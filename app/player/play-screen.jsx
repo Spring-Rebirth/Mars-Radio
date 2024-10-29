@@ -6,9 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PlayScreen() {
     const { post } = useLocalSearchParams();
-    const parsedPost = post ? JSON.parse(post) : null;
+    const parsedVideoUrl = post ? JSON.parse(post).video : null;
 
-    console.log('PlayScreen - post:', JSON.stringify(parsedPost, null, 4));
+    console.log('PlayScreen - post:', JSON.stringify(parsedVideoUrl, null, 4));
 
     const screenHight = Dimensions.get('window').width * 9 / 16;
     console.log('screenHight:', screenHight);
@@ -25,7 +25,7 @@ export default function PlayScreen() {
                     }} />
                 )}
                 <Video
-                    source={{ uri: parsedPost.video }}
+                    source={{ uri: parsedVideoUrl }}
                     style={{ width: '100%', height: screenHight }}
                     resizeMode={ResizeMode.CONTAIN}
                     useNativeControls
