@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, ActivityIndicator } from 'react-native'
+import { View, Text, Dimensions, ActivityIndicator, StyleSheet } from 'react-native'
 import React, { useState } from 'react'
 import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
@@ -17,16 +17,19 @@ export default function PlayScreen() {
     const [loading, setLoading] = useState(true);
 
     return (
-        <SafeAreaView className="bg-primary h-screen">
-            <View className='w-screen h-screen bg-primary'>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
                 {loading && (
-                    <ActivityIndicator size="large" color="#fff" style={{
-                        position: 'absolute', top: '10%', left: '50%', transform: [{ translateX: -20 }, { translateY: -20 }]
-                    }} />
+                    <>
+                        <ActivityIndicator size="large" color="#fff" style={styles.activityIndicator} />
+                        {!playing && (
+                            <Text style={styles.loadingText}>Loading</Text>
+                        )}
+                    </>
                 )}
                 <Video
                     source={{ uri: parsedVideoUrl }}
-                    style={{ width: '100%', height: screenHight }}
+                    style={[styles.video, { height: screenHight }]}
                     resizeMode={ResizeMode.CONTAIN}
                     useNativeControls
                     shouldPlay
@@ -44,3 +47,32 @@ export default function PlayScreen() {
         </SafeAreaView>
     )
 }
+
+const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#121212', // adjust for your bg-primary color
+    },
+    container: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#121212', // adjust for your bg-primary color
+    },
+    activityIndicator: {
+        position: 'absolute',
+        top: '10%',
+        left: '50%',
+        transform: [{ translateX: -20 }, { translateY: -20 }],
+    },
+    loadingText: {
+        color: '#fff',
+        fontSize: 20,
+        position: 'absolute',
+        top: '5%',
+        left: '50%',
+        transform: [{ translateX: -40 }, { translateY: -10 }],
+    },
+    video: {
+        width: '100%',
+    },
+});
