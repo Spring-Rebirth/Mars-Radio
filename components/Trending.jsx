@@ -1,13 +1,10 @@
 // cSpell:ignore Pressable
-import { useState, useEffect, useContext } from 'react'
+import { useState, useContext } from 'react'
 import * as Animatable from 'react-native-animatable'
-import { icons } from '../constants';
-import { Video, ResizeMode } from 'expo-av';
 import star from '../assets/menu/star-solid.png'
 import starThree from '../assets/menu/star3.png'
 import { useGlobalContext } from '../context/GlobalProvider'
 import { updatesaved_counts } from '../lib/appwrite';
-import closeY from '../assets/menu/close-yuan.png'
 import { PlayDataContext } from '../context/PlayDataContext';
 import {
     FlatList, ImageBackground, Text, TouchableOpacity, View, Image, ActivityIndicator,
@@ -17,8 +14,6 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 function TrendingItem({ activeItem, item }) {
-    const [playing, setPlaying] = useState(false);
-    const [loading, setLoading] = useState(true);
     const [imageLoaded, setImageLoaded] = useState(false);
     const { user, setUser } = useGlobalContext();
     const { played_counts, $id } = item;
@@ -113,11 +108,20 @@ function TrendingItem({ activeItem, item }) {
             className='mr-2 relative'
         >
             <TouchableOpacity onPress={handleAddSaved} className='absolute z-10 top-3 right-3'>
-                <Image
-                    source={isSaved ? star : starThree}
-                    className='w-7 h-7'
-                    resizeMode='contain'
-                />
+                {/* 星标图标（右上角） */}
+                <View style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    padding: 5,
+                    borderRadius: 12,
+                    shadowColor: '#fff',
+                    shadowOpacity: 0.8,
+                    shadowRadius: 6,
+                }}>
+                    <Image source={isSaved ? star : starThree} style={{ width: 20, height: 20 }} />
+                </View>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -166,21 +170,6 @@ function TrendingItem({ activeItem, item }) {
                             console.log("Failed to load image.");
                         }}
                     />
-                </View>
-
-                {/* 星标图标（右上角） */}
-                <View style={{
-                    position: 'absolute',
-                    top: 10,
-                    right: 10,
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    padding: 5,
-                    borderRadius: 12,
-                    shadowColor: '#fff',
-                    shadowOpacity: 0.8,
-                    shadowRadius: 6,
-                }}>
-                    <Image source={star} style={{ width: 20, height: 20 }} />
                 </View>
 
                 {/* 底部渐变覆盖层 */}
