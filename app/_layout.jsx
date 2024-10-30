@@ -42,11 +42,11 @@ export default function RootLayout() {
                     console.log('Update fetched.');
 
                     Alert.alert(
-                        '有可用的更新',
-                        '已经下载了新的更新，是否立即重启应用？',
+                        'Update Available',
+                        'A new update has been downloaded. Would you like to restart the app now?',
                         [
                             {
-                                text: '稍后',
+                                text: 'Later',
                                 onPress: () => {
                                     setIsUpdating(false);
                                     setCanNavigate(true);
@@ -54,7 +54,7 @@ export default function RootLayout() {
                                 style: 'cancel',
                             },
                             {
-                                text: '立即重启',
+                                text: 'Restart Now',
                                 onPress: async () => {
                                     console.log('Reloading app...');
                                     await Updates.reloadAsync();
@@ -63,6 +63,7 @@ export default function RootLayout() {
                         ],
                         { cancelable: false }
                     );
+
                 } else {
                     console.log('No updates available.');
                     setCanNavigate(true);
