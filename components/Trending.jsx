@@ -4,7 +4,7 @@ import * as Animatable from 'react-native-animatable'
 import star from '../assets/menu/star-solid.png'
 import starThree from '../assets/menu/star3.png'
 import { useGlobalContext } from '../context/GlobalProvider'
-import { updatesaved_counts } from '../lib/appwrite';
+import { updateSavedCounts } from '../lib/appwrite';
 import { PlayDataContext } from '../context/PlayDataContext';
 import {
     FlatList, ImageBackground, Text, TouchableOpacity, View, Image, ActivityIndicator,
@@ -64,7 +64,7 @@ function TrendingItem({ activeItem, item }) {
                 isIncrement = false;
                 Alert.alert('Cancel save successfully');
             }
-            await updatesaved_counts($id, isIncrement);
+            await updateSavedCounts($id, isIncrement);
         } catch (error) {
             console.error("Error handling favorite:", error);
             Alert.alert('An error occurred while updating favorite count');

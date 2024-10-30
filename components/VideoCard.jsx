@@ -2,17 +2,14 @@
 import { View, Text, Image, TouchableOpacity, Pressable, Alert, ActivityIndicator } from 'react-native'
 import { useEffect, useState, useRef, useContext } from 'react'
 import { icons } from '../constants'
-import { ResizeMode, Video } from 'expo-av';
 import star from '../assets/menu/star-solid.png'
 import starThree from '../assets/menu/star3.png'
 import trash from '../assets/menu/trash-solid.png'
 import { useGlobalContext } from '../context/GlobalProvider'
 import { deleteVideoDoc, deleteVideoFiles } from '../lib/appwrite'
 import { useRoute } from '@react-navigation/native';
-import { updatesaved_counts, getVideoDetails } from '../lib/appwrite';
-import * as ScreenOrientation from 'expo-screen-orientation';
+import { updateSavedCounts, getVideoDetails } from '../lib/appwrite';
 import { StatusBar } from 'expo-status-bar';
-import closeY from '../assets/menu/close-yuan.png'
 import { PlayDataContext } from '../context/PlayDataContext';
 import { formatNumberWithUnits, getRelativeTime } from '../utils/numberFormatter';
 import { router } from 'expo-router';
@@ -20,12 +17,10 @@ import { router } from 'expo-router';
 export default function VideoCard({
     post,
     handleRefresh,
-    toggleFullscreen,
     isFullscreen,
 }) {
-    const { $id, $createdAt, title, thumbnail, video, creator: { accountId, username, avatar } } = post;
-    const [playing, setPlaying] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const { $id, $createdAt, title, thumbnail, creator: { accountId, username, avatar } } = post;
+
     const [showControlMenu, setShowControlMenu] = useState(false);
 
     const [isVideoCreator, setIsVideoCreator] = useState(false);
@@ -36,31 +31,16 @@ export default function VideoCard({
     const { updatePlayData, playDataRef } = useContext(PlayDataContext);
     const [playCount, setPlayCount] = useState(post.played_counts || 0);
 
-
-    const videoRef = useRef(null);
     const route = useRoute();
     const currentPath = route.name;
-    const aspectRatio = 16 / 9; // 视频比例
     const adminList = ['cjunwei6249@gmail.com', '1392600130@qq.com', 'zhangwww1998@outlook.com'];
     let admin = adminList.includes(user?.email);
+
     for (let index = 0; index < adminList.length; index++) {
         if (user?.email === adminList[index]) {
             admin = true;
         }
     }
-
-
-    const onFullscreenUpdate = async ({ fullscreenUpdate }) => {
-        if (fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT) {
-            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-            toggleFullscreen(true);
-        } else if (fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS) {
-            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-            toggleFullscreen(false);
-        }
-    };
-
-
 
     const handleAddSaved = async () => {
         try {
@@ -94,7 +74,7 @@ export default function VideoCard({
                 isIncrement = false;
                 Alert.alert('Cancel save successfully');
             }
-            await updatesaved_counts($id, isIncrement);
+            await updateSavedCounts($id, isIncrement);
         } catch (error) {
             console.error("Error handling favorite:", error);
             Alert.alert('An error occurred while updating favorite count');
@@ -105,14 +85,14 @@ export default function VideoCard({
         console.log("Before click, isSaved:", isSaved); // Debugging
         setShowControlMenu(false);
         handleAddSaved();
-
     }
 
     const handleDelete = async () => {
         setShowControlMenu(false);
 
         try {
-            const videoDetails = await getVideoDetails($id); // 假设 getVideoDetails 从数据库获取视频详细信息
+            // 假设 getVideoDetails 从数据库获取视频详细信息
+            const videoDetails = await getVideoDetails($id);
             const { image_ID, video_ID } = videoDetails;
 
             if (image_ID && video_ID) {
@@ -138,6 +118,7 @@ export default function VideoCard({
             setIsVideoCreator(true);
         }
     }, [user.accountId, $id]);
+
     // cSpell:words cooldown
     const handlePlay = async () => {
         const currentTime = Date.now();
@@ -156,9 +137,6 @@ export default function VideoCard({
             console.log('冷却时间未过，播放次数不增加');
         }
 
-        // 继续播放视频
-        // setPlaying(true);
-        // setLoading(true);
         router.push({
             pathname: 'player/play-screen',
             params: {
@@ -167,20 +145,17 @@ export default function VideoCard({
         });
     };
 
-
     return (
         <View className={`relative bg-primary ${isFullscreen ? 'flex-1 w-full h-full' : 'my-4 '}`}>
             {/* 在全屏模式下隐藏状态栏 */}
             {isFullscreen && <StatusBar hidden />}
 
             {/* 视频视图 */}
-
             <TouchableOpacity
                 className='w-full h-56 justify-center items-center relative overflow-hidden' // 添加 overflow-hidden
                 activeOpacity={0.7}
                 onPress={handlePlay}
             >
-
                 <Image
                     source={{ uri: thumbnail }}
                     className='w-full h-full mb-4'
@@ -191,12 +166,12 @@ export default function VideoCard({
                         console.log("Failed to load image.");
                     }}
                 />
+
                 {!imageLoaded && (
                     <ActivityIndicator size="large" color="#fff" style={{
                         position: 'absolute', top: '50%', left: '50%', transform: [{ translateX: -20 }, { translateY: -20 }]
                     }} />
                 )}
-
             </TouchableOpacity>
 
             {!isFullscreen && (
