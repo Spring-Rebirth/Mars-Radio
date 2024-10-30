@@ -51,12 +51,12 @@ export default function PlayScreen() {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#121212', // adjust for your bg-primary color
+        backgroundColor: '#161622', // adjust for your bg-primary color
     },
     container: {
         width: '100%',
         height: '100%',
-        backgroundColor: '#121212', // adjust for your bg-primary color
+        backgroundColor: '#161622', // adjust for your bg-primary color
     },
     activityIndicator: {
         position: 'absolute',
