@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar'
 import { updateSavedVideo } from '../../lib/appwrite'
 import downIcon from '../../assets/icons/down.png'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -21,6 +22,7 @@ export default function Home() {
 	const [popularData, setPopularData] = useState([]);
 	const { user } = useGlobalContext();
 	const { fetchPosts, fetchPopularPosts } = useGetData({ setLoading, setData, setPopularData });
+	const { t } = useTranslation();
 
 	const toggleFullscreen = (fullscreen) => {
 		setIsFullscreen(fullscreen);
@@ -73,7 +75,7 @@ export default function Home() {
 
 								<View className='flex-row justify-between items-center mt-4 h-[60px]'>
 									<View >
-										<Text className='text-gray-100 text-lg'>Welcome Back</Text>
+										<Text className='text-gray-100 text-lg'>{t('Welcome Back')}</Text>
 										<Text className='text-white text-2xl font-psemibold '>{user?.username}</Text>
 									</View>
 									<Image

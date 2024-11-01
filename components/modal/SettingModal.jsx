@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
+import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SettingModal({ showModal = false, setModalVisible }) {
     const [viewLevel, setViewLevel] = useState(1); // 控制当前视图层级
+    const { t, i18n } = useTranslation();
 
     // 使用 useEffect 监听 showModal 的变化
     useEffect(() => {
         if (showModal) setViewLevel(1); // 每次打开 Modal 时重置为一级视图
     }, [showModal]);
+
+    const changeLanguage = async (lang) => {
+        await i18n.changeLanguage(lang);
+        await AsyncStorage.setItem('language', lang);
+        setModalVisible(false);
+    };
 
     const goToNextLevel = () => {
         setViewLevel(2); // 切换到二级视图
@@ -37,19 +46,26 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
                 ) : (
                     // 二级视图
                     <View>
-
                         <TouchableOpacity onPress={goToPreviousLevel}
                             className="absolute -top-2.5 -left-28"
                         >
                             <Text>返回</Text>
                         </TouchableOpacity>
                         <Text style={styles.title}>Switch Language</Text>
-                        <TouchableOpacity onPress={() => { }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                changeLanguage('en');
+                            }}
+                        >
                             <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
                                 <Text>English</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                changeLanguage('zh');
+                            }}
+                        >
                             <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center mt-2">
                                 <Text>中文</Text>
                             </View>

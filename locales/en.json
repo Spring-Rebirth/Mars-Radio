@@ -1,4 +1,5 @@
 {
     "welcome": "Welcome",
-    "hello": "Hello, {{name}}!"
+    "hello": "Hello, {{name}}!",
+    "Welcome Back": "Welcome Back"
 }

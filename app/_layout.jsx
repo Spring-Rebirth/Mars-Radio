@@ -9,6 +9,7 @@ import { PlayDataProvider } from '../context/PlayDataContext';
 import AppContent from '../context/AppContent';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -84,6 +85,11 @@ export default function RootLayout() {
 
     useEffect(() => {
         if (fontsLoaded && canNavigate && !isUpdating) {
+            AsyncStorage.getItem('language').then((lang) => {
+                if (lang) {
+                    i18n.changeLanguage(lang);
+                }
+            });
             SplashScreen.hideAsync();
         }
     }, [fontsLoaded, canNavigate, isUpdating]);
