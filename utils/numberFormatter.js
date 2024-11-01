@@ -30,24 +30,24 @@ export const getRelativeTime = ($createdAt) => {
     const now = new Date();
 
     const diffInMs = now - dateObj; // 时间差，单位为毫秒
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // 转换为分钟
-    const diffInHours = Math.floor(diffInMinutes / 60); // 转换为小时
-    const diffInDays = Math.floor(diffInHours / 24); // 转换为天
-    const diffInWeeks = Math.floor(diffInDays / 7); // 转换为星期
-    const diffInMonths = Math.floor(diffInDays / 30); // 粗略转换为月
-    const diffInYears = Math.floor(diffInDays / 365); // 粗略转换为年
+    let diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // 转换为分钟
+    let diffInHours = Math.floor(diffInMinutes / 60); // 转换为小时
+    let diffInDays = Math.floor(diffInHours / 24); // 转换为天
+    let diffInWeeks = Math.floor(diffInDays / 7); // 转换为星期
+    let diffInMonths = Math.floor(diffInDays / 30); // 粗略转换为月
+    let diffInYears = Math.floor(diffInDays / 365); // 粗略转换为年
 
     if (diffInMinutes < 60) {
-        return `${diffInMinutes} min ago`;
+        return `${diffInMinutes || 1} min ago`; // 如果为0，则返回1
     } else if (diffInHours < 24) {
-        return `${diffInHours} h ago`;
+        return `${diffInHours || 1} h ago`; // 如果为0，则返回1
     } else if (diffInDays < 7) {
-        return `${diffInDays} d ago`;
+        return `${diffInDays || 1} d ago`; // 如果为0，则返回1
     } else if (diffInWeeks < 4) {
-        return `${diffInWeeks} wk ago`;
+        return `${diffInWeeks || 1} wk ago`; // 如果为0，则返回1
     } else if (diffInMonths < 12) {
-        return `${diffInMonths} mo ago`;
+        return `${diffInMonths || 1} mo ago`; // 如果为0，则返回1
     } else {
-        return `${diffInYears} y ago`;
+        return `${diffInYears || 1} y ago`; // 如果为0，则返回1
     }
 };
