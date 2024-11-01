@@ -13,6 +13,8 @@ import { StatusBar } from 'expo-status-bar'
 import * as ImagePicker from 'expo-image-picker';
 import { fetchFileUrl, updateAvatar, getCurrentUser } from '../../lib/appwrite'
 import { createFile } from '../../lib/appwrite';
+import settingIcon from '../../assets/icons/setting-red.png'
+import SettingModal from '../../components/modal/SettingModal'
 
 export default function profile() {
     const [userPostsData, setUserPostsData] = useState([]);
@@ -23,7 +25,7 @@ export default function profile() {
     const [avatarUploading, setAvatarUploading] = useState(false);
     const [currentPlayingPost, setCurrentPlayingPost] = useState(null);
     const [isTransitioning, setIsTransitioning] = useState(false);
-
+    const [settingModalVisible, setSettingModalVisible] = useState(false);
 
     useEffect(() => {
         setLoading(true);
@@ -120,7 +122,10 @@ export default function profile() {
 
     return (
         <SafeAreaView className='bg-primary h-full'>
-
+            <SettingModal
+                showModal={settingModalVisible}
+                setModalVisible={setSettingModalVisible}
+            />
             <FlatList
                 data={loading ? [] : userPostsData}
                 // item 是 data 数组中的每一项
@@ -129,14 +134,24 @@ export default function profile() {
                 ListHeaderComponent={() => {
                     return (
                         <View className='my-6 px-4 mb-8 relative'>
-                            <TouchableOpacity onPress={handleSignOut}>
-                                <Image
-                                    source={icons.logout}
-                                    className='w-6 h-6 absolute top-2 right-4'
-                                    resizeMode='contain'
-                                />
-                            </TouchableOpacity>
-
+                            <View className='flex-row items-center justify-between'>
+                                <TouchableOpacity onPress={() => { setSettingModalVisible(true) }}
+                                    className='w-8 h-8'
+                                >
+                                    <Image
+                                        source={settingIcon}
+                                        className='w-8 h-8 mt-[0.5]'
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={handleSignOut}>
+                                    <Image
+                                        source={icons.logout}
+                                        className='w-6 h-6 '
+                                        resizeMode='contain'
+                                    />
+                                </TouchableOpacity>
+                            </View>
                             <View className='justify-between items-center mt-10'>
                                 <TouchableOpacity onPress={handleAvatarPress}>
                                     <View
