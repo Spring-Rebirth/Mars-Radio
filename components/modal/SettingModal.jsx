@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 
 export default function SettingModal({ showModal = false, setModalVisible }) {
@@ -27,17 +27,41 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
                 {viewLevel === 1 ? (
                     // 一级视图
                     <View>
-                        <Text style={styles.title}>一级视图</Text>
-                        <Button title="跳转到二级视图" onPress={goToNextLevel} />
+                        <Text style={styles.title}>Setting</Text>
+                        <TouchableOpacity onPress={goToNextLevel}>
+                            <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
+                                <Text>Language</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 ) : (
                     // 二级视图
                     <View>
-                        <Text style={styles.title}>二级视图</Text>
-                        <Button title="返回一级视图" onPress={goToPreviousLevel} />
+
+                        <TouchableOpacity onPress={goToPreviousLevel}
+                            className="absolute -top-2.5 -left-28"
+                        >
+                            <Text>返回</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Switch Language</Text>
+                        <TouchableOpacity onPress={() => { }}>
+                            <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
+                                <Text>English</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => { }}>
+                            <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center mt-2">
+                                <Text>中文</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 )}
-                <Button title="关闭" onPress={() => setModalVisible(false)} />
+                <TouchableOpacity
+                    style={{ position: 'absolute', top: 10, right: 10 }}
+                    onPress={() => setModalVisible(false)}
+                >
+                    <Text>关闭</Text>
+                </TouchableOpacity>
             </View>
         </Modal>
     );
@@ -50,14 +74,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     modalContent: {
+        position: 'relative',
         backgroundColor: 'white',
         padding: 20,
         borderRadius: 10,
+        justifyContent: 'center',
         alignItems: 'center',
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
+        textAlign: 'center',
     },
 });
