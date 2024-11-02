@@ -35,14 +35,13 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
         useEffect(() => {
             // 获取子评论
             const loadReplies = async () => {
-                if (comment.parent_comment_ID) {
-                    const childComments = await fetchReplies(comment.$id); // 根据父评论ID获取子评论
-                    setReplies(childComments);
-                    setIsRepliesLoaded(true);
-                }
+                const childComments = await fetchReplies(comment.$id); // 根据当前评论 ID 获取子评论
+                setReplies(childComments);
+                setIsRepliesLoaded(true);
             };
             loadReplies();
-        }, [comment.$id]);
+        }, [comment.$id]); // 使用 comment.$id 作为依赖项
+
 
         return (
 

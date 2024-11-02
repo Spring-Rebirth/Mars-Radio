@@ -47,14 +47,20 @@ export default function PlayScreen() {
     }, []);
 
     const fetchReplies = async (parentCommentId) => {
-        const replies = await databases.listDocuments(
-            config.databaseId,
-            config.commentsCollectionId,
-            [
-                Query.equal("parent_comment_ID", parentCommentId)
-            ]
-        );
-        return replies.documents; // 返回子评论数组
+        try {
+            const replies = await databases.listDocuments(
+                config.databaseId,
+                config.commentsCollectionId,
+                [
+                    Query.equal("parent_comment_ID", parentCommentId)
+                ]
+            );
+            return replies.documents; // 返回子评论数组
+        } catch (error) {
+            console.error("Failed to fetch replies:", error);
+            return [];
+        }
+
     };
 
     const submitReply = async (content, parentCommentId) => {
