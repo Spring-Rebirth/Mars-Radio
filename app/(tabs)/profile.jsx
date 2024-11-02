@@ -15,6 +15,7 @@ import { fetchFileUrl, updateAvatar, getCurrentUser } from '../../lib/appwrite'
 import { createFile } from '../../lib/appwrite';
 import settingIcon from '../../assets/icons/setting-red.png'
 import SettingModal from '../../components/modal/SettingModal'
+import {useTranslation} from "react-i18next";
 
 export default function profile() {
     const [userPostsData, setUserPostsData] = useState([]);
@@ -26,6 +27,7 @@ export default function profile() {
     const [currentPlayingPost, setCurrentPlayingPost] = useState(null);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [settingModalVisible, setSettingModalVisible] = useState(false);
+    const {t} = useTranslation();
 
     useEffect(() => {
         setLoading(true);
@@ -84,7 +86,6 @@ export default function profile() {
                         .catch(err => {
                             console.warn('还没读取到创建的文件:', err);
                             Alert.alert('Network error, please try again.');
-                            return;
                         })
 
                     if (file) {
@@ -197,7 +198,7 @@ export default function profile() {
                     return loading ? (
                         <View className="flex-1 justify-center items-center bg-primary">
                             <ActivityIndicator size="large" color="#ffffff" />
-                            <Text className='mt-[10] text-white text-xl'>Loading, please wait...</Text>
+                            <Text className='mt-[10] text-white text-xl'>{t("Loading, please wait...")}</Text>
                         </View>
                     ) : (
                         <View>

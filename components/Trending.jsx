@@ -12,6 +12,7 @@ import {
 } from 'react-native'
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next'
 
 function TrendingItem({ activeItem, item }) {
     const [imageLoaded, setImageLoaded] = useState(false);
@@ -206,8 +207,9 @@ function TrendingItem({ activeItem, item }) {
 export default function Trending({ video, loading }) {
     // cSpell: words viewability
     const viewabilityConfig = { itemVisiblePercentThreshold: 70 }; // 配置可见性百分比
-
     const [activeItem, setActiveItem] = useState(video && video.length > 0 ? video[0] : null); // 设置默认 activeItem
+
+    const { t } = useTranslation();
 
     const handleViewableItemsChanged = ({ viewableItems }) => {
         if (viewableItems && viewableItems.length > 0) {
@@ -218,7 +220,7 @@ export default function Trending({ video, loading }) {
     return loading ? (
         <View className="flex-1 justify-center items-center bg-primary mt-12">
             <ActivityIndicator size="large" color="#ffffff" />
-            <Text className='mt-[10] text-white text-xl'>Loading, please wait...</Text>
+            <Text className='mt-[10] text-white text-xl'>{t('Loading, please wait...')}</Text>
         </View>
     ) : (
         <FlatList

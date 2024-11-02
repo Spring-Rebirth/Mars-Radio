@@ -17,6 +17,7 @@ import * as VideoThumbnails from 'expo-video-thumbnails';
 import * as FileSystem from 'expo-file-system';
 import * as Progress from 'react-native-progress';
 import mime from 'mime';
+import {useTranslation} from "react-i18next";
 
 export default function Create() {
     const { user } = useGlobalContext();
@@ -28,6 +29,7 @@ export default function Create() {
     const isImageSelected = imageFile?.uri != null;
     const isVideoSelected = videoFile?.uri != null;
     const [progress, setProgress] = useState({ type: '', percent: 0 });
+    const {t} = useTranslation();
 
     // 处理图片选择
     const handlePickImage = async () => {
@@ -182,7 +184,7 @@ export default function Create() {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 {/* Upload Video */}
                 <View className='flex-row justify-between items-center mt-10 h-[60px]'>
-                    <Text className='text-white text-2xl font-psemibold'>Upload Video</Text>
+                    <Text className='text-white text-2xl font-psemibold'>{t("Upload Video")}</Text>
                     <Image
                         source={images.logoSmall}
                         className='w-9 h-10'
@@ -191,14 +193,14 @@ export default function Create() {
                 </View>
 
                 <CustomForm
-                    title={'Title'}
+                    title={t('Title')}
                     handleChangeText={(text) => setForm({ ...form, title: text })}
                     value={form.title}
-                    placeholder={'Catchy titles get more clicks !'}
+                    placeholder={t('Catchy titles get more clicks !')}
                 />
 
                 {/* Upload Video */}
-                <Text className='text-gray-100 mt-5 text-lg'>Video</Text>
+                <Text className='text-gray-100 mt-5 text-lg'>{t('Video')}</Text>
                 {/* TODO：视频存在则显示视频 */}
                 {!isVideoSelected ? (
                     <TouchableOpacity onPress={handlePickVideo}>
@@ -233,19 +235,19 @@ export default function Create() {
                 )}
 
                 {/* Thumbnail Image */}
-                <Text className='text-gray-100 mt-5 text-lg'>Thumbnail</Text>
+                <Text className='text-gray-100 mt-5 text-lg'>{t("Thumbnail")}</Text>
                 {/* TODO：图片存在则显示图片 */}
                 {!isImageSelected ? (
                     <View className='flex-row w-full justify-around mt-6 mb-8'>
                         <TouchableOpacity onPress={handlePickImage}>
                             <View className='w-36 h-16 bg-[#5454eb] rounded-3xl  flex-row justify-center items-center px-4'>
-                                <Text className='text-white'>Choose File</Text>
+                                <Text className='text-white'>{t("Choose File")}</Text>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={generateThumbnailFromVideo}>
                             <View className='w-36 h-16 bg-[#517ae1] rounded-3xl  flex-row justify-center items-center px-4'>
-                                <Text className='text-white'>Auto Generate</Text>
+                                <Text className='text-white'>{t("Auto Generate")}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -276,7 +278,7 @@ export default function Create() {
                             <>
                                 <ActivityIndicator size="small" color="#ffffff" />
                                 <Text className='text-white text-xl text-center mt-2'>
-                                    Image Uploading
+                                    {t("Image Uploading")}
                                 </Text>
                             </>
                         ) : (
@@ -297,7 +299,7 @@ export default function Create() {
                 {/* submit button */}
                 <CustomButton
                     onPress={() => { handleUpload() }}
-                    title={'Submit & Publish'}
+                    title={t('Submit & Publish')}
                     style={'h-16 mb-8'}
                     textStyle={'text-black-100'}
                     isLoading={uploading}

@@ -2,6 +2,7 @@ import { View, Text, Image } from 'react-native'
 import { Tabs } from 'expo-router'
 import icons from '../../constants/icons'
 import { useWindowDimensions } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 function TabIcon({ name, icon, color, focused }) {
     const { width, height } = useWindowDimensions();
@@ -30,6 +31,7 @@ function TabIcon({ name, icon, color, focused }) {
 }
 
 export default function TabsLayout() {
+    const { t } = useTranslation();
     return (
         <Tabs screenOptions={{
             tabBarShowLabel: false,
@@ -45,11 +47,11 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='home'
                 options={{
-                    title: 'Home',
+                    title: t('Home'),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabIcon
-                            name={'Home'}
+                            name={t('Home')}
                             icon={icons.home}
                             color={color}
                             focused={focused} />
@@ -59,11 +61,11 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='create'
                 options={{
-                    title: 'Create',
+                    title: t('Create'),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabIcon
-                            name={'Create'}
+                            name={t('Create')}
                             icon={icons.plus}
                             color={color}
                             focused={focused} />
@@ -73,11 +75,11 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='saved'
                 options={{
-                    title: 'Saved',
+                    title: t('Saved'),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabIcon
-                            name={'Saved'}
+                            name={t('Saved')}
                             icon={icons.bookmark}
                             color={color}
                             focused={focused} />
@@ -87,11 +89,11 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='profile'
                 options={{
-                    title: 'Profile',
+                    title: t('Profile'),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabIcon
-                            name={'Profile'}
+                            name={t('Profile')}
                             icon={icons.profile}
                             color={color}
                             focused={focused} />

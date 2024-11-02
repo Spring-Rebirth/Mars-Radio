@@ -88,7 +88,7 @@ export default function Home() {
 								<SearchInput containerStyle={'mt-6'} />
 
 								<View className='mt-8'>
-									<Text className=' mb-8 font-psemibold text-lg text-sky-300 text-center'>Top  Hits</Text>
+									<Text className=' mb-8 font-psemibold text-lg text-sky-300 text-center'>{t('Top  Hits')}</Text>
 									{/* 头部视频 */}
 									{popularData.length === 0 ? (
 										<View className='items-center'>
@@ -98,7 +98,7 @@ export default function Home() {
 												resizeMode='contain'
 											/>
 											<Text className='text-sky-300 text-center font-psemibold'>
-												Play the video to help it {'\n'}become a popular one !
+												{t("Play the video to help it")} {'\n'}{t('become a popular one !')}
 											</Text>
 										</View>
 									) : (
@@ -112,7 +112,9 @@ export default function Home() {
 										resizeMode='contain'
 										className='w-6 h-6'
 									/>
-									<Text className='text-sky-300  font-psemibold text-lg text-center mx-12'>Latest</Text>
+									<Text className='text-sky-300  font-psemibold text-lg text-center mx-12'>
+										{t("Latest")}
+									</Text>
 									<Image
 										source={downIcon}
 										resizeMode='contain'
@@ -120,7 +122,6 @@ export default function Home() {
 									/>
 								</View>
 							</View>
-
 						);
 					}}
 
@@ -135,7 +136,7 @@ export default function Home() {
 						return loading ? (
 							<View className="flex-1 justify-center items-center bg-primary mt-64">
 								<ActivityIndicator size="large" color="#ffffff" />
-								<Text className='mt-[10] text-white text-xl'>Loading, please wait...</Text>
+								<Text className='mt-[10] text-white text-xl'>{t('Loading, please wait...')}</Text>
 							</View>
 						) : (
 							<View>

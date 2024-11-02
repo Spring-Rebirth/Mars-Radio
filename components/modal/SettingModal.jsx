@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import Modal from 'react-native-modal';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import backIcon from '../../assets/icons/left-arrow.png'
+import closeIcon from '../../assets/icons/close.png'
 
 export default function SettingModal({ showModal = false, setModalVisible }) {
     const [viewLevel, setViewLevel] = useState(1); // 控制当前视图层级
@@ -36,10 +38,10 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
                 {viewLevel === 1 ? (
                     // 一级视图
                     <View>
-                        <Text style={styles.title}>Setting</Text>
+                        <Text style={styles.title}>{t("Setting")}</Text>
                         <TouchableOpacity onPress={goToNextLevel}>
                             <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
-                                <Text>Language</Text>
+                                <Text>{t("Language")}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -47,9 +49,11 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
                     // 二级视图
                     <View>
                         <TouchableOpacity onPress={goToPreviousLevel}
-                            className="absolute -top-2.5 -left-28"
+                            className="absolute -top-2 -left-[68]"
                         >
-                            <Text>返回</Text>
+                            <Image source={backIcon} resizeMode={'contain'}
+                                className={'w-5 h-5'}
+                            />
                         </TouchableOpacity>
                         <Text style={styles.title}>Switch Language</Text>
                         <TouchableOpacity
@@ -76,7 +80,9 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
                     style={{ position: 'absolute', top: 10, right: 10 }}
                     onPress={() => setModalVisible(false)}
                 >
-                    <Text>关闭</Text>
+                    <Image source={closeIcon} resizeMode={'contain'}
+                           className={'w-5 h-5'}
+                    />
                 </TouchableOpacity>
             </View>
         </Modal>

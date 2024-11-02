@@ -2,10 +2,12 @@ import { View, TextInput, Image, TouchableOpacity, Alert } from 'react-native'
 import { useState } from 'react'
 import { icons } from '../constants'
 import { router, usePathname } from 'expo-router';
+import { useTranslation } from 'react-i18next'
 
-export default function SearchInput({ title, handleChangeText, containerStyle }) {
+export default function SearchInput({containerStyle }) {
     const [queryText, setQueryText] = useState('');
     const pathname = usePathname();
+    const { t } = useTranslation();
 
     return (
         <View className={`w-full h-16 bg-[#1e1e2d] border-2 border-black-200 rounded-2xl \
@@ -13,7 +15,7 @@ export default function SearchInput({ title, handleChangeText, containerStyle })
         >
             <TextInput
                 className={'flex-1 h-full px-4 text-white'}
-                placeholder={"Search by the beginning of the title"}
+                placeholder={t("Search by the beginning of the title")}
                 placeholderTextColor={'#7f7f7f'}
                 style={{ outline: 'none' }}
                 value={queryText}

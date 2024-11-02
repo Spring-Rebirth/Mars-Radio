@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CommentBox from "../../components/comment/CommentBox";
 
 export default function PlayScreen() {
     const { post } = useLocalSearchParams();
@@ -43,6 +44,9 @@ export default function PlayScreen() {
                         }
                     }}
                 />
+                <View className={'px-6 mt-4'}>
+                <CommentBox />
+                </View>
             </View>
         </SafeAreaView>
     )

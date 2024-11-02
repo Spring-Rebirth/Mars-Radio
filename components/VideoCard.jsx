@@ -1,6 +1,6 @@
 // cSpell:ignore Pressable
 import { View, Text, Image, TouchableOpacity, Pressable, Alert, ActivityIndicator } from 'react-native'
-import { useEffect, useState, useRef, useContext } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { icons } from '../constants'
 import star from '../assets/menu/star-solid.png'
 import starThree from '../assets/menu/star3.png'
@@ -13,12 +13,14 @@ import { StatusBar } from 'expo-status-bar';
 import { PlayDataContext } from '../context/PlayDataContext';
 import { formatNumberWithUnits, getRelativeTime } from '../utils/numberFormatter';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next'
 
 export default function VideoCard({
     post,
     handleRefresh,
     isFullscreen,
 }) {
+    const { t } = useTranslation();
     const { $id, $createdAt, title, thumbnail, creator: { accountId, username, avatar } } = post;
 
     const [showControlMenu, setShowControlMenu] = useState(false);
@@ -224,7 +226,7 @@ export default function VideoCard({
                                 {title}
                             </Text>
                             <Text className='text-gray-100 font-pregular text-xs' numberOfLines={1}>
-                                {username}  ·  {formatNumberWithUnits(playCount)} views  ·  {getRelativeTime($createdAt)}
+                                {username}  ·  {formatNumberWithUnits(playCount, t)} {t("views")}  ·  {getRelativeTime($createdAt, t)}
                             </Text>
                         </TouchableOpacity>
 
