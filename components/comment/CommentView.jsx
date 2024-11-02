@@ -8,7 +8,7 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 export default function CommentView({ commentsDoc, avatar, username, fetchReplies }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
     const bottomSheetRef = useRef(null);
-    const [showBottomSheet, setShowBottomSheet] = useState(false);
+    const [sheetIndex, setSheetIndex] = useState(-1); // 初始为关闭状态
 
     const CommentItem = ({ comment, level = 0 }) => {
         const [replies, setReplies] = useState([]);
@@ -46,7 +46,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                             resizeMode='contain'
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { setShowBottomSheet(true) }}
+                    <TouchableOpacity onPress={() => { setSheetIndex(0) }}
                         className=' w-20 items-center'
                     >
                         <Image
@@ -84,21 +84,21 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 )}
             />
 
-            {showBottomSheet && (
-                <BottomSheet
-                    ref={bottomSheetRef}
-                    index={0}
-                    snapPoints={['50%', '90%', 300]}
-                    onChange={(index) => {
-                        console.log('Sheet changed to:', index);
-                    }}
-                >
-                    <BottomSheetView style={{ flex: 1, backgroundColor: 'white' }}>
-                        <Text>BottomSheet Content</Text>
-                    </BottomSheetView>
-                </BottomSheet>
-            )
-            }
+            <BottomSheet
+                ref={bottomSheetRef}
+                index={sheetIndex}
+                snapPoints={['25%', '90%']}
+                enablePanDownToClose={true}
+                onChange={(index) => {
+                    console.log('Sheet changed to:', index);
+                    if (index === -1) setSheetIndex(-1); // 当关闭时，保持 `sheetIndex` 为 -1
+                }}
+            >
+                <BottomSheetView style={{ flex: 1, backgroundColor: 'white' }}>
+                    <Text>BottomSheet Content</Text>
+                </BottomSheetView>
+            </BottomSheet>
+
         </>
     );
 }
