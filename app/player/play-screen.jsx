@@ -8,6 +8,7 @@ import CommentView from "../../components/comment/CommentView";
 import { config, databases } from "../../lib/appwrite";
 import { Query } from "react-native-appwrite";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ID } from 'react-native-appwrite';
 
 
 export default function PlayScreen() {
@@ -56,6 +57,25 @@ export default function PlayScreen() {
         return replies.documents; // 返回子评论数组
     };
 
+    const submitReply = async (content, parentCommentId) => {
+        try {
+            await databases.createDocument(
+                config.databaseId,
+                config.commentsCollectionId,
+                ID.unique(),
+                {
+                    content: content,
+                    parent_comment_ID: parentCommentId,
+                    user_ID: userId,
+                    video_ID: videoId,
+                }
+            );
+            console.log('Reply submitted successfully');
+        } catch (error) {
+            console.error('Failed to submit reply:', error);
+        }
+    };
+
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -97,6 +117,7 @@ export default function PlayScreen() {
                             username={username}
                             commentsDoc={commentsDoc}
                             fetchReplies={fetchReplies}
+                            submitReply={submitReply}
                         />
                     </View>
                 </View>

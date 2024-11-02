@@ -6,14 +6,25 @@ import likedIcon from '../../assets/icons/liked.png';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import { useTranslation } from 'react-i18next';
 
-export default function CommentView({ commentsDoc, avatar, username, fetchReplies }) {
+export default function CommentView({ commentsDoc, avatar, username, fetchReplies, submitReply }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
     const bottomSheetRef = useRef(null);
     const [sheetIndex, setSheetIndex] = useState(-1); // 初始为关闭状态
-    const { t } = useTranslation();
     const [replyMsg, setReplyMsg] = useState('');
+    const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
+    const { t } = useTranslation();
 
-    handleReplySubmit = async (e) => { }
+    handleReplySubmit = async (e) => {
+        // TODO: 提交回复评论
+        if (!replyMsg.trim()) return;
+        // 调用提交回复的函数，传入回复内容和父评论 ID
+        await submitReply(replyMsg, parentCommentId);
+
+        console.log('Submit reply:', replyMsg);
+        setSheetIndex(-1); // 关闭评论框
+        setReplyMsg(''); // 清空输入框
+        setParentCommentId(null); // 重置父评论 ID
+    }
 
     const CommentItem = ({ comment, level = 0 }) => {
         const [replies, setReplies] = useState([]);
@@ -51,7 +62,10 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                             resizeMode='contain'
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { setSheetIndex(0) }}
+                    <TouchableOpacity onPress={() => {
+                        setParentCommentId(comment.$id); // 设置当前父评论 ID
+                        setSheetIndex(0);
+                    }}
                         className=' w-20 items-center'
                     >
                         <Image
