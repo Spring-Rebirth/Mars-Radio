@@ -1,7 +1,7 @@
 import { FlatList, Image, Text, View } from "react-native";
 import menuIcon from "../../assets/icons/menu.png";
 
-export default function CommentView({ comments, avatar, username }) {
+export default function CommentView({ commentsDoc, avatar, username }) {
     const commentsMock = [
         { id: "1", comment: "This is a comment" },
         { id: "2", comment: "This is another comment" },
@@ -11,8 +11,8 @@ export default function CommentView({ comments, avatar, username }) {
     return (
         <FlatList
             className='mt-4'
-            data={commentsMock}
-            keyExtractor={(item) => item.id}
+            data={commentsDoc}
+            keyExtractor={(item) => item.$id}
             renderItem={({ item }) => (
                 <View className='mb-6'>
                     <View className='flex-row'>
@@ -35,7 +35,7 @@ export default function CommentView({ comments, avatar, username }) {
                             className='text-white mt-1.5 ml-11 mr-3'
                             numberOfLines={4}
                         >
-                            {item.comment}
+                            {item.content}
                         </Text>
                     </View>
                 </View>

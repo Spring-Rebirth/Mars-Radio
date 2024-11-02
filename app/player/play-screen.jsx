@@ -21,6 +21,7 @@ export default function PlayScreen() {
 
     const [playing, setPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [commentsDoc, setCommentsDoc] = useState([]);
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -31,6 +32,7 @@ export default function PlayScreen() {
                     [Query.equal('video_ID', videoId)], // queries (optional)
                 );
                 if (result.documents) {
+                    setCommentsDoc(result.documents);
                     console.log('Comments:', JSON.stringify(result.documents, null, 2));
                 }
             } catch (error) {
@@ -78,6 +80,7 @@ export default function PlayScreen() {
                         videoId={videoId}
                         avatar={avatar}
                         username={username}
+                        commentsDoc={commentsDoc}
                     />
                 </View>
             </View>
