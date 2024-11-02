@@ -3,16 +3,19 @@ import React, { useState } from 'react'
 import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CommentBox from "../../components/comment/CommentBox";
+import CommentInputBox from "../../components/comment/CommentInputBox";
+import CommentView from "../../components/comment/CommentView";
 
 export default function PlayScreen() {
     const { post } = useLocalSearchParams();
     const parsedVideoUrl = post ? JSON.parse(post).video : null;
+    const { $id: videoId, creator: { $id: userId } } = JSON.parse(post);
 
-    console.log('PlayScreen - post:', JSON.stringify(parsedVideoUrl, null, 4));
+    console.log('PlayScreen - post:', JSON.parse(post, null, 2));
+    console.log(videoId, "\t", userId);
 
-    const screenHight = Dimensions.get('window').width * 9 / 16;
-    console.log('screenHight:', screenHight);
+    const screenHeight = Dimensions.get('window').width * 9 / 16;
+    console.log('screenHeight:', screenHeight);
 
     const [playing, setPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -30,7 +33,7 @@ export default function PlayScreen() {
                 )}
                 <Video
                     source={{ uri: parsedVideoUrl }}
-                    style={[styles.video, { height: screenHight }]}
+                    style={[styles.video, { height: screenHeight }]}
                     resizeMode={ResizeMode.CONTAIN}
                     useNativeControls
                     shouldPlay
@@ -45,7 +48,11 @@ export default function PlayScreen() {
                     }}
                 />
                 <View className={'px-6 mt-4'}>
-                <CommentBox />
+                    <CommentInputBox
+                        userId={userId}
+                        videoId={videoId}
+                    />
+                    <CommentView />
                 </View>
             </View>
         </SafeAreaView>
