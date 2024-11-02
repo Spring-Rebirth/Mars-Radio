@@ -1,14 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import commentIcon from '../../assets/icons/comment.png';
 import likeIcon from '../../assets/icons/like.png';
 import likedIcon from '../../assets/icons/liked.png';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
+import { useTranslation } from 'react-i18next';
 
 export default function CommentView({ commentsDoc, avatar, username, fetchReplies }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
     const bottomSheetRef = useRef(null);
     const [sheetIndex, setSheetIndex] = useState(-1); // 初始为关闭状态
+    const { t } = useTranslation();
+    const [replyMsg, setReplyMsg] = useState('');
+
+    handleReplySubmit = async (e) => { }
 
     const CommentItem = ({ comment, level = 0 }) => {
         const [replies, setReplies] = useState([]);
@@ -95,8 +100,17 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                     if (index === -1) setSheetIndex(-1); // 当关闭时，保持 `sheetIndex` 为 -1
                 }}
             >
-                <BottomSheetView style={{ flex: 1, backgroundColor: 'white' }}>
-                    <Text>BottomSheet Content</Text>
+                <BottomSheetView style={{ flex: 1, backgroundColor: '#161622' }}>
+                    <View className='flex-1 px-6 mt-4'>
+                        <TextInput
+                            value={replyMsg}
+                            onChangeText={setReplyMsg}
+                            placeholder={t("Add a reply···")}
+                            placeholderTextColor={'gray'}
+                            style={styles.input}
+                            onSubmitEditing={handleReplySubmit}
+                        />
+                    </View>
                 </BottomSheetView>
             </BottomSheet>
         </>
@@ -128,4 +142,13 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginLeft: 40,
     },
+    input: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 8,
+        marginBottom: 10,
+        paddingHorizontal: 16,
+        color: 'white'
+    }
 });
