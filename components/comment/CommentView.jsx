@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import commentIcon from '../../assets/icons/comment.png';
 import likeIcon from '../../assets/icons/like.png';
 import likedIcon from '../../assets/icons/liked.png';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 
 export default function CommentView({ commentsDoc, avatar, username, fetchReplies }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
+    const bottomSheetRef = useRef(null);
+    const [showBottomSheet, setShowBottomSheet] = useState(false);
 
     const CommentItem = ({ comment, level = 0 }) => {
         const [replies, setReplies] = useState([]);
         const [isRepliesLoaded, setIsRepliesLoaded] = useState(false);
         const [liked, setLiked] = useState(false);
+
 
         useEffect(() => {
             // 获取子评论
@@ -25,6 +29,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
         }, [comment.$id]);
 
         return (
+
             <View style={[styles.commentContainer, { marginLeft: level * 20 }]}>
                 <View style={styles.header}>
                     <Image source={{ uri: avatar }} style={styles.avatar} />
@@ -41,7 +46,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                             resizeMode='contain'
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { }}
+                    <TouchableOpacity onPress={() => { setShowBottomSheet(true) }}
                         className=' w-20 items-center'
                     >
                         <Image
@@ -50,6 +55,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                             resizeMode='contain'
                         />
                     </TouchableOpacity>
+
 
                 </View>
                 {/* 渲染子评论 */}
@@ -63,17 +69,37 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                     />
                 )}
             </View>
+
         );
     };
 
+
     return (
-        <FlatList
-            data={commentsDoc}
-            keyExtractor={(item) => item.$id}
-            renderItem={({ item }) => (
-                <CommentItem comment={item} />
-            )}
-        />
+        <>
+            <FlatList
+                data={commentsDoc}
+                keyExtractor={(item) => item.$id}
+                renderItem={({ item }) => (
+                    <CommentItem comment={item} />
+                )}
+            />
+
+            {showBottomSheet && (
+                <BottomSheet
+                    ref={bottomSheetRef}
+                    index={0}
+                    snapPoints={['50%', '90%', 300]}
+                    onChange={(index) => {
+                        console.log('Sheet changed to:', index);
+                    }}
+                >
+                    <BottomSheetView style={{ flex: 1, backgroundColor: 'white' }}>
+                        <Text>BottomSheet Content</Text>
+                    </BottomSheetView>
+                </BottomSheet>
+            )
+            }
+        </>
     );
 }
 

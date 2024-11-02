@@ -7,6 +7,8 @@ import CommentInputBox from "../../components/comment/CommentInputBox";
 import CommentView from "../../components/comment/CommentView";
 import { config, databases } from "../../lib/appwrite";
 import { Query } from "react-native-appwrite";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 
 export default function PlayScreen() {
     const { post } = useLocalSearchParams();
@@ -56,48 +58,50 @@ export default function PlayScreen() {
 
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.container}>
-                {loading && (
-                    <>
-                        <ActivityIndicator size="large" color="#fff" style={styles.activityIndicator} />
-                        {!playing && (
-                            <Text style={styles.loadingText}>Loading</Text>
-                        )}
-                    </>
-                )}
-                <Video
-                    source={{ uri: parsedVideoUrl }}
-                    style={[styles.video, { height: screenHeight }]}
-                    resizeMode={ResizeMode.CONTAIN}
-                    useNativeControls
-                    shouldPlay
-                    onPlaybackStatusUpdate={async (status) => {
-                        if (status.isLoaded) {
-                            setLoading(false);
-                        }
-                        if (status.didJustFinish) {
-                            setPlaying(false);
-                            setLoading(true);
-                        }
-                    }}
-                />
-                <View className={'px-6 mt-4'}>
-                    <CommentInputBox
-                        userId={userId}
-                        videoId={videoId}
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.container}>
+                    {loading && (
+                        <>
+                            <ActivityIndicator size="large" color="#fff" style={styles.activityIndicator} />
+                            {!playing && (
+                                <Text style={styles.loadingText}>Loading</Text>
+                            )}
+                        </>
+                    )}
+                    <Video
+                        source={{ uri: parsedVideoUrl }}
+                        style={[styles.video, { height: screenHeight }]}
+                        resizeMode={ResizeMode.CONTAIN}
+                        useNativeControls
+                        shouldPlay
+                        onPlaybackStatusUpdate={async (status) => {
+                            if (status.isLoaded) {
+                                setLoading(false);
+                            }
+                            if (status.didJustFinish) {
+                                setPlaying(false);
+                                setLoading(true);
+                            }
+                        }}
                     />
-                    <CommentView
-                        userId={userId}
-                        videoId={videoId}
-                        avatar={avatar}
-                        username={username}
-                        commentsDoc={commentsDoc}
-                        fetchReplies={fetchReplies}
-                    />
+                    <View className={'px-6 mt-4'}>
+                        <CommentInputBox
+                            userId={userId}
+                            videoId={videoId}
+                        />
+                        <CommentView
+                            userId={userId}
+                            videoId={videoId}
+                            avatar={avatar}
+                            username={username}
+                            commentsDoc={commentsDoc}
+                            fetchReplies={fetchReplies}
+                        />
+                    </View>
                 </View>
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </GestureHandlerRootView>
     )
 }
 
