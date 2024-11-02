@@ -43,6 +43,18 @@ export default function PlayScreen() {
         fetchComments();
     }, []);
 
+    const fetchReplies = async (parentCommentId) => {
+        const replies = await databases.listDocuments(
+            config.databaseId,
+            config.commentsCollectionId,
+            [
+                Query.equal("parent_comment_ID", parentCommentId)
+            ]
+        );
+        return replies.documents; // 返回子评论数组
+    };
+
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
@@ -81,6 +93,7 @@ export default function PlayScreen() {
                         avatar={avatar}
                         username={username}
                         commentsDoc={commentsDoc}
+                        fetchReplies={fetchReplies}
                     />
                 </View>
             </View>

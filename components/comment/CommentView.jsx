@@ -1,45 +1,81 @@
-import { FlatList, Image, Text, View } from "react-native";
-import menuIcon from "../../assets/icons/menu.png";
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
 
-export default function CommentView({ commentsDoc, avatar, username }) {
-    const commentsMock = [
-        { id: "1", comment: "This is a comment" },
-        { id: "2", comment: "This is another comment" },
-        { id: "3", comment: "This is yet another comment ggggggggggggggggggggggggggggggggggggggggggg" },
-    ];
+export default function CommentView({ commentsDoc, avatar, username, fetchReplies }) {
+    // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
+
+    const CommentItem = ({ comment, level = 0 }) => {
+        const [replies, setReplies] = useState([]);
+        const [isRepliesLoaded, setIsRepliesLoaded] = useState(false);
+
+        useEffect(() => {
+            // 获取子评论
+            const loadReplies = async () => {
+                if (comment.parent_comment_ID) {
+                    const childComments = await fetchReplies(comment.$id); // 根据父评论ID获取子评论
+                    setReplies(childComments);
+                    setIsRepliesLoaded(true);
+                }
+            };
+            loadReplies();
+        }, [comment.$id]);
+
+        return (
+            <View style={[styles.commentContainer, { marginLeft: level * 20 }]}>
+                <View style={styles.header}>
+                    <Image source={{ uri: avatar }} style={styles.avatar} />
+                    <Text style={styles.username}>{username}</Text>
+                </View>
+                <Text style={styles.commentText}>{comment.content}</Text>
+
+                {/* 渲染子评论 */}
+                {isRepliesLoaded && replies.length > 0 && (
+                    <FlatList
+                        data={replies}
+                        keyExtractor={(item) => item.$id}
+                        renderItem={({ item }) => (
+                            <CommentItem comment={item} level={level + 1} /> // 递归渲染子评论
+                        )}
+                    />
+                )}
+            </View>
+        );
+    };
 
     return (
         <FlatList
-            className='mt-4'
             data={commentsDoc}
             keyExtractor={(item) => item.$id}
             renderItem={({ item }) => (
-                <View className='mb-6'>
-                    <View className='flex-row'>
-                        <Image
-                            source={{ uri: avatar }}
-                            style={{ width: 30, height: 30, borderRadius: 15 }}
-                        />
-                        <Text className='text-gray-100 mt-0.5 ml-3'>
-                            {username}
-                        </Text>
-                        <Image
-                            source={menuIcon}
-                            style={{ width: 14, height: 14, position: 'absolute', right: 0, top: 3.5 }}
-                            resizeMode="contain"
-                        />
-                    </View>
-
-                    <View>
-                        <Text
-                            className='text-white mt-1.5 ml-11 mr-3'
-                            numberOfLines={4}
-                        >
-                            {item.content}
-                        </Text>
-                    </View>
-                </View>
+                <CommentItem comment={item} />
             )}
         />
-    )
+    );
 }
+
+const styles = StyleSheet.create({
+    commentContainer: {
+        padding: 10,
+        borderRadius: 5,
+        backgroundColor: '#161622',
+        marginBottom: 10,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    avatar: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+    },
+    username: {
+        color: '#fff',
+        marginLeft: 10,
+    },
+    commentText: {
+        color: '#fff',
+        marginTop: 5,
+        marginLeft: 40,
+    },
+});
