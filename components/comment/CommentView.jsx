@@ -89,6 +89,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 index={sheetIndex}
                 snapPoints={['25%', '90%']}
                 enablePanDownToClose={true}
+                handleComponent={null}
                 onChange={(index) => {
                     console.log('Sheet changed to:', index);
                     if (index === -1) setSheetIndex(-1); // 当关闭时，保持 `sheetIndex` 为 -1
@@ -98,7 +99,6 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                     <Text>BottomSheet Content</Text>
                 </BottomSheetView>
             </BottomSheet>
-
         </>
     );
 }
