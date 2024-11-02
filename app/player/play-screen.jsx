@@ -1,17 +1,19 @@
 import { View, Text, Dimensions, ActivityIndicator, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CommentInputBox from "../../components/comment/CommentInputBox";
 import CommentView from "../../components/comment/CommentView";
+import { config, databases } from "../../lib/appwrite";
+import { Query } from "react-native-appwrite";
 
 export default function PlayScreen() {
     const { post } = useLocalSearchParams();
     const parsedVideoUrl = post ? JSON.parse(post).video : null;
     const { $id: videoId, creator: { $id: userId, avatar, username } } = JSON.parse(post);
 
-    console.log('PlayScreen - post:', JSON.parse(post, null, 2));
+    // console.log('PlayScreen - post:', JSON.parse(post, null, 2));
     // console.log(videoId, "\t", userId);
 
     const screenHeight = Dimensions.get('window').width * 9 / 16;
@@ -19,6 +21,25 @@ export default function PlayScreen() {
 
     const [playing, setPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                const result = await databases.listDocuments(
+                    config.databaseId, // databaseId
+                    config.commentsCollectionId, // collectionId
+                    [Query.equal('video_ID', videoId)], // queries (optional)
+                );
+                if (result.documents) {
+                    console.log('Comments:', JSON.stringify(result.documents, null, 2));
+                }
+            } catch (error) {
+                console.error('Error fetching comments:', error);
+            }
+        }
+
+        fetchComments();
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
