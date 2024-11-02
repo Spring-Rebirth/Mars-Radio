@@ -42,9 +42,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
             loadReplies();
         }, [comment.$id]); // 使用 comment.$id 作为依赖项
 
-
         return (
-
             <View style={[styles.commentContainer, { marginLeft: level * 20 }]}>
                 <View style={styles.header}>
                     <Image source={{ uri: avatar }} style={styles.avatar} />

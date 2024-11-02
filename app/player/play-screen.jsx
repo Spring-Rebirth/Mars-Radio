@@ -32,7 +32,10 @@ export default function PlayScreen() {
                 const result = await databases.listDocuments(
                     config.databaseId, // databaseId
                     config.commentsCollectionId, // collectionId
-                    [Query.equal('video_ID', videoId)], // queries (optional)
+                    [
+                        Query.equal('video_ID', videoId),
+                        Query.equal('parent_comment_ID', "")
+                    ], // queries (optional)
                 );
                 if (result.documents) {
                     setCommentsDoc(result.documents);
