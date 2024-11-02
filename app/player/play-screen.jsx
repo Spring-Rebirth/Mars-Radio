@@ -9,13 +9,13 @@ import CommentView from "../../components/comment/CommentView";
 export default function PlayScreen() {
     const { post } = useLocalSearchParams();
     const parsedVideoUrl = post ? JSON.parse(post).video : null;
-    const { $id: videoId, creator: { $id: userId } } = JSON.parse(post);
+    const { $id: videoId, creator: { $id: userId, avatar, username } } = JSON.parse(post);
 
     console.log('PlayScreen - post:', JSON.parse(post, null, 2));
-    console.log(videoId, "\t", userId);
+    // console.log(videoId, "\t", userId);
 
     const screenHeight = Dimensions.get('window').width * 9 / 16;
-    console.log('screenHeight:', screenHeight);
+    // console.log('screenHeight:', screenHeight);
 
     const [playing, setPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -52,7 +52,12 @@ export default function PlayScreen() {
                         userId={userId}
                         videoId={videoId}
                     />
-                    <CommentView />
+                    <CommentView
+                        userId={userId}
+                        videoId={videoId}
+                        avatar={avatar}
+                        username={username}
+                    />
                 </View>
             </View>
         </SafeAreaView>

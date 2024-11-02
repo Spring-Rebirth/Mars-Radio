@@ -21,6 +21,7 @@ export default function CommentInputBox({ videoId, userId }) {
                 }
             );
             Alert.alert('Publish successfully');
+            setComment('');
             console.log('Comment uploaded successfully', JSON.stringify(response));
         } catch (error) {
             console.error(error, 'Data upload failed');
