@@ -1,5 +1,5 @@
 import { View, Text, Dimensions, ActivityIndicator, StyleSheet } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -93,6 +93,20 @@ export default function PlayScreen() {
         setCommentsDoc((prevComments) => [newComment, ...prevComments]);
     };
 
+    const memoizedCommentView = useMemo(() => {
+        return (
+            <CommentView
+                userId={userId}
+                videoId={videoId}
+                avatar={avatar}
+                username={username}
+                commentsDoc={commentsDoc}
+                fetchReplies={fetchReplies}
+                submitReply={submitReply}
+            />
+        );
+    }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply]);
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={styles.safeArea}>
@@ -127,15 +141,7 @@ export default function PlayScreen() {
                             videoId={videoId}
                             onCommentSubmitted={onCommentSubmitted}
                         />
-                        <CommentView
-                            userId={userId}
-                            videoId={videoId}
-                            avatar={avatar}
-                            username={username}
-                            commentsDoc={commentsDoc}
-                            fetchReplies={fetchReplies}
-                            submitReply={submitReply}
-                        />
+                        {memoizedCommentView}
                     </View>
                 </View>
             </SafeAreaView>

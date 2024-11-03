@@ -103,15 +103,19 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
         );
     });
 
+    // 使用 useMemo 缓存 FlatList 的渲染
+    const memoizedComments = useMemo(() => {
+        return commentsDoc.map((item) => (
+            <CommentItem key={item.$id} comment={item} />
+        ));
+    }, [commentsDoc]);
 
     return (
         <>
             <FlatList
                 data={commentsDoc}
                 keyExtractor={(item) => item.$id}
-                renderItem={({ item }) => (
-                    <CommentItem comment={item} />
-                )}
+                renderItem={() => memoizedComments}
                 contentContainerStyle={{ paddingBottom: 280 }}
                 extraData={showReplyModal}
             />
