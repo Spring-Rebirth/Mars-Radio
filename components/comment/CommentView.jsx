@@ -8,11 +8,21 @@ import ReactNativeModal from 'react-native-modal';
 
 export default function CommentView({ commentsDoc, avatar, username, fetchReplies, submitReply }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
-    const bottomSheetRef = useRef(null);
+    const textInputRef = useRef(null);
     const [showReplyModal, setShowReplyModal] = useState(false); // 初始为关闭状态
     const [replyMsg, setReplyMsg] = useState('');
     const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
     const { t } = useTranslation();
+
+    useEffect(() => {
+        if (showReplyModal) {
+            const timer = setTimeout(() => {
+                textInputRef.current?.focus(); // 确保模态框打开后再聚焦
+            }, 100); // 100毫秒延迟
+
+            return () => clearTimeout(timer); // 清理定时器
+        }
+    }, [showReplyModal]);
 
     handleReplySubmit = async (e) => {
         // TODO: 提交回复评论
@@ -109,6 +119,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 <View className='h-24 bg-slate-800'>
                     <View className='flex-1 px-6 mt-4'>
                         <TextInput
+                            ref={textInputRef}
                             value={replyMsg}
                             onChangeText={setReplyMsg}
                             placeholder={t("Add a reply···")}
