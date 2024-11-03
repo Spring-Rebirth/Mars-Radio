@@ -115,7 +115,11 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
             <FlatList
                 data={commentsDoc}
                 keyExtractor={(item) => item.$id}
-                renderItem={() => memoizedComments}
+                renderItem={({ item }) => {
+                    // 使用 memoizedComments 的逻辑
+                    const comment = memoizedComments.find(c => c.key === item.$id);
+                    return comment;
+                }}
                 contentContainerStyle={{ paddingBottom: 280 }}
                 extraData={showReplyModal}
             />
