@@ -86,17 +86,13 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 </View>
                 {/* 渲染子评论 */}
                 {isRepliesLoaded && replies.length > 0 && (
-                    <FlatList
-                        style={{ marginTop: 20 }}
-                        data={replies}
-                        keyExtractor={(item) => item.$id}
-                        renderItem={({ item }) => (
-                            <CommentItem comment={item} level={level + 1} /> // 递归渲染子评论
-                        )}
-                    />
+                    <View style={{ paddingBottom: 20 }}>
+                        {replies.map((item) => (
+                            <CommentItem key={item.$id} comment={item} level={level + 1} /> // 使用 map 渲染子评论
+                        ))}
+                    </View>
                 )}
             </View>
-
         );
     };
 
@@ -109,6 +105,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 renderItem={({ item }) => (
                     <CommentItem comment={item} />
                 )}
+                contentContainerStyle={{ paddingBottom: 280 }}
             />
 
             <ReactNativeModal

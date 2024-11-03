@@ -14,7 +14,7 @@ import { useGlobalContext } from '../../context/GlobalProvider';
 
 export default function PlayScreen() {
     const { user } = useGlobalContext();
-    console.log('user:', JSON.stringify(user, null, 2));
+    // console.log('user:', JSON.stringify(user, null, 2));
     const { post } = useLocalSearchParams();
     const parsedVideoUrl = post ? JSON.parse(post).video : null;
     const { $id: videoId } = JSON.parse(post);
