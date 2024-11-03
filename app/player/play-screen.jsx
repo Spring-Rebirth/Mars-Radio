@@ -11,20 +11,14 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ID } from 'react-native-appwrite';
 import { useGlobalContext } from '../../context/GlobalProvider';
 
-
 export default function PlayScreen() {
     const { user } = useGlobalContext();
-    // console.log('user:', JSON.stringify(user, null, 2));
     const { post } = useLocalSearchParams();
     const parsedVideoUrl = post ? JSON.parse(post).video : null;
     const { $id: videoId } = JSON.parse(post);
     const { $id: userId, avatar, username } = user;
-    // console.log('PlayScreen - post:', JSON.parse(post, null, 2));
-    // console.log(videoId, "\t", userId);
 
     const screenHeight = Dimensions.get('window').width * 9 / 16;
-    // console.log('screenHeight:', screenHeight);
-
     const [playing, setPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
     const [commentsDoc, setCommentsDoc] = useState([]);
@@ -33,17 +27,16 @@ export default function PlayScreen() {
         const fetchComments = async () => {
             try {
                 const result = await databases.listDocuments(
-                    config.databaseId, // databaseId
-                    config.commentsCollectionId, // collectionId
+                    config.databaseId,
+                    config.commentsCollectionId,
                     [
                         Query.equal('video_ID', videoId),
                         Query.equal('parent_comment_ID', ""),
                         Query.orderDesc('$createdAt')
-                    ], // queries (optional)
+                    ],
                 );
                 if (result.documents) {
                     setCommentsDoc(result.documents);
-                    console.log('Comments:', JSON.stringify(result.documents, null, 2));
                 }
             } catch (error) {
                 console.error('Error fetching comments:', error);
@@ -67,7 +60,6 @@ export default function PlayScreen() {
             console.error("Failed to fetch replies:", error);
             return [];
         }
-
     };
 
     const submitReply = async (content, parentCommentId) => {

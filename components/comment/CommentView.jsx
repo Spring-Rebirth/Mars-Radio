@@ -52,7 +52,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
             loadReplies();
         }, [comment.$id]); // 使用 comment.$id 作为依赖项
 
-        const marginLeft = level * 20;
+        const marginLeft = level * 30;
 
         // 在这里使用 useMemo
         const memoizedReplies = useMemo(() => {
