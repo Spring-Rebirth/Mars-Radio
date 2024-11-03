@@ -114,7 +114,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 onBackButtonPress={() => setShowReplyModal(false)}
                 style={styles.modal}
             >
-                <View className='h-24 bg-slate-800'>
+                <View className='h-24 bg-[#212121]'>
                     <View className='flex-1 px-6 mt-4'>
                         <TextInput
                             ref={textInputRef}
