@@ -3,13 +3,13 @@ import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity, TextInput } 
 import commentIcon from '../../assets/icons/comment.png';
 import likeIcon from '../../assets/icons/like.png';
 import likedIcon from '../../assets/icons/liked.png';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import { useTranslation } from 'react-i18next';
+import ReactNativeModal from 'react-native-modal';
 
 export default function CommentView({ commentsDoc, avatar, username, fetchReplies, submitReply }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
     const bottomSheetRef = useRef(null);
-    const [sheetIndex, setSheetIndex] = useState(-1); // 初始为关闭状态
+    const [showReplyModal, setShowReplyModal] = useState(false); // 初始为关闭状态
     const [replyMsg, setReplyMsg] = useState('');
     const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
     const { t } = useTranslation();
@@ -21,9 +21,9 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
         await submitReply(replyMsg, parentCommentId);
 
         console.log('Submit reply:', replyMsg);
-        setSheetIndex(-1); // 关闭评论框
         setReplyMsg(''); // 清空输入框
         setParentCommentId(null); // 重置父评论 ID
+        setShowReplyModal(false); // 关闭评论框
     }
 
     const CommentItem = ({ comment, level = 0 }) => {
@@ -61,7 +61,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
                         setParentCommentId(comment.$id); // 设置当前父评论 ID
-                        setSheetIndex(0);
+                        setShowReplyModal(true);
                     }}
                         className=' w-20 items-center'
                     >
@@ -100,18 +100,13 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 )}
             />
 
-            <BottomSheet
-                ref={bottomSheetRef}
-                index={sheetIndex}
-                snapPoints={['25%', '65%']}
-                enablePanDownToClose={true}
-                // handleComponent={null}
-                onChange={(index) => {
-                    console.log('Sheet changed to:', index);
-                    if (index === -1) setSheetIndex(-1); // 当关闭时，保持 `sheetIndex` 为 -1
-                }}
+            <ReactNativeModal
+                isVisible={showReplyModal}
+                onBackdropPress={() => setShowReplyModal(false)}
+                onBackButtonPress={() => setShowReplyModal(false)}
+                style={styles.modal}
             >
-                <BottomSheetView style={{ flex: 1, backgroundColor: '#161622' }}>
+                <View className='h-24 bg-slate-800'>
                     <View className='flex-1 px-6 mt-4'>
                         <TextInput
                             value={replyMsg}
@@ -122,8 +117,8 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                             onSubmitEditing={handleReplySubmit}
                         />
                     </View>
-                </BottomSheetView>
-            </BottomSheet>
+                </View>
+            </ReactNativeModal>
         </>
     );
 }
@@ -161,5 +156,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingHorizontal: 16,
         color: 'white'
-    }
+    },
+    modal: {
+        justifyContent: 'flex-end',
+        margin: 0,
+    },
 });
