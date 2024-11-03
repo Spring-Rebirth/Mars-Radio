@@ -87,6 +87,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 {/* 渲染子评论 */}
                 {isRepliesLoaded && replies.length > 0 && (
                     <FlatList
+                        style={{ marginTop: 20 }}
                         data={replies}
                         keyExtractor={(item) => item.$id}
                         renderItem={({ item }) => (
