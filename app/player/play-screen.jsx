@@ -85,6 +85,9 @@ export default function PlayScreen() {
         }
     };
 
+    const onCommentSubmitted = (newComment) => {
+        setCommentsDoc((prevComments) => [newComment, ...prevComments]);
+    };
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -118,6 +121,7 @@ export default function PlayScreen() {
                         <CommentInputBox
                             userId={userId}
                             videoId={videoId}
+                            onCommentSubmitted={onCommentSubmitted}
                         />
                         <CommentView
                             userId={userId}
