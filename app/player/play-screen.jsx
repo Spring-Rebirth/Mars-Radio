@@ -37,7 +37,8 @@ export default function PlayScreen() {
                     config.commentsCollectionId, // collectionId
                     [
                         Query.equal('video_ID', videoId),
-                        Query.equal('parent_comment_ID', "")
+                        Query.equal('parent_comment_ID', ""),
+                        Query.orderDesc('$createdAt')
                     ], // queries (optional)
                 );
                 if (result.documents) {
