@@ -9,13 +9,16 @@ import { config, databases } from "../../lib/appwrite";
 import { Query } from "react-native-appwrite";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ID } from 'react-native-appwrite';
+import { useGlobalContext } from '../../context/GlobalProvider';
 
 
 export default function PlayScreen() {
+    const { user } = useGlobalContext();
+    console.log('user:', JSON.stringify(user, null, 2));
     const { post } = useLocalSearchParams();
     const parsedVideoUrl = post ? JSON.parse(post).video : null;
-    const { $id: videoId, creator: { $id: userId, avatar, username } } = JSON.parse(post);
-
+    const { $id: videoId } = JSON.parse(post);
+    const { $id: userId, avatar, username } = user;
     // console.log('PlayScreen - post:', JSON.parse(post, null, 2));
     // console.log(videoId, "\t", userId);
 
