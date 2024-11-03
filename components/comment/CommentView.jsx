@@ -86,7 +86,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 </View>
                 {/* 渲染子评论 */}
                 {isRepliesLoaded && replies.length > 0 && (
-                    <View style={{ paddingBottom: 20 }}>
+                    <View style={{ paddingTop: 20 }}>
                         {replies.map((item) => (
                             <CommentItem key={item.$id} comment={item} level={level + 1} /> // 使用 map 渲染子评论
                         ))}
