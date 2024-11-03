@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import commentIcon from '../../assets/icons/comment.png';
 import likeIcon from '../../assets/icons/like.png';
@@ -24,7 +24,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
         }
     }, [showReplyModal]);
 
-    handleReplySubmit = async (e) => {
+    handleReplySubmit = useCallback(async (e) => {
         // TODO: 提交回复评论
         if (!replyMsg.trim()) return;
         // 调用提交回复的函数，传入回复内容和父评论 ID
@@ -34,9 +34,9 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
         setReplyMsg(''); // 清空输入框
         setParentCommentId(null); // 重置父评论 ID
         setShowReplyModal(false); // 关闭评论框
-    }
+    }, [replyMsg, parentCommentId]);
 
-    const CommentItem = ({ comment, level = 0 }) => {
+    const CommentItem = React.memo(({ comment, level = 0 }) => {
         const [replies, setReplies] = useState([]);
         const [isRepliesLoaded, setIsRepliesLoaded] = useState(false);
         const [liked, setLiked] = useState(false);
@@ -52,8 +52,17 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
             loadReplies();
         }, [comment.$id]); // 使用 comment.$id 作为依赖项
 
+        const marginLeft = level * 20;
+
+        // 在这里使用 useMemo
+        const memoizedReplies = useMemo(() => {
+            return replies.map((item) => (
+                <CommentItem key={item.$id} comment={item} level={level + 1} />
+            ));
+        }, [replies, level]); // 依赖于 replies
+
         return (
-            <View style={[styles.commentContainer, { marginLeft: level * 20 }]}>
+            <View style={[styles.commentContainer, { marginLeft }]}>
                 <View style={styles.header}>
                     <Image source={{ uri: avatar }} style={styles.avatar} />
                     <Text style={styles.username}>{username}</Text>
@@ -87,14 +96,12 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 {/* 渲染子评论 */}
                 {isRepliesLoaded && replies.length > 0 && (
                     <View style={{ paddingTop: 20 }}>
-                        {replies.map((item) => (
-                            <CommentItem key={item.$id} comment={item} level={level + 1} /> // 使用 map 渲染子评论
-                        ))}
+                        {memoizedReplies}
                     </View>
                 )}
             </View>
         );
-    };
+    });
 
 
     return (
@@ -106,6 +113,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                     <CommentItem comment={item} />
                 )}
                 contentContainerStyle={{ paddingBottom: 280 }}
+                extraData={showReplyModal}
             />
 
             <ReactNativeModal
