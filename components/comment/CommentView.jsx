@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import commentIcon from '../../assets/icons/comment.png';
 import likeIcon from '../../assets/icons/like.png';
 import likedIcon from '../../assets/icons/liked.png';
 import { useTranslation } from 'react-i18next';
 import ReactNativeModal from 'react-native-modal';
 import deleteIcon from '../../assets/menu/trash-solid.png';
+import { config, databases } from "../../lib/appwrite";
 
 export default function CommentView({ commentsDoc, userId, avatar, username, fetchReplies, submitReply }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
@@ -42,7 +43,6 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
         const [isRepliesLoaded, setIsRepliesLoaded] = useState(false);
         const [liked, setLiked] = useState(false);
 
-
         useEffect(() => {
             // 获取子评论
             const loadReplies = async () => {
@@ -62,13 +62,28 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
             ));
         }, [replies, level]); // 依赖于 replies
 
+        const deleteComment = async (commentId) => {
+            try {
+                const result = await databases.deleteDocument(
+                    config.databaseId,
+                    config.commentsCollectionId,
+                    commentId
+                );
+                if (result) {
+                    Alert.alert('Delete Success');
+                }
+            } catch (error) {
+                console.error('Failed to delete comment:', error);
+            }
+        }
+
         return (
             <View style={[styles.commentContainer, { marginLeft }]}>
                 <View style={styles.header}>
                     <Image source={{ uri: avatar }} style={styles.avatar} />
                     <Text style={styles.username}>{username}</Text>
                     {comment.user_ID === userId && (
-                        <TouchableOpacity onPress={() => { }}>
+                        <TouchableOpacity onPress={() => { deleteComment(comment.$id) }}>
                             <Image
                                 source={deleteIcon}
                                 className='w-5 h-5 ml-[50]'
@@ -159,8 +174,6 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
 const styles = StyleSheet.create({
     commentContainer: {
         width: '100%',
-        borderWidth: 1,
-        borderColor: '#333',
         padding: 10,
         borderRadius: 5,
         backgroundColor: '#161622',
