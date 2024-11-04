@@ -8,12 +8,13 @@ import ReactNativeModal from 'react-native-modal';
 import deleteIcon from '../../assets/menu/delete.png';
 import { config, databases } from "../../lib/appwrite";
 
-export default function CommentView({ commentsDoc, userId, avatar, username, fetchReplies, submitReply, setRefreshFlag }) {
+export default function CommentView({ commentsDoc, userId, avatar, username, fetchReplies, fetchUsername, submitReply, setRefreshFlag }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
     const textInputRef = useRef(null);
     const [showReplyModal, setShowReplyModal] = useState(false); // 初始为关闭状态
     const [replyMsg, setReplyMsg] = useState('');
     const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
+    const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -27,13 +28,14 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
     }, [showReplyModal]);
 
     handleReplySubmit = useCallback(async (e) => {
-        // TODO: 提交回复评论
+        // 调用提交回复的函数，传入回复内容和父评论 ID   // 获取回复的用户名
         if (!replyMsg.trim()) return;
-        // 调用提交回复的函数，传入回复内容和父评论 ID
-        await submitReply(replyMsg, parentCommentId);
 
+        const parentUsername = await fetchUsername(parentCommentUserId);
+        await submitReply(`@${parentUsername}    ${replyMsg}`, parentCommentId);
         console.log('Submit reply:', replyMsg);
         setReplyMsg('');
+        setParentCommentUserId(null);
         setParentCommentId(null);
         setShowReplyModal(false);
         setRefreshFlag(prev => !prev);
@@ -109,6 +111,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                     <TouchableOpacity
                         onPress={() => {
                             setParentCommentId(comment.$id); // 设置当前父评论 ID
+                            setParentCommentUserId(comment.user_ID); // 设置当前父评论用户 ID
                             setShowReplyModal(true);
                         }}
                         className='w-[46] items-center'

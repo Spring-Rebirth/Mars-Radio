@@ -47,6 +47,18 @@ export default function PlayScreen() {
         fetchComments();
     }, [refreshFlag]);
 
+    const fetchCommentUsername = async (userId) => {
+        try {
+            const user = await databases.getDocument(
+                config.databaseId,
+                config.usersCollectionId,
+                userId
+            );
+            return user.username;
+        } catch (error) {
+            console.error('Failed to fetch username:', error);
+        }
+    }
     const fetchReplies = async (parentCommentId) => {
         try {
             const replies = await databases.listDocuments(
@@ -94,6 +106,7 @@ export default function PlayScreen() {
                 avatar={avatar}
                 username={username}
                 commentsDoc={commentsDoc}
+                fetchUsername={fetchCommentUsername}
                 fetchReplies={fetchReplies}
                 submitReply={submitReply}
                 setRefreshFlag={setRefreshFlag}
