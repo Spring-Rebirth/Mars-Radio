@@ -54,7 +54,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
             loadReplies();
         }, [comment.$id]); // 使用 comment.$id 作为依赖项
 
-        const MAX_LEVEL = 2;
+        const MAX_LEVEL = 1;
         const marginLeft = level <= MAX_LEVEL ? level * 30 : MAX_LEVEL * 30;
 
         // 在这里使用 useMemo
@@ -93,7 +93,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                         <TouchableOpacity onPress={() => { deleteComment(comment.$id) }}>
                             <Image
                                 source={deleteIcon}
-                                className='w-6 h-6 absolute left-[62] -top-[13]'
+                                className='w-6 h-6 absolute left-[115] -top-[13]'
                                 resizeMode='contain'
                             />
                         </TouchableOpacity>
