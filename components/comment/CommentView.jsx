@@ -55,17 +55,13 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
         }, [comment.$id]); // 使用 comment.$id 作为依赖项
 
         const MAX_LEVEL = 1;
-        const marginLeft = level <= MAX_LEVEL ? level * 30 : MAX_LEVEL * 30;
+        let marginLeft = level <= MAX_LEVEL ? level * 40 : 0;
 
         // 在这里使用 useMemo
         const memoizedReplies = useMemo(() => {
-            if (level < MAX_LEVEL) {
-                return replies.map((item) => (
-                    <CommentItem key={item.$id} comment={item} level={level + 1} />
-                ));
-            } else {
-                return null; // 或者返回其他适当的内容
-            }
+            return replies.map((item) => (
+                <CommentItem key={item.$id} comment={item} level={level + 1} />
+            ));
         }, [replies, level]); // 依赖于 replies
 
         const deleteComment = async (commentId) => {
@@ -110,21 +106,19 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                             resizeMode='contain'
                         />
                     </TouchableOpacity>
-                    {level < MAX_LEVEL && (
-                        <TouchableOpacity
-                            onPress={() => {
-                                setParentCommentId(comment.$id); // 设置当前父评论 ID
-                                setShowReplyModal(true);
-                            }}
-                            className='w-[46] items-center'
-                        >
-                            <Image
-                                source={commentIcon}
-                                style={{ width: 20, height: 20, marginTop: 20 }}
-                                resizeMode='contain'
-                            />
-                        </TouchableOpacity>
-                    )}
+                    <TouchableOpacity
+                        onPress={() => {
+                            setParentCommentId(comment.$id); // 设置当前父评论 ID
+                            setShowReplyModal(true);
+                        }}
+                        className='w-[46] items-center'
+                    >
+                        <Image
+                            source={commentIcon}
+                            style={{ width: 20, height: 20, marginTop: 20 }}
+                            resizeMode='contain'
+                        />
+                    </TouchableOpacity>
                 </View>
                 {/* 渲染子评论 */}
                 {isRepliesLoaded && replies.length > 0 && (
@@ -153,7 +147,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                     const comment = memoizedComments.find(c => c.key === item.$id);
                     return comment;
                 }}
-                contentContainerStyle={{ paddingBottom: 330 }}
+                contentContainerStyle={{ paddingBottom: 330, paddingTop: 10 }}
                 extraData={showReplyModal}
             />
 
@@ -184,8 +178,6 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
 const styles = StyleSheet.create({
     commentContainer: {
         width: '100%',
-        padding: 10,
-        borderRadius: 5,
         backgroundColor: '#161622',
         marginBottom: 10,
         position: 'relative',
