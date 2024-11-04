@@ -33,9 +33,10 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
         await submitReply(replyMsg, parentCommentId);
 
         console.log('Submit reply:', replyMsg);
-        setReplyMsg(''); // 清空输入框
-        setParentCommentId(null); // 重置父评论 ID
-        setShowReplyModal(false); // 关闭评论框
+        setReplyMsg('');
+        setParentCommentId(null);
+        setShowReplyModal(false);
+        setRefreshFlag(prev => !prev);
     }, [replyMsg, parentCommentId]);
 
     const CommentItem = React.memo(({ comment, level = 0 }) => {
