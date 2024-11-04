@@ -95,6 +95,7 @@ export default function PlayScreen() {
                 commentsDoc={commentsDoc}
                 fetchReplies={fetchReplies}
                 submitReply={submitReply}
+
             />
         );
     }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply]);

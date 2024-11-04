@@ -5,8 +5,9 @@ import likeIcon from '../../assets/icons/like.png';
 import likedIcon from '../../assets/icons/liked.png';
 import { useTranslation } from 'react-i18next';
 import ReactNativeModal from 'react-native-modal';
+import deleteIcon from '../../assets/menu/trash-solid.png';
 
-export default function CommentView({ commentsDoc, avatar, username, fetchReplies, submitReply }) {
+export default function CommentView({ commentsDoc, userId, avatar, username, fetchReplies, submitReply }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
     const textInputRef = useRef(null);
     const [showReplyModal, setShowReplyModal] = useState(false); // 初始为关闭状态
@@ -66,6 +67,15 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                 <View style={styles.header}>
                     <Image source={{ uri: avatar }} style={styles.avatar} />
                     <Text style={styles.username}>{username}</Text>
+                    {comment.user_ID === userId && (
+                        <TouchableOpacity onPress={() => { }}>
+                            <Image
+                                source={deleteIcon}
+                                className='w-5 h-5 ml-[50]'
+                                resizeMode='contain'
+                            />
+                        </TouchableOpacity>
+                    )}
                 </View>
                 <Text style={styles.commentText}>{comment.content}</Text>
                 <View className='flex-row gap-x-6 ml-0.5'>
@@ -90,8 +100,6 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                             resizeMode='contain'
                         />
                     </TouchableOpacity>
-
-
                 </View>
                 {/* 渲染子评论 */}
                 {isRepliesLoaded && replies.length > 0 && (
@@ -120,7 +128,7 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
                     const comment = memoizedComments.find(c => c.key === item.$id);
                     return comment;
                 }}
-                contentContainerStyle={{ paddingBottom: 280 }}
+                contentContainerStyle={{ paddingBottom: 330 }}
                 extraData={showReplyModal}
             />
 
@@ -150,10 +158,14 @@ export default function CommentView({ commentsDoc, avatar, username, fetchReplie
 
 const styles = StyleSheet.create({
     commentContainer: {
+        width: '100%',
+        borderWidth: 1,
+        borderColor: '#333',
         padding: 10,
         borderRadius: 5,
         backgroundColor: '#161622',
         marginBottom: 10,
+        position: 'relative',
     },
     header: {
         flexDirection: 'row',
