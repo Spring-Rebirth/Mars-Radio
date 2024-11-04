@@ -5,7 +5,7 @@ import likeIcon from '../../assets/icons/like.png';
 import likedIcon from '../../assets/icons/liked.png';
 import { useTranslation } from 'react-i18next';
 import ReactNativeModal from 'react-native-modal';
-import deleteIcon from '../../assets/menu/trash-solid.png';
+import deleteIcon from '../../assets/menu/delete.png';
 import { config, databases } from "../../lib/appwrite";
 
 export default function CommentView({ commentsDoc, userId, avatar, username, fetchReplies, submitReply, setRefreshFlag }) {
@@ -88,7 +88,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                         <TouchableOpacity onPress={() => { deleteComment(comment.$id) }}>
                             <Image
                                 source={deleteIcon}
-                                className='w-5 h-5 ml-[50]'
+                                className='w-6 h-6 absolute left-[62] -top-[13]'
                                 resizeMode='contain'
                             />
                         </TouchableOpacity>
@@ -97,7 +97,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                 <Text style={styles.commentText}>{comment.content}</Text>
                 <View className='flex-row gap-x-6 ml-0.5'>
                     <TouchableOpacity onPress={() => setLiked(!liked)}
-                        className=' w-20 items-center'
+                        className='w-[46] items-center'
                     >
                         <Image
                             source={liked ? likedIcon : likeIcon}
@@ -109,7 +109,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                         setParentCommentId(comment.$id); // 设置当前父评论 ID
                         setShowReplyModal(true);
                     }}
-                        className=' w-20 items-center'
+                        className='w-[46] items-center'
                     >
                         <Image
                             source={commentIcon}
