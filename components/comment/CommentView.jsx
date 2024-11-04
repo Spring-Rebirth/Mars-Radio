@@ -8,7 +8,7 @@ import ReactNativeModal from 'react-native-modal';
 import deleteIcon from '../../assets/menu/trash-solid.png';
 import { config, databases } from "../../lib/appwrite";
 
-export default function CommentView({ commentsDoc, userId, avatar, username, fetchReplies, submitReply }) {
+export default function CommentView({ commentsDoc, userId, avatar, username, fetchReplies, submitReply, setRefreshFlag }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
     const textInputRef = useRef(null);
     const [showReplyModal, setShowReplyModal] = useState(false); // 初始为关闭状态
@@ -71,6 +71,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                 );
                 if (result) {
                     Alert.alert('Delete Success');
+                    setRefreshFlag(prev => !prev); // 刷新评论列表
                 }
             } catch (error) {
                 console.error('Failed to delete comment:', error);

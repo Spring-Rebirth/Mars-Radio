@@ -22,6 +22,7 @@ export default function PlayScreen() {
     const [playing, setPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
     const [commentsDoc, setCommentsDoc] = useState([]);
+    const [refreshFlag, setRefreshFlag] = useState(false);
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -44,7 +45,7 @@ export default function PlayScreen() {
         }
 
         fetchComments();
-    }, []);
+    }, [refreshFlag]);
 
     const fetchReplies = async (parentCommentId) => {
         try {
@@ -95,6 +96,7 @@ export default function PlayScreen() {
                 commentsDoc={commentsDoc}
                 fetchReplies={fetchReplies}
                 submitReply={submitReply}
+                setRefreshFlag={setRefreshFlag}
             />
         );
     }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply]);
