@@ -5,6 +5,7 @@ import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CommentInputBox from "../../components/comment/CommentInputBox";
 import CommentView from "../../components/comment/CommentView";
+import CommentList from "../../components/comment/CommentList";
 import { config, databases } from "../../lib/appwrite";
 import { Query } from "react-native-appwrite";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -116,7 +117,7 @@ export default function PlayScreen() {
 
     const memoizedCommentView = useMemo(() => {
         return (
-            <CommentView
+            <CommentList
                 userId={userId}
                 videoId={videoId}
                 commentsDoc={commentsDoc}
@@ -181,12 +182,14 @@ export default function PlayScreen() {
                         shouldPlay
                         onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
                     />
-                    <View className={'px-6 mt-4'}>
-                        <CommentInputBox
-                            userId={userId}
-                            videoId={videoId}
-                            onCommentSubmitted={onCommentSubmitted}
-                        />
+                    <View className={'mt-4'}>
+                        <View className='px-6'>
+                            <CommentInputBox
+                                userId={userId}
+                                videoId={videoId}
+                                onCommentSubmitted={onCommentSubmitted}
+                            />
+                        </View>
                         {memoizedCommentView}
                     </View>
                 </View>

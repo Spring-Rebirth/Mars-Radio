@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity, TextInput, Alert, InteractionManager } from 'react-native';
 import commentIcon from '../../assets/icons/comment.png';
 import likeIcon from '../../assets/icons/like.png';
 import likedIcon from '../../assets/icons/liked.png';
@@ -10,12 +10,32 @@ import { config, databases } from "../../lib/appwrite";
 
 export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUsername, fetchCommentUser, submitReply, setRefreshFlag }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
+    const [comments, setComments] = useState([]);
+    const listRef = useRef(null);
+    const [viewableIndex, setViewableIndex] = useState({ index: 0, offset: 0 }); // 记录当前可见的第一个项的索引和偏移量
+    const [contentLoaded, setContentLoaded] = useState(false); // 用于标记内容加载完成
     const textInputRef = useRef(null);
     const [showReplyModal, setShowReplyModal] = useState(false); // 初始为关闭状态
     const [replyMsg, setReplyMsg] = useState('');
     const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
     const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
     const { t } = useTranslation();
+
+    // Viewability 配置，设定可见性阈值
+    const viewabilityConfig = {
+        itemVisiblePercentThreshold: 50, // 超过50%可见才算可见项
+    };
+
+    // 记录当前可见的第一个项
+    const onViewableItemsChanged = ({ viewableItems }) => {
+        if (viewableItems.length > 0) {
+            const firstVisibleItem = viewableItems[0];
+            setViewableIndex({
+                index: firstVisibleItem.index,
+                offset: firstVisibleItem.item.offset || 0,
+            });
+        }
+    };
 
     useEffect(() => {
         if (showReplyModal) {
@@ -26,6 +46,34 @@ export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUs
             return () => clearTimeout(timer); // 清理定时器
         }
     }, [showReplyModal]);
+
+    // 批量加载评论数据，包括头像和用户名
+    useEffect(() => {
+        const prepareComments = async () => {
+            if (commentsDoc && commentsDoc.length > 0) {
+                const enrichedComments = await Promise.all(commentsDoc.map(async (comment) => {
+                    const user = await fetchCommentUser(comment.user_ID);
+                    return { ...comment, username: user.username, avatar: user.avatar || require('../../assets/images/default-avatar.png') };
+                }));
+                setComments(enrichedComments);
+                setContentLoaded(false); // 设置为未加载状态，以便重新恢复位置
+            }
+        };
+        prepareComments();
+    }, [commentsDoc]);
+
+    // 等待布局完成后恢复位置
+    useEffect(() => {
+        if (contentLoaded && listRef.current && comments.length > 0 && viewableIndex.index < comments.length) {
+            InteractionManager.runAfterInteractions(() => {
+                listRef.current.scrollToIndex({
+                    index: viewableIndex.index,
+                    viewOffset: viewableIndex.offset,
+                    animated: false,
+                });
+            });
+        }
+    }, [contentLoaded, comments]);
 
     handleReplySubmit = useCallback(async () => {
         // 调用提交回复的函数，传入回复内容和父评论 ID   // 获取回复的用户名
@@ -45,7 +93,8 @@ export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUs
         const [replies, setReplies] = useState([]);
         const [isRepliesLoaded, setIsRepliesLoaded] = useState(false);
         const [liked, setLiked] = useState(false);
-        const [user, setUser] = useState(null);
+        const [cmtUsername, setCmtUsername] = useState('loading...');
+        const [cmtAvatar, setCmtAvatar] = useState(require('../../assets/images/default-avatar.png'));
 
         useEffect(() => {
             // 获取子评论
@@ -61,7 +110,8 @@ export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUs
             // 获取评论的用户信息
             const loadUser = async () => {
                 const user = await fetchCommentUser(comment.user_ID);
-                setUser(user);
+                setCmtUsername(user.username);
+                setCmtAvatar({ uri: user.avatar });
             };
             loadUser();
         }, []);
@@ -96,8 +146,8 @@ export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUs
             <View style={[styles.commentContainer, { marginLeft }]}>
                 <View style={styles.header}>
                     {/* 改成使用评论的用户名和头像 */}
-                    <Image source={{ uri: user?.avatar }} style={styles.avatar} />
-                    <Text style={styles.username}>{user?.username}</Text>
+                    <Image source={cmtAvatar} style={styles.avatar} />
+                    <Text style={styles.username}>{cmtUsername}</Text>
                 </View>
                 <Text style={styles.commentText} numberOfLines={10}>
                     {comment.content}
@@ -140,7 +190,7 @@ export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUs
                 </View>
                 {/* 渲染子评论 */}
                 {isRepliesLoaded && replies.length > 0 && (
-                    <View style={{ paddingTop: 20 }}>
+                    <View style={{ paddingTop: 20 }} onLayout={() => setContentLoaded(true)}>
                         {memoizedReplies}
                     </View>
                 )}
@@ -150,15 +200,16 @@ export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUs
 
     // 使用 useMemo 缓存 FlatList 的渲染
     const memoizedComments = useMemo(() => {
-        return commentsDoc.map((item) => (
+        return comments.map((item) => (
             <CommentItem key={item.$id} comment={item} />
         ));
-    }, [commentsDoc]);
+    }, [comments]);
 
     return (
         <>
             <FlatList
-                data={commentsDoc}
+                ref={listRef}
+                data={comments}
                 keyExtractor={(item) => item.$id}
                 renderItem={({ item }) => {
                     // 使用 memoizedComments 的逻辑
@@ -166,7 +217,10 @@ export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUs
                     return comment;
                 }}
                 contentContainerStyle={{ paddingBottom: 330, paddingTop: 10 }}
-                extraData={showReplyModal}
+                extraData={comments}
+                viewabilityConfig={viewabilityConfig}
+                onViewableItemsChanged={onViewableItemsChanged}
+                onScrollToIndexFailed={() => listRef.current.scrollToOffset({ offset: 0, animated: false })}
             />
 
             <ReactNativeModal
