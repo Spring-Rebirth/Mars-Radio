@@ -8,8 +8,9 @@ import deleteIcon from '../../assets/menu/delete.png';
 import ReactNativeModal from 'react-native-modal';
 import { useTranslation } from 'react-i18next';
 
-const CommentItem = ({ comment, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply }) => {
+const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply }) => {
     const [replies, setReplies] = useState([]);
+    const [repliesCount, setRepliesCount] = useState(0);
     const [showReplies, setShowReplies] = useState(false);
     const [loadingReplies, setLoadingReplies] = useState(false);
     const [liked, setLiked] = useState(false);
@@ -21,6 +22,9 @@ const CommentItem = ({ comment, fetchReplies, setRefreshFlag, fetchUsername, use
     const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
     const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
 
+    const MAX_LEVEL = 2;
+    let paddingLeft = level <= MAX_LEVEL ? level * 20 : 0;
+
     // 加载用户信息
     useEffect(() => {
         const loadUser = async () => {
@@ -30,6 +34,14 @@ const CommentItem = ({ comment, fetchReplies, setRefreshFlag, fetchUsername, use
         };
         loadUser();
     }, [comment.user_ID]);
+
+    useEffect(() => {
+        const loadRepliesCount = async () => {
+            const childComments = await fetchReplies(comment.$id);
+            setRepliesCount(childComments.length); // 设置子评论数量
+        };
+        loadRepliesCount();
+    }, [comment.$id, fetchReplies]);
 
     // 切换显示/隐藏子评论
     const toggleReplies = useCallback(async () => {
@@ -123,11 +135,11 @@ const CommentItem = ({ comment, fetchReplies, setRefreshFlag, fetchUsername, use
                 onPress={toggleReplies}
                 className='mt-[20] mb-[10] ml-[40]'
             >
-                <Text className='text-blue-500'>{replies.length} 条回复</Text>
+                <Text className='text-blue-500'>{repliesCount} 条回复</Text>
             </TouchableOpacity>
 
             {showReplies && (
-                <View style={styles.repliesContainer}>
+                <View style={[styles.repliesContainer, { paddingLeft }]}>
                     {loadingReplies ? (
                         <Text>loading...</Text>
                     ) : (
@@ -136,6 +148,7 @@ const CommentItem = ({ comment, fetchReplies, setRefreshFlag, fetchUsername, use
                                 key={reply.$id}
                                 comment={reply}
                                 userId={userId}
+                                level={level + 1}
                                 fetchReplies={fetchReplies}
                                 setRefreshFlag={setRefreshFlag}
                                 fetchUsername={fetchUsername}
@@ -206,7 +219,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
     },
     repliesContainer: {
-        paddingLeft: 20,
         borderLeftWidth: 2,
         borderColor: '#eee',
     },
