@@ -1,5 +1,5 @@
-import { View, Text, Dimensions, ActivityIndicator, StyleSheet } from 'react-native'
-import React, { useEffect, useMemo, useState } from 'react'
+import { View, Text, Dimensions, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import { Query } from "react-native-appwrite";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ID } from 'react-native-appwrite';
 import { useGlobalContext } from '../../context/GlobalProvider';
+import replayIcon from '../../assets/icons/replay.png';
 
 export default function PlayScreen() {
     const { user } = useGlobalContext();
@@ -21,6 +22,8 @@ export default function PlayScreen() {
     const screenHeight = Dimensions.get('window').width * 9 / 16;
     const [playing, setPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
+    const videoRef = useRef(null);
+    const [isEnded, setIsEnded] = useState(false);
     const [commentsDoc, setCommentsDoc] = useState([]);
     const [refreshFlag, setRefreshFlag] = useState(false);
 
@@ -126,6 +129,28 @@ export default function PlayScreen() {
         );
     }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply]);
 
+    const handlePlaybackStatusUpdate = (status) => {
+        if (status.isLoaded) {
+            setLoading(false);
+        }
+        if (status.didJustFinish) {
+            console.log("视频结束");
+            setPlaying(false);
+            setLoading(false);
+            setIsEnded(true);
+        }
+
+    };
+
+    const replayVideo = async () => {
+        if (videoRef.current) {
+            await videoRef.current.replayAsync(); // 重播视频
+            setIsEnded(false); // 重置状态
+            setLoading(false); // 重置 loading 状态
+            setPlaying(true); // 设置播放状态
+        }
+    };
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={styles.safeArea}>
@@ -138,21 +163,23 @@ export default function PlayScreen() {
                             )}
                         </>
                     )}
+                    {isEnded && (
+                        <TouchableOpacity onPress={replayVideo} style={styles.replayIconContainer}>
+                            <Image
+                                source={replayIcon}
+                                style={styles.replayIcon}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
+                    )}
                     <Video
+                        ref={videoRef}
                         source={{ uri: parsedVideoUrl }}
                         style={[styles.video, { height: screenHeight }]}
                         resizeMode={ResizeMode.CONTAIN}
                         useNativeControls
                         shouldPlay
-                        onPlaybackStatusUpdate={async (status) => {
-                            if (status.isLoaded) {
-                                setLoading(false);
-                            }
-                            if (status.didJustFinish) {
-                                setPlaying(false);
-                                setLoading(true);
-                            }
-                        }}
+                        onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
                     />
                     <View className={'px-6 mt-4'}>
                         <CommentInputBox
@@ -188,11 +215,21 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 20,
         position: 'absolute',
-        top: '5%',
+        top: '3%',
         left: '50%',
         transform: [{ translateX: -40 }, { translateY: -10 }],
     },
-    video: {
+    replayIconContainer: {
+        position: 'absolute',
+        top: '10%',
+        left: '50%',
+        zIndex: 1, // 确保图标在最前面
+        transform: [{ translateX: -15 }, { translateY: 0 }],
+    },
+    replayIcon: {
+        width: 30,
+        height: 30,
+    }, video: {
         width: '100%',
     },
 });
