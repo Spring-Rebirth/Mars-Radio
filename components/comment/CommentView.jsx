@@ -87,15 +87,6 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                 <View style={styles.header}>
                     <Image source={{ uri: avatar }} style={styles.avatar} />
                     <Text style={styles.username}>{username}</Text>
-                    {comment.user_ID === userId && (
-                        <TouchableOpacity onPress={() => { deleteComment(comment.$id) }}>
-                            <Image
-                                source={deleteIcon}
-                                className='w-6 h-6 absolute left-[115] -top-[13]'
-                                resizeMode='contain'
-                            />
-                        </TouchableOpacity>
-                    )}
                 </View>
                 <Text style={styles.commentText}>{comment.content}</Text>
                 <View className='flex-row gap-x-6 ml-0.5'>
@@ -122,6 +113,17 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
                             resizeMode='contain'
                         />
                     </TouchableOpacity>
+                    {comment.user_ID === userId && (
+                        <TouchableOpacity onPress={() => { deleteComment(comment.$id) }}
+                            className='w-[46] items-center'
+                        >
+                            <Image
+                                source={deleteIcon}
+                                style={{ width: 22, height: 22, marginTop: 18 }}
+                                resizeMode='contain'
+                            />
+                        </TouchableOpacity>
+                    )}
                 </View>
                 {/* 渲染子评论 */}
                 {isRepliesLoaded && replies.length > 0 && (
