@@ -234,7 +234,6 @@ export default function Trending({ video, loading }) {
             onViewableItemsChanged={handleViewableItemsChanged}
             viewabilityConfig={viewabilityConfig}
             showsHorizontalScrollIndicator={false}
-            scrollEventThrottle={16}
             decelerationRate="fast"
             directionalLockEnabled={false}
         />
