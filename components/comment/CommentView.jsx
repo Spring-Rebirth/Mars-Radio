@@ -99,7 +99,9 @@ export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUs
                     <Image source={{ uri: user?.avatar }} style={styles.avatar} />
                     <Text style={styles.username}>{user?.username}</Text>
                 </View>
-                <Text style={styles.commentText}>{comment.content}</Text>
+                <Text style={styles.commentText} numberOfLines={4}>
+                    {comment.content}
+                </Text>
                 <View className='flex-row gap-x-6 ml-0.5'>
                     <TouchableOpacity onPress={() => setLiked(!liked)}
                         className='w-[46] items-center'
@@ -215,6 +217,8 @@ const styles = StyleSheet.create({
         color: '#fff',
         marginTop: 5,
         marginLeft: 40,
+        marginRight: 40,
+        lineHeight: 22
     },
     input: {
         height: 40,
