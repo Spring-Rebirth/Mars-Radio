@@ -8,7 +8,7 @@ import deleteIcon from '../../assets/menu/delete.png';
 import ReactNativeModal from 'react-native-modal';
 import { useTranslation } from 'react-i18next';
 
-const CommentItem = ({ comment, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser }) => {
+const CommentItem = ({ comment, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply }) => {
     const [replies, setReplies] = useState([]);
     const [showReplies, setShowReplies] = useState(false);
     const [loadingReplies, setLoadingReplies] = useState(false);
@@ -135,8 +135,12 @@ const CommentItem = ({ comment, fetchReplies, setRefreshFlag, fetchUsername, use
                             <CommentItem
                                 key={reply.$id}
                                 comment={reply}
+                                userId={userId}
                                 fetchReplies={fetchReplies}
                                 setRefreshFlag={setRefreshFlag}
+                                fetchUsername={fetchUsername}
+                                fetchCommentUser={fetchCommentUser}
+                                submitReply={submitReply}
                             />
                         ))
                     )}

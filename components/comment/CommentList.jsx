@@ -3,7 +3,7 @@ import React from 'react';
 import { FlatList, ActivityIndicator } from 'react-native';
 import CommentItem from './CommentItem';
 
-export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser }) {
+export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply }) {
     const renderComment = ({ item }) => (
         <CommentItem
             comment={item}
@@ -12,6 +12,7 @@ export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag,
             setRefreshFlag={setRefreshFlag}
             fetchUsername={fetchUsername}
             fetchCommentUser={fetchCommentUser}
+            submitReply={submitReply}
         />
     );
 
@@ -24,7 +25,7 @@ export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag,
             data={commentsDoc}
             renderItem={renderComment}
             keyExtractor={(item) => item.$id.toString()}
-            contentContainerStyle={{ paddingBottom: 20, paddingTop: 5 }}
+            contentContainerStyle={{ paddingBottom: 330, paddingTop: 5 }}
         />
     );
 }
