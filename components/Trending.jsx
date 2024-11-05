@@ -233,7 +233,7 @@ export default function Trending({ video, loading }) {
             )}
             onViewableItemsChanged={handleViewableItemsChanged}
             viewabilityConfig={viewabilityConfig}
-
+            showsHorizontalScrollIndicator={false}
         />
     )
 }
