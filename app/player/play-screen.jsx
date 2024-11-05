@@ -75,6 +75,19 @@ export default function PlayScreen() {
         }
     };
 
+    const fetchCommentUser = async (userId) => {
+        try {
+            const user = await databases.getDocument(
+                config.databaseId,
+                config.usersCollectionId,
+                userId
+            );
+            return user;
+        } catch (error) {
+            console.error('Failed to fetch user:', error);
+        }
+    }
+
     const submitReply = async (content, parentCommentId) => {
         try {
             await databases.createDocument(
@@ -103,13 +116,12 @@ export default function PlayScreen() {
             <CommentView
                 userId={userId}
                 videoId={videoId}
-                avatar={avatar}
-                username={username}
                 commentsDoc={commentsDoc}
                 fetchUsername={fetchCommentUsername}
                 fetchReplies={fetchReplies}
                 submitReply={submitReply}
                 setRefreshFlag={setRefreshFlag}
+                fetchCommentUser={fetchCommentUser}
             />
         );
     }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply]);

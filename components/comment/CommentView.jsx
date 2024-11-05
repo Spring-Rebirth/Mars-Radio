@@ -8,7 +8,7 @@ import ReactNativeModal from 'react-native-modal';
 import deleteIcon from '../../assets/menu/delete.png';
 import { config, databases } from "../../lib/appwrite";
 
-export default function CommentView({ commentsDoc, userId, avatar, username, fetchReplies, fetchUsername, submitReply, setRefreshFlag }) {
+export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUsername, fetchCommentUser, submitReply, setRefreshFlag }) {
     // fetchReplies 是一个获取子评论的函数，输入评论 ID，返回该评论的子评论
     const textInputRef = useRef(null);
     const [showReplyModal, setShowReplyModal] = useState(false); // 初始为关闭状态
@@ -27,7 +27,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
         }
     }, [showReplyModal]);
 
-    handleReplySubmit = useCallback(async (e) => {
+    handleReplySubmit = useCallback(async () => {
         // 调用提交回复的函数，传入回复内容和父评论 ID   // 获取回复的用户名
         if (!replyMsg.trim()) return;
 
@@ -45,6 +45,7 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
         const [replies, setReplies] = useState([]);
         const [isRepliesLoaded, setIsRepliesLoaded] = useState(false);
         const [liked, setLiked] = useState(false);
+        const [user, setUser] = useState(null);
 
         useEffect(() => {
             // 获取子评论
@@ -55,6 +56,15 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
             };
             loadReplies();
         }, [comment.$id]); // 使用 comment.$id 作为依赖项
+
+        useEffect(() => {
+            // 获取评论的用户信息
+            const loadUser = async () => {
+                const user = await fetchCommentUser(comment.user_ID);
+                setUser(user);
+            };
+            loadUser();
+        }, []);
 
         const MAX_LEVEL = 1;
         let marginLeft = level <= MAX_LEVEL ? level * 40 : 0;
@@ -85,8 +95,9 @@ export default function CommentView({ commentsDoc, userId, avatar, username, fet
         return (
             <View style={[styles.commentContainer, { marginLeft }]}>
                 <View style={styles.header}>
-                    <Image source={{ uri: avatar }} style={styles.avatar} />
-                    <Text style={styles.username}>{username}</Text>
+                    {/* 改成使用评论的用户名和头像 */}
+                    <Image source={{ uri: user?.avatar }} style={styles.avatar} />
+                    <Text style={styles.username}>{user?.username}</Text>
                 </View>
                 <Text style={styles.commentText}>{comment.content}</Text>
                 <View className='flex-row gap-x-6 ml-0.5'>
