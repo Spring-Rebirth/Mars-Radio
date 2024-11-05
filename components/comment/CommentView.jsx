@@ -99,7 +99,7 @@ export default function CommentView({ commentsDoc, userId, fetchReplies, fetchUs
                     <Image source={{ uri: user?.avatar }} style={styles.avatar} />
                     <Text style={styles.username}>{user?.username}</Text>
                 </View>
-                <Text style={styles.commentText} numberOfLines={4}>
+                <Text style={styles.commentText} numberOfLines={10}>
                     {comment.content}
                 </Text>
                 <View className='flex-row gap-x-6 ml-0.5'>
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         marginTop: 5,
         marginLeft: 40,
-        marginRight: 40,
+        marginRight: 60,
         lineHeight: 22
     },
     input: {
