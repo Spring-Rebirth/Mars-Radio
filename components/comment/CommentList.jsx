@@ -1,7 +1,8 @@
 // CommentList.js
 import React from 'react';
-import { FlatList, ActivityIndicator } from 'react-native';
+import { FlatList, View, Image, Text } from 'react-native';
 import CommentItem from './CommentItem';
+import emptyIcon from '../../assets/images/empty-msg.png';
 
 export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply }) {
     const renderComment = ({ item }) => (
@@ -17,7 +18,18 @@ export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag,
     );
 
     if (!commentsDoc || commentsDoc.length === 0) {
-        return <ActivityIndicator size="large" color="#000" />;
+        return (
+            <View className="w-full h-full justify-start items-center">
+                <Image
+                    source={emptyIcon}
+                    className="w-full h-32"
+                    resizeMode="contain"
+                />
+                <Text style={{ fontSize: 18, color: 'gray' }}>
+                    No Comments Yet
+                </Text>
+            </View>
+        );
     }
 
     return (
