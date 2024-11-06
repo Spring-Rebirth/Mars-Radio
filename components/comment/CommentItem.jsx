@@ -9,7 +9,6 @@ import ReactNativeModal from 'react-native-modal';
 import { useTranslation } from 'react-i18next';
 import { databases } from '../../lib/appwrite';
 import { config } from '../../lib/appwrite';
-import { use } from 'i18next';
 
 const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply, onReplyDeleted }) => {
     const [replies, setReplies] = useState([]);
@@ -18,11 +17,11 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
     const [showReplies, setShowReplies] = useState(false);
     const [loadingReplies, setLoadingReplies] = useState(false);
     const [liked, setLiked] = useState(false);
-    const [cmtUsername, setCmtUsername] = useState('加载中...');
+    const { t } = useTranslation();
+    const [cmtUsername, setCmtUsername] = useState(t('loading...'));
     const [cmtAvatar, setCmtAvatar] = useState(require('../../assets/images/default-avatar.png'));
     const [showReplyModal, setShowReplyModal] = useState(false);
     const [replyMsg, setReplyMsg] = useState('');
-    const { t } = useTranslation();
     const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
     const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
     const inputRef = useRef(null);
