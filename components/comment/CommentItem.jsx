@@ -23,7 +23,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
     const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
 
     const MAX_LEVEL = 2;
-    let paddingLeft = level <= MAX_LEVEL ? level * 20 : 0;
+    let paddingLeft = level <= MAX_LEVEL ? 20 : 0;
 
     // 加载用户信息
     useEffect(() => {
