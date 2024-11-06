@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { databases } from '../../lib/appwrite';
 import { config } from '../../lib/appwrite';
 
-const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply }) => {
+const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply, onReplyDeleted }) => {
     const [replies, setReplies] = useState([]);
     const [commentId, setCommentId] = useState(comment.$id);
     const [repliesCount, setRepliesCount] = useState(0);
@@ -57,6 +57,10 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
         setShowReplies((prev) => !prev);
     }, [showReplies, fetchReplies, commentId]);
 
+    const handleReplyDeleted = () => {
+        setRepliesCount((prevCount) => prevCount - 1);
+    };
+
     const deleteComment = async (commentId) => {
         try {
             const result = await databases.deleteDocument(
@@ -67,6 +71,8 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
             if (result) {
                 Alert.alert('Delete Success');
                 setCommentId("");
+                // setRefreshFlag(prev => !prev);
+                onReplyDeleted();
             }
         } catch (error) {
             console.error('Failed to delete comment:', error);
@@ -162,6 +168,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
                                 fetchUsername={fetchUsername}
                                 fetchCommentUser={fetchCommentUser}
                                 submitReply={submitReply}
+                                onReplyDeleted={handleReplyDeleted}
                             />
                         ))
                     )}
