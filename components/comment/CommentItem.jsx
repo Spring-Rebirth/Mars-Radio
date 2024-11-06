@@ -146,7 +146,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
             {repliesCount > 0 && (
                 <TouchableOpacity
                     onPress={toggleReplies}
-                    className='mt-[20] mb-[10] ml-[40]'
+                    className='mt-[10] ml-[40] h-10 w-20 justify-center'
                 >
                     <Text className='text-blue-500'>{repliesCount} {t('replies')}</Text>
                 </TouchableOpacity>
