@@ -12,6 +12,7 @@ import { config } from '../../lib/appwrite';
 
 const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply }) => {
     const [replies, setReplies] = useState([]);
+    const [commentId, setCommentId] = useState(comment.$id);
     const [repliesCount, setRepliesCount] = useState(0);
     const [showReplies, setShowReplies] = useState(false);
     const [loadingReplies, setLoadingReplies] = useState(false);
@@ -39,22 +40,22 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
 
     useEffect(() => {
         const loadRepliesCount = async () => {
-            const childComments = await fetchReplies(comment.$id);
+            const childComments = await fetchReplies(commentId);
             setRepliesCount(childComments.length); // 设置子评论数量
         };
         loadRepliesCount();
-    }, [comment.$id, fetchReplies]);
+    }, [commentId, fetchReplies]);
 
     // 切换显示/隐藏子评论
     const toggleReplies = useCallback(async () => {
         if (!showReplies) {
             setLoadingReplies(true);
-            const childComments = await fetchReplies(comment.$id);
+            const childComments = await fetchReplies(commentId);
             setReplies(childComments);
             setLoadingReplies(false);
         }
         setShowReplies((prev) => !prev);
-    }, [showReplies, fetchReplies, comment.$id]);
+    }, [showReplies, fetchReplies, commentId]);
 
     const deleteComment = async (commentId) => {
         try {
@@ -65,7 +66,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
             );
             if (result) {
                 Alert.alert('Delete Success');
-                setRefreshFlag(prev => !prev); // 刷新评论列表
+                setCommentId("");
             }
         } catch (error) {
             console.error('Failed to delete comment:', error);
@@ -85,6 +86,10 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
         setShowReplyModal(false);
         setRefreshFlag(prev => !prev);
     }, [replyMsg, parentCommentId]);
+
+    if (!commentId) {
+        return null;
+    }
 
     return (
         <View style={styles.commentContainer}>
@@ -107,7 +112,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => {
-                        setParentCommentId(comment.$id); // 设置当前父评论 ID
+                        setParentCommentId(commentId); // 设置当前父评论 ID
                         setParentCommentUserId(comment.user_ID); // 设置当前父评论用户 ID
                         setShowReplyModal(true);
                     }}
@@ -122,7 +127,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
 
                 {comment.user_ID === userId && (
                     <TouchableOpacity
-                        onPress={() => deleteComment(comment.$id)}
+                        onPress={() => deleteComment(commentId)}
                         className='w-[46] items-center'
                     >
                         <Image
