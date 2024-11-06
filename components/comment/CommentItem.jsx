@@ -1,5 +1,5 @@
 // CommentItem.js
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native';
 import commentIcon from '../../assets/icons/comment.png';
 import likeIcon from '../../assets/icons/like.png';
@@ -9,6 +9,7 @@ import ReactNativeModal from 'react-native-modal';
 import { useTranslation } from 'react-i18next';
 import { databases } from '../../lib/appwrite';
 import { config } from '../../lib/appwrite';
+import { use } from 'i18next';
 
 const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply, onReplyDeleted }) => {
     const [replies, setReplies] = useState([]);
@@ -24,6 +25,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
     const { t } = useTranslation();
     const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
     const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
+    const inputRef = useRef(null);
 
     const MAX_LEVEL = 2;
     let paddingLeft = level <= MAX_LEVEL ? 40 : 0;
@@ -45,6 +47,15 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
         };
         loadRepliesCount();
     }, [commentId, fetchReplies]);
+
+    // 打开模态框时，自动聚焦输入框
+    useEffect(() => {
+        if (showReplyModal) {
+            setTimeout(() => {
+                inputRef.current.focus();
+            }, 100);
+        }
+    }, [showReplyModal]);
 
     // 切换显示/隐藏子评论
     const toggleReplies = useCallback(async () => {
@@ -189,6 +200,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
             >
                 <View style={styles.modalContent}>
                     <TextInput
+                        ref={inputRef}
                         value={replyMsg}
                         onChangeText={setReplyMsg}
                         placeholder={t("Add a reply...")}
