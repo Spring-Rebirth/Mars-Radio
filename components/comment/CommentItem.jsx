@@ -131,12 +131,14 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
                     </TouchableOpacity>
                 )}
             </View>
-            <TouchableOpacity
-                onPress={toggleReplies}
-                className='mt-[20] mb-[10] ml-[40]'
-            >
-                <Text className='text-blue-500'>{repliesCount} 条回复</Text>
-            </TouchableOpacity>
+            {repliesCount > 0 && (
+                <TouchableOpacity
+                    onPress={toggleReplies}
+                    className='mt-[20] mb-[10] ml-[40]'
+                >
+                    <Text className='text-blue-500'>{repliesCount} {t('replies')}</Text>
+                </TouchableOpacity>
+            )}
 
             {showReplies && (
                 <View style={{ paddingLeft }}>
