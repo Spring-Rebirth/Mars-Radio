@@ -115,11 +115,11 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
             <View style={styles.actions}>
                 <TouchableOpacity
                     onPress={() => setLiked(!liked)}
-                    className='w-[46] items-center'
+                    className='w-[60] h-[40] items-center justify-center'
                 >
                     <Image
                         source={liked ? likedIcon : likeIcon}
-                        style={{ width: 20, height: 20, marginTop: 20 }}
+                        style={{ width: 20, height: 20 }}
                     />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -128,11 +128,11 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
                         setParentCommentUserId(comment.user_ID); // 设置当前父评论用户 ID
                         setShowReplyModal(true);
                     }}
-                    className='w-[46] items-center'
+                    className='w-[60] h-[40] items-center justify-center'
                 >
                     <Image
                         source={commentIcon}
-                        style={{ width: 20, height: 20, marginTop: 20 }}
+                        style={{ width: 20, height: 20 }}
                         resizeMode='contain'
                     />
                 </TouchableOpacity>
@@ -140,11 +140,11 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
                 {comment.user_ID === userId && (
                     <TouchableOpacity
                         onPress={() => deleteComment(commentId)}
-                        className='w-[46] items-center'
+                        className='w-[60] h-[40] items-center justify-center'
                     >
                         <Image
                             source={deleteIcon}
-                            style={{ width: 20, height: 20, marginTop: 20 }}
+                            style={{ width: 20, height: 20 }}
                         />
                     </TouchableOpacity>
                 )}
@@ -223,7 +223,8 @@ const styles = StyleSheet.create({
     },
     commentText: {
         color: '#fff',
-        marginTop: 15,
+        marginTop: 10,
+        marginBottom: 5,
         marginLeft: 40,
         marginRight: 40,
         lineHeight: 22
@@ -231,7 +232,8 @@ const styles = StyleSheet.create({
     actions: {
         flexDirection: 'row',
         marginTop: 0,
-        marginLeft: 28,
+        marginLeft: 20,
+        gap: 20,
     },
     icon: {
         width: 20,
