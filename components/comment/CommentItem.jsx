@@ -72,7 +72,13 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
                 Alert.alert('Delete Success');
                 setCommentId("");
                 // setRefreshFlag(prev => !prev);
-                onReplyDeleted();
+                if (level !== 1) {
+                    // 如果是子评论，通知父组件删除子评论
+                    onReplyDeleted();
+                } else {
+                    // 如果是父评论，通知父组件刷新评论列表
+                    setRefreshFlag(prev => !prev);
+                }
             }
         } catch (error) {
             console.error('Failed to delete comment:', error);

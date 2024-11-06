@@ -4,7 +4,6 @@ import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CommentInputBox from "../../components/comment/CommentInputBox";
-import CommentView from "../../components/comment/CommentView";
 import CommentList from "../../components/comment/CommentList";
 import { config, databases } from "../../lib/appwrite";
 import { Query } from "react-native-appwrite";
