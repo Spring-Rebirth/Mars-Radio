@@ -23,7 +23,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
     const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
 
     const MAX_LEVEL = 2;
-    let paddingLeft = level <= MAX_LEVEL ? 20 : 0;
+    let paddingLeft = level <= MAX_LEVEL ? 40 : 0;
 
     // 加载用户信息
     useEffect(() => {
@@ -75,7 +75,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
         if (!replyMsg.trim()) return;
 
         const parentUsername = await fetchUsername(parentCommentUserId);
-        await submitReply(`@${parentUsername}    ${replyMsg}`, parentCommentId);
+        await submitReply(`@${parentUsername}\n${replyMsg}`, parentCommentId);
         console.log('Submit reply:', replyMsg);
         setReplyMsg('');
         setParentCommentUserId(null);
@@ -139,7 +139,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
             </TouchableOpacity>
 
             {showReplies && (
-                <View style={[styles.repliesContainer, { paddingLeft }]}>
+                <View style={{ paddingLeft }}>
                     {loadingReplies ? (
                         <Text>loading...</Text>
                     ) : (
@@ -183,9 +183,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
 
 const styles = StyleSheet.create({
     commentContainer: {
-        paddingVertical: 10,
-        // paddingHorizontal: 15,
-        borderWidth: 1, borderColor: 'red'
+        paddingVertical: 10
     },
     header: {
         flexDirection: 'row',
@@ -218,10 +216,6 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         marginHorizontal: 5,
-    },
-    repliesContainer: {
-        // borderLeftWidth: 2,
-        // borderColor: '#eee',
     },
     modal: {
         justifyContent: 'flex-end',
