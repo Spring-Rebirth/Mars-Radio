@@ -231,7 +231,8 @@ const styles = StyleSheet.create({
     username: {
         fontWeight: 'bold',
         marginLeft: 15,
-        color: '#fff',
+        color: '#A9A9A9',
+        marginBottom: 5
     },
     commentText: {
         color: '#fff',
