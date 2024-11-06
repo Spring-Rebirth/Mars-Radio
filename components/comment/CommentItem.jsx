@@ -184,7 +184,8 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
 const styles = StyleSheet.create({
     commentContainer: {
         paddingVertical: 10,
-        paddingHorizontal: 15,
+        // paddingHorizontal: 15,
+        borderWidth: 1, borderColor: 'red'
     },
     header: {
         flexDirection: 'row',
@@ -219,8 +220,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
     },
     repliesContainer: {
-        borderLeftWidth: 2,
-        borderColor: '#eee',
+        // borderLeftWidth: 2,
+        // borderColor: '#eee',
     },
     modal: {
         justifyContent: 'flex-end',
