@@ -7,6 +7,8 @@ import likedIcon from '../../assets/icons/liked.png';
 import deleteIcon from '../../assets/menu/delete.png';
 import ReactNativeModal from 'react-native-modal';
 import { useTranslation } from 'react-i18next';
+import { databases } from '../../lib/appwrite';
+import { config } from '../../lib/appwrite';
 
 const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply }) => {
     const [replies, setReplies] = useState([]);
@@ -84,14 +86,13 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
         setRefreshFlag(prev => !prev);
     }, [replyMsg, parentCommentId]);
 
-
     return (
         <View style={styles.commentContainer}>
             <View style={styles.header}>
                 <Image source={cmtAvatar} style={styles.avatar} />
                 <Text style={styles.username}>{cmtUsername}</Text>
             </View>
-            <Text style={styles.commentText}>
+            <Text style={styles.commentText} numberOfLines={10}>
                 {comment.content}
             </Text>
             <View style={styles.actions}>
@@ -204,14 +205,14 @@ const styles = StyleSheet.create({
     },
     commentText: {
         color: '#fff',
-        marginTop: 20,
+        marginTop: 15,
         marginLeft: 40,
         marginRight: 40,
         lineHeight: 22
     },
     actions: {
         flexDirection: 'row',
-        marginTop: 10,
+        marginTop: 0,
         marginLeft: 28,
     },
     icon: {
