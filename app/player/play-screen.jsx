@@ -231,7 +231,8 @@ const styles = StyleSheet.create({
     replayIcon: {
         width: 30,
         height: 30,
-    }, video: {
-        width: '100%',
     },
+    video: {
+        width: '100%',
+    }
 });
