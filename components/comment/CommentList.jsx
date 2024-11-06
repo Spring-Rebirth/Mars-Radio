@@ -22,11 +22,11 @@ export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag,
             <View className="w-full h-full justify-start items-center">
                 <Image
                     source={emptyIcon}
-                    className="w-full h-32"
+                    className="w-20 h-20 mt-32"
                     resizeMode="contain"
                 />
-                <Text style={{ fontSize: 18, color: 'gray' }}>
-                    No Comments Yet
+                <Text style={{ fontSize: 18, color: 'gray', marginTop: 16 }}>
+                    Be the first to comment
                 </Text>
             </View>
         );
