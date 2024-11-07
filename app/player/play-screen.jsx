@@ -209,7 +209,9 @@ export default function PlayScreen() {
                 )}
 
                 {isEnded && (
-                    <TouchableOpacity onPress={replayVideo} style={styles.replayIconContainer}>
+                    <TouchableOpacity onPress={replayVideo}
+                        style={fullscreen ? styles.replayIconContainerFS : styles.replayIconContainer}
+                    >
                         <Image
                             source={replayIcon}
                             style={styles.replayIcon}
@@ -300,6 +302,13 @@ const styles = StyleSheet.create({
         left: '50%',
         zIndex: 1, // 确保图标在最前面
         transform: [{ translateX: -15 }, { translateY: 0 }],
+    },
+    replayIconContainerFS: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        zIndex: 1, // 确保图标在最前面
+        transform: [{ translateX: -15 - 14 }, { translateY: -15 }],
     },
     replayIcon: {
         width: 30,
