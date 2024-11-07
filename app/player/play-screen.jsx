@@ -39,7 +39,17 @@ export default function PlayScreen() {
 
     const handleExitFullscreen = async () => {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+        setFullscreen(false);
     };
+
+    useEffect(() => {
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+
+        return () => {
+            // 解除屏幕方向的锁定
+            ScreenOrientation.unlockAsync();
+        };
+    }, []);
 
     useEffect(() => {
         const fetchComments = async () => {
