@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Dimensions, ActivityIndicator, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
@@ -51,6 +51,15 @@ export default function PlayScreen() {
             ScreenOrientation.unlockAsync();
         };
     }, []);
+
+    useEffect(() => {
+        const updateStatusBar = () => {
+            StatusBar.setHidden(fullscreen);
+        };
+        updateStatusBar();
+
+        return () => StatusBar.setHidden(false);
+    }, [fullscreen]);
 
     useEffect(() => {
         const fetchComments = async () => {
