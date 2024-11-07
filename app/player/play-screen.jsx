@@ -30,9 +30,10 @@ export default function PlayScreen() {
     const [refreshFlag, setRefreshFlag] = useState(false);
     const [fullscreen, setFullscreen] = useState(false);
 
+    const [safeAreaInsets, setSafeAreaInsets] = useState({ top: 0, bottom: 0, left: 0, right: 0 });
     const insets = useSafeAreaInsets();
-    const safeAreaInset = -14;
-
+    const safeAreaInset = -safeAreaInsets.top / 2;
+    console.log('safeAreaInset:', safeAreaInset);
     const handleEnterFullscreen = async () => {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
         setFullscreen(true);
@@ -42,6 +43,16 @@ export default function PlayScreen() {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
         setFullscreen(false);
     };
+
+    useEffect(() => {
+        // 初始化时仅设置一次
+        setSafeAreaInsets({
+            top: insets.top,
+            bottom: insets.bottom,
+            left: insets.left,
+            right: insets.right
+        });
+    }, []);
 
     useEffect(() => {
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
