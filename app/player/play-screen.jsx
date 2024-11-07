@@ -11,6 +11,7 @@ import { ID } from 'react-native-appwrite';
 import { useGlobalContext } from '../../context/GlobalProvider';
 import replayIcon from '../../assets/icons/replay.png';
 import fullscreenIcon from '../../assets/icons/fullscreen.png';
+import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.png';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 export default function PlayScreen() {
@@ -31,7 +32,7 @@ export default function PlayScreen() {
 
     const insets = useSafeAreaInsets();
     const safeAreaInset = -insets.top / 2;
-    console.log('headerInset:', safeAreaInset);
+
     const handleEnterFullscreen = async () => {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
         setFullscreen(true);
@@ -186,6 +187,7 @@ export default function PlayScreen() {
                         )}
                     </>
                 )}
+
                 {isEnded && (
                     <TouchableOpacity onPress={replayVideo} style={styles.replayIconContainer}>
                         <Image
@@ -210,16 +212,29 @@ export default function PlayScreen() {
                     onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
                 />
 
-                <TouchableOpacity
-                    onPress={handleEnterFullscreen}
-                    className='absolute top-44 right-4'
-                >
-                    <Image
-                        source={fullscreenIcon}
-                        style={styles.fullscreenIcon}
-                        resizeMode="contain"
-                    />
-                </TouchableOpacity>
+                {fullscreen ? (
+                    <TouchableOpacity
+                        onPress={handleExitFullscreen}
+                        className='absolute top-44 right-4'
+                    >
+                        <Image
+                            source={exitFullscreenIcon}
+                            style={styles.exitFullscreenIcon}
+                            resizeMode="contain"
+                        />
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity
+                        onPress={handleEnterFullscreen}
+                        className='absolute top-44 right-4'
+                    >
+                        <Image
+                            source={fullscreenIcon}
+                            style={styles.fullscreenIcon}
+                            resizeMode="contain"
+                        />
+                    </TouchableOpacity>
+                )}
 
                 <View className={'mt-4'}>
                     <View className='px-6'>
@@ -271,6 +286,10 @@ const styles = StyleSheet.create({
         height: 30,
     },
     fullscreenIcon: {
+        width: 20,
+        height: 20,
+    },
+    exitFullscreenIcon: {
         width: 20,
         height: 20,
     },
