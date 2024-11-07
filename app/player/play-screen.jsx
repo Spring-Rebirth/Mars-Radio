@@ -2,15 +2,16 @@ import { View, Text, Dimensions, ActivityIndicator, StyleSheet, Image, Touchable
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import CommentInputBox from "../../components/comment/CommentInputBox";
 import CommentList from "../../components/comment/CommentList";
 import { config, databases } from "../../lib/appwrite";
 import { Query } from "react-native-appwrite";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ID } from 'react-native-appwrite';
 import { useGlobalContext } from '../../context/GlobalProvider';
 import replayIcon from '../../assets/icons/replay.png';
+import fullscreenIcon from '../../assets/icons/fullscreen.png';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 export default function PlayScreen() {
     const { user } = useGlobalContext();
@@ -26,6 +27,19 @@ export default function PlayScreen() {
     const [isEnded, setIsEnded] = useState(false);
     const [commentsDoc, setCommentsDoc] = useState([]);
     const [refreshFlag, setRefreshFlag] = useState(false);
+    const [fullscreen, setFullscreen] = useState(false);
+
+    const insets = useSafeAreaInsets();
+    const safeAreaInset = -insets.top / 2;
+    console.log('headerInset:', safeAreaInset);
+    const handleEnterFullscreen = async () => {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+        setFullscreen(true);
+    };
+
+    const handleExitFullscreen = async () => {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    };
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -152,48 +166,63 @@ export default function PlayScreen() {
     };
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.container}>
-                    {loading && (
-                        <>
-                            <ActivityIndicator size="large" color="#fff" style={styles.activityIndicator} />
-                            {!playing && (
-                                <Text style={styles.loadingText}>Loading</Text>
-                            )}
-                        </>
-                    )}
-                    {isEnded && (
-                        <TouchableOpacity onPress={replayVideo} style={styles.replayIconContainer}>
-                            <Image
-                                source={replayIcon}
-                                style={styles.replayIcon}
-                                resizeMode="contain"
-                            />
-                        </TouchableOpacity>
-                    )}
-                    <Video
-                        ref={videoRef}
-                        source={{ uri: parsedVideoUrl }}
-                        style={[styles.video, { height: screenHeight }]}
-                        resizeMode={ResizeMode.CONTAIN}
-                        useNativeControls
-                        shouldPlay
-                        onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+        <SafeAreaView style={styles.safeArea}>
+            <View style={[styles.container, { backgroundColor: fullscreen ? 'black' : '#161622' }]}>
+                {loading && (
+                    <>
+                        <ActivityIndicator size="large" color="#fff" style={styles.activityIndicator} />
+                        {!playing && (
+                            <Text style={styles.loadingText}>Loading</Text>
+                        )}
+                    </>
+                )}
+                {isEnded && (
+                    <TouchableOpacity onPress={replayVideo} style={styles.replayIconContainer}>
+                        <Image
+                            source={replayIcon}
+                            style={styles.replayIcon}
+                            resizeMode="contain"
+                        />
+                    </TouchableOpacity>
+                )}
+
+                <Video
+                    ref={videoRef}
+                    source={{ uri: parsedVideoUrl }}
+                    style={[
+                        styles.video,
+                        { height: fullscreen ? '100%' : screenHeight },
+                        { marginLeft: fullscreen ? safeAreaInset : 0 }
+                    ]}
+                    resizeMode={ResizeMode.CONTAIN}
+                    useNativeControls={false}
+                    shouldPlay
+                    onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+                />
+
+                <TouchableOpacity
+                    onPress={handleEnterFullscreen}
+                    className='absolute top-44 right-4'
+                >
+                    <Image
+                        source={fullscreenIcon}
+                        style={styles.fullscreenIcon}
+                        resizeMode="contain"
                     />
-                    <View className={'mt-4'}>
-                        <View className='px-6'>
-                            <CommentInputBox
-                                userId={userId}
-                                videoId={videoId}
-                                onCommentSubmitted={onCommentSubmitted}
-                            />
-                        </View>
-                        {memoizedCommentView}
+                </TouchableOpacity>
+
+                <View className={'mt-4'}>
+                    <View className='px-6'>
+                        <CommentInputBox
+                            userId={userId}
+                            videoId={videoId}
+                            onCommentSubmitted={onCommentSubmitted}
+                        />
                     </View>
+                    {memoizedCommentView}
                 </View>
-            </SafeAreaView>
-        </GestureHandlerRootView>
+            </View>
+        </SafeAreaView>
     )
 }
 
@@ -204,8 +233,7 @@ const styles = StyleSheet.create({
     },
     container: {
         width: '100%',
-        height: '100%',
-        backgroundColor: '#161622', // adjust for your bg-primary color
+        height: '100%'
     },
     activityIndicator: {
         position: 'absolute',
@@ -231,6 +259,10 @@ const styles = StyleSheet.create({
     replayIcon: {
         width: 30,
         height: 30,
+    },
+    fullscreenIcon: {
+        width: 20,
+        height: 20,
     },
     video: {
         width: '100%',
