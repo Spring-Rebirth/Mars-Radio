@@ -31,7 +31,7 @@ export default function PlayScreen() {
     const [fullscreen, setFullscreen] = useState(false);
 
     const insets = useSafeAreaInsets();
-    const safeAreaInset = -insets.top / 2;
+    const safeAreaInset = -14;
 
     const handleEnterFullscreen = async () => {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
