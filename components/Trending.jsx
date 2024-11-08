@@ -152,7 +152,7 @@ function TrendingItem({ activeItem, item }) {
                     width: '100%',
                     height: '45%',
                     backgroundColor: '#2C3E5C',
-                    paddingVertical: 5, // 内边距
+                    paddingVertical: 0, // 内边距
                 }}>
                     <ImageBackground
                         source={{ uri: item.thumbnail }}
