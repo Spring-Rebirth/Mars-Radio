@@ -26,7 +26,7 @@ export default function PlayScreen() {
 
     const videoRef = useRef(null);
     const screenHeight = Dimensions.get('window').width * 9 / 16;
-    const [playing, setPlaying] = useState(false);
+    const [playing, setPlaying] = useState(true);
     const [loading, setLoading] = useState(true);
     const [isEnded, setIsEnded] = useState(false);
     const [commentsDoc, setCommentsDoc] = useState([]);
@@ -54,8 +54,13 @@ export default function PlayScreen() {
 
     const handlePlaybackStatusUpdate = () => {
         if (playbackStatus.isLoaded) {
-            setLoading(false);
+            // 当视频已加载时，根据是否正在缓冲更新 loading 状态
+            setLoading(playbackStatus.isBuffering);
+        } else {
+            // 视频尚未加载，保持 loading 为 true
+            setLoading(true);
         }
+
         if (playbackStatus.didJustFinish) {
             console.log("视频结束");
             setPlaying(false);
@@ -237,19 +242,24 @@ export default function PlayScreen() {
     };
 
     const handleClickedVideo = () => {
-        showControlsWithTimer();
+        if (showControls) {
+            // 如果控件正在显示，点击时隐藏控件并清除定时器
+            setShowControls(false);
+            if (hideControlsTimer.current) {
+                clearTimeout(hideControlsTimer.current);
+                hideControlsTimer.current = null;
+            }
+        } else {
+            // 如果控件未显示，调用 showControlsWithTimer() 显示控件并启动定时器
+            showControlsWithTimer();
+        }
     }
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={[styles.container, { backgroundColor: fullscreen ? 'black' : '#161622' }]}>
                 {loading && (
-                    <>
-                        <ActivityIndicator size="large" color="#fff" style={styles.activityIndicator} />
-                        {!playing && (
-                            <Text style={styles.loadingText}>Loading</Text>
-                        )}
-                    </>
+                    <ActivityIndicator size="large" color="#fff" style={styles.activityIndicator} />
                 )}
 
                 {isEnded && (
@@ -287,7 +297,10 @@ export default function PlayScreen() {
                                 style={[styles.controlButton, {
                                     top: '50%', left: '50%', transform: [{ translateX: -34 }, { translateY: -20 }]
                                 }]} // 定位到视频上方
-                                onPress={() => { setPlaying(prev => !prev) }} // 添加点击事件来控制播放暂停
+                                onPress={() => {
+                                    setPlaying(prev => !prev);
+                                    showControlsWithTimer();
+                                }} // 添加点击事件来控制播放暂停
                             >
                                 <Image
                                     source={playing ? pauseIcon : playbackIcon}
@@ -338,7 +351,10 @@ export default function PlayScreen() {
                             {/* 播放/暂停按钮 */}
                             <TouchableOpacity
                                 style={[styles.controlButton, { top: '10%', left: '50%' }]} // 定位到视频上方
-                                onPress={() => { setPlaying(prev => !prev) }} // 添加点击事件来控制播放暂停
+                                onPress={() => {
+                                    setPlaying(prev => !prev);
+                                    showControlsWithTimer();
+                                }} // 添加点击事件来控制播放暂停
                             >
                                 <Image
                                     source={playing ? pauseIcon : playbackIcon}
@@ -411,6 +427,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     activityIndicator: {
+        zIndex: 10,
         position: 'absolute',
         top: '10%',
         left: '50%',
