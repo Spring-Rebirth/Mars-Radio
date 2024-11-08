@@ -9,10 +9,13 @@ import { config, databases } from "../../lib/appwrite";
 import { Query } from "react-native-appwrite";
 import { ID } from 'react-native-appwrite';
 import { useGlobalContext } from '../../context/GlobalProvider';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import replayIcon from '../../assets/icons/replay.png';
 import fullscreenIcon from '../../assets/icons/fullscreen.png';
 import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.png';
-import * as ScreenOrientation from 'expo-screen-orientation';
+import playbackIcon from '../../assets/icons/playback.png';
+import pauseIcon from '../../assets/icons/pause.png';
+import Slider from '@react-native-community/slider';
 
 export default function PlayScreen() {
     const { user } = useGlobalContext();
@@ -33,7 +36,7 @@ export default function PlayScreen() {
     const [safeAreaInsets, setSafeAreaInsets] = useState({ top: 0, bottom: 0, left: 0, right: 0 });
     const insets = useSafeAreaInsets();
     const safeAreaInset = -safeAreaInsets.top / 2;
-    console.log('safeAreaInset:', safeAreaInset);
+
     const handleEnterFullscreen = async () => {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
         setFullscreen(true);
@@ -43,6 +46,15 @@ export default function PlayScreen() {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
         setFullscreen(false);
     };
+
+    useEffect(() => {
+        // 根据 playing 状态播放或暂停视频
+        if (playing) {
+            videoRef.current.playAsync(); // 如果 playing 为 true，播放视频
+        } else {
+            videoRef.current.pauseAsync(); // 如果 playing 为 false，暂停视频
+        }
+    }, [playing]); // 依赖列表中包含 playing
 
     useEffect(() => {
         // 初始化时仅设置一次
@@ -235,27 +247,75 @@ export default function PlayScreen() {
                 />
 
                 {fullscreen ? (
-                    <TouchableOpacity
-                        onPress={handleExitFullscreen}
-                        className='absolute top-44 right-4'
-                    >
-                        <Image
-                            source={exitFullscreenIcon}
-                            style={styles.exitFullscreenIcon}
-                            resizeMode="contain"
-                        />
-                    </TouchableOpacity>
+                    <>
+                        {/* 播放/暂停按钮 */}
+                        <TouchableOpacity
+                            style={[styles.controlButton, {
+                                top: '50%', left: '50%', transform: [{ translateX: -34 }, { translateY: -20 }]
+                            }]} // 定位到视频上方
+                            onPress={() => { setPlaying(prev => !prev) }} // 添加点击事件来控制播放暂停
+                        >
+                            <Image
+                                source={playing ? pauseIcon : playbackIcon}
+                                style={{ width: '100%', height: '100%' }}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
+
+                        <View style={[styles.bottomBarFS]}>
+                            <Slider
+                                style={styles.slider}
+                                value={0}
+                                onValueChange={() => { }}  // value => 控制视频进度(value)
+                                minimumValue={0}
+                                maximumValue={1}
+                                minimumTrackTintColor="#FFFFFF"
+                                maximumTrackTintColor="#000000"
+                                trackStyle={styles.trackStyle}
+                            />
+                            <TouchableOpacity onPress={handleExitFullscreen}>
+                                <Image
+                                    source={exitFullscreenIcon}
+                                    style={{ width: 20, height: 20 }}
+                                    resizeMode="contain"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </>
                 ) : (
-                    <TouchableOpacity
-                        onPress={handleEnterFullscreen}
-                        className='absolute top-44 right-4'
-                    >
-                        <Image
-                            source={fullscreenIcon}
-                            style={styles.fullscreenIcon}
-                            resizeMode="contain"
-                        />
-                    </TouchableOpacity>
+                    <>
+                        {/* 播放/暂停按钮 */}
+                        <TouchableOpacity
+                            style={[styles.controlButton, { top: '10%', left: '50%' }]} // 定位到视频上方
+                            onPress={() => { setPlaying(prev => !prev) }} // 添加点击事件来控制播放暂停
+                        >
+                            <Image
+                                source={playing ? pauseIcon : playbackIcon}
+                                style={{ width: '100%', height: '100%' }}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
+
+                        <View style={[styles.bottomBar, { top: '20%', left: 0 }]}>
+                            <Slider
+                                style={styles.slider}
+                                value={0}
+                                onValueChange={() => { }}  // value => 控制视频进度(value)
+                                minimumValue={0}
+                                maximumValue={1}
+                                minimumTrackTintColor="#FFFFFF"
+                                maximumTrackTintColor="#000000"
+                                trackStyle={styles.trackStyle}
+                            />
+                            <TouchableOpacity onPress={handleEnterFullscreen}>
+                                <Image
+                                    source={fullscreenIcon}
+                                    style={{ width: 20, height: 20, marginRight: 10 }}
+                                    resizeMode="contain"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </>
                 )}
 
                 <View className={'mt-4'}>
@@ -280,7 +340,7 @@ const styles = StyleSheet.create({
     },
     container: {
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
     activityIndicator: {
         position: 'absolute',
@@ -317,6 +377,7 @@ const styles = StyleSheet.create({
     fullscreenIcon: {
         width: 20,
         height: 20,
+        marginLeft: 10, // 添加适当的间距
     },
     exitFullscreenIcon: {
         width: 20,
@@ -324,5 +385,49 @@ const styles = StyleSheet.create({
     },
     video: {
         width: '100%',
-    }
+    },
+    // 增加一半的偏移量
+    controlButton: {
+        position: 'absolute', // 让按钮浮动在视频上
+        zIndex: 10, // 确保按钮在视频之上
+        transform: [{ translateX: -20 }],
+        backgroundColor: 'white',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        overflow: 'hidden',
+        borderWidth: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    bottomBar: {
+        position: 'absolute',
+        zIndex: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: 10,
+        gap: 0,
+    },
+    bottomBarFS: {
+        position: 'absolute',
+        bottom: 15, // 距底部的距离
+        left: 0,
+        right: 0,
+        height: 40, // 固定高度
+        alignItems: 'center', // 垂直居中
+        justifyContent: 'center', // 水平居中
+        paddingHorizontal: 70, // 左右内边距
+        zIndex: 10, // 确保在视频上方
+        flexDirection: 'row', // 水平布局
+        gap: 15, // 间距
+    },
+    slider: {
+        flex: 1,  // 设置Slider的宽度
+        height: 40,  // 设置Slider的高度
+        marginVertical: 10, // 可选，调整Slider的上下间距
+    },
+    trackStyle: {
+        height: 4, // 设置进度条的高度
+        borderRadius: 2, // 圆角效果
+    },
 });
