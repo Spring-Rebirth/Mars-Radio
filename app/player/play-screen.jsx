@@ -24,14 +24,18 @@ export default function PlayScreen() {
     const { $id: videoId } = JSON.parse(post);
     const { $id: userId, avatar, username } = user;
 
+    const videoRef = useRef(null);
     const screenHeight = Dimensions.get('window').width * 9 / 16;
     const [playing, setPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
-    const videoRef = useRef(null);
     const [isEnded, setIsEnded] = useState(false);
     const [commentsDoc, setCommentsDoc] = useState([]);
     const [refreshFlag, setRefreshFlag] = useState(false);
     const [fullscreen, setFullscreen] = useState(false);
+    const [playbackStatus, setPlaybackStatus] = useState({});
+    const currentProgress = playbackStatus.positionMillis || 0; // 当前播放位置（毫秒）
+    const totalDuration = playbackStatus.durationMillis || 1;    // 视频总时长（毫秒）
+
 
     const [safeAreaInsets, setSafeAreaInsets] = useState({ top: 0, bottom: 0, left: 0, right: 0 });
     const insets = useSafeAreaInsets();
@@ -46,6 +50,25 @@ export default function PlayScreen() {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
         setFullscreen(false);
     };
+
+    const handlePlaybackStatusUpdate = () => {
+        if (playbackStatus.isLoaded) {
+            setLoading(false);
+        }
+        if (playbackStatus.didJustFinish) {
+            console.log("视频结束");
+            setPlaying(false);
+            setLoading(false);
+            setIsEnded(true);
+        }
+        // 您可以在这里添加更多对 playbackStatus 的处理
+    };
+
+    useEffect(() => {
+        if (playbackStatus) {
+            handlePlaybackStatusUpdate();
+        }
+    }, [playbackStatus]);
 
     useEffect(() => {
         // 根据 playing 状态播放或暂停视频
@@ -186,19 +209,6 @@ export default function PlayScreen() {
         );
     }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply]);
 
-    const handlePlaybackStatusUpdate = (status) => {
-        if (status.isLoaded) {
-            setLoading(false);
-        }
-        if (status.didJustFinish) {
-            console.log("视频结束");
-            setPlaying(false);
-            setLoading(false);
-            setIsEnded(true);
-        }
-
-    };
-
     const replayVideo = async () => {
         if (videoRef.current) {
             await videoRef.current.replayAsync(); // 重播视频
@@ -243,7 +253,7 @@ export default function PlayScreen() {
                     resizeMode={ResizeMode.CONTAIN}
                     useNativeControls={false}
                     shouldPlay
-                    onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+                    onPlaybackStatusUpdate={status => setPlaybackStatus(() => status)}
                 />
 
                 {fullscreen ? (
@@ -265,13 +275,18 @@ export default function PlayScreen() {
                         <View style={[styles.bottomBarFS]}>
                             <Slider
                                 style={styles.sliderFS}
-                                value={0}
+                                value={currentProgress}
                                 onValueChange={() => { }}  // value => 控制视频进度(value)
                                 minimumValue={0}
-                                maximumValue={1}
+                                maximumValue={totalDuration}
                                 minimumTrackTintColor="#87CEEB"
                                 maximumTrackTintColor="#FFFFFF"
                                 trackStyle={styles.trackStyle}
+                                onSlidingComplete={async value => {
+                                    if (videoRef.current != null && status.isLoaded) {
+                                        await videoRef.current.setPositionAsync(value);
+                                    }
+                                }}
                             />
                             <TouchableOpacity onPress={handleExitFullscreen}>
                                 <Image
@@ -299,13 +314,18 @@ export default function PlayScreen() {
                         <View style={[styles.bottomBar, { top: '20%', left: 0 }]}>
                             <Slider
                                 style={styles.slider}
-                                value={0}
+                                value={currentProgress}
                                 onValueChange={() => { }}  // value => 控制视频进度(value)
                                 minimumValue={0}
-                                maximumValue={1}
+                                maximumValue={totalDuration}
                                 minimumTrackTintColor="#87CEEB"
                                 maximumTrackTintColor="#FFFFFF"
                                 trackStyle={styles.trackStyle}
+                                onSlidingComplete={async value => {
+                                    if (videoRef.current != null && playbackStatus.isLoaded) {
+                                        await videoRef.current.setPositionAsync(value);
+                                    }
+                                }}
                             />
                             <TouchableOpacity onPress={handleEnterFullscreen}>
                                 <Image
