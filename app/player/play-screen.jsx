@@ -43,13 +43,21 @@ export default function PlayScreen() {
     const safeAreaInset = -safeAreaInsets.top / 2;
 
     const handleEnterFullscreen = async () => {
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-        setFullscreen(true);
+        try {
+            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+            setFullscreen(true);
+        } catch (error) {
+            console.error('Error in handleEnterFullscreen:', error);
+        }
     };
 
     const handleExitFullscreen = async () => {
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-        setFullscreen(false);
+        try {
+            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+            setFullscreen(false);
+        } catch (error) {
+            console.error('Error in handleExitFullscreen:', error);
+        }
     };
 
     const handlePlaybackStatusUpdate = () => {
@@ -77,13 +85,22 @@ export default function PlayScreen() {
     }, [playbackStatus]);
 
     useEffect(() => {
-        // 根据 playing 状态播放或暂停视频
-        if (playing) {
-            videoRef.current.playAsync(); // 如果 playing 为 true，播放视频
-        } else {
-            videoRef.current.pauseAsync(); // 如果 playing 为 false，暂停视频
-        }
-    }, [playing]); // 依赖列表中包含 playing
+        const playOrPauseVideo = async () => {
+            if (videoRef.current) {
+                try {
+                    if (playing) {
+                        await videoRef.current.playAsync();
+                    } else {
+                        await videoRef.current.pauseAsync();
+                    }
+                } catch (error) {
+                    console.error('Error in playOrPauseVideo:', error);
+                }
+            }
+        };
+
+        playOrPauseVideo();
+    }, [playing]);
 
     useEffect(() => {
         // 初始化时仅设置一次
@@ -96,11 +113,26 @@ export default function PlayScreen() {
     }, []);
 
     useEffect(() => {
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+        const lockOrientation = async () => {
+            try {
+                await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+            } catch (error) {
+                console.error('Error locking orientation:', error);
+            }
+        };
+
+        lockOrientation();
 
         return () => {
-            // 解除屏幕方向的锁定
-            ScreenOrientation.unlockAsync();
+            const unlockOrientation = async () => {
+                try {
+                    await ScreenOrientation.unlockAsync();
+                } catch (error) {
+                    console.error('Error unlocking orientation:', error);
+                }
+            };
+
+            unlockOrientation();
         };
     }, []);
 
@@ -114,6 +146,8 @@ export default function PlayScreen() {
     }, [fullscreen]);
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchComments = async () => {
             try {
                 const result = await databases.listDocuments(
@@ -125,15 +159,21 @@ export default function PlayScreen() {
                         Query.orderDesc('$createdAt')
                     ],
                 );
-                if (result.documents) {
+                if (isMounted && result.documents) {
                     setCommentsDoc(result.documents);
                 }
             } catch (error) {
-                console.error('Error fetching comments:', error);
+                if (isMounted) {
+                    console.error('Error fetching comments:', error);
+                }
             }
-        }
+        };
 
         fetchComments();
+
+        return () => {
+            isMounted = false;
+        };
     }, [refreshFlag]);
 
     const showControlsWithTimer = () => {
@@ -234,10 +274,14 @@ export default function PlayScreen() {
 
     const replayVideo = async () => {
         if (videoRef.current) {
-            await videoRef.current.replayAsync(); // 重播视频
-            setIsEnded(false); // 重置状态
-            setLoading(false); // 重置 loading 状态
-            setPlaying(true); // 设置播放状态
+            try {
+                await videoRef.current.replayAsync();
+                setIsEnded(false);
+                setLoading(false);
+                setPlaying(true);
+            } catch (error) {
+                console.error('Error in replayVideo:', error);
+            }
         }
     };
 
@@ -431,7 +475,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '10%',
         left: '50%',
-        transform: [{ translateX: -20 }, { translateY: -20 }],
+        transform: [{ translateX: -20 }],
     },
     loadingText: {
         color: '#fff',
