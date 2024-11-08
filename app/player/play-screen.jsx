@@ -282,8 +282,9 @@ export default function PlayScreen() {
                                 minimumTrackTintColor="#87CEEB"
                                 maximumTrackTintColor="#FFFFFF"
                                 trackStyle={styles.trackStyle}
+                                thumbTouchSize={{ width: 40, height: 50 }}
                                 onSlidingComplete={async value => {
-                                    if (videoRef.current != null && status.isLoaded) {
+                                    if (videoRef.current != null && playbackStatus.isLoaded) {
                                         await videoRef.current.setPositionAsync(value);
                                     }
                                 }}
@@ -321,6 +322,7 @@ export default function PlayScreen() {
                                 minimumTrackTintColor="#87CEEB"
                                 maximumTrackTintColor="#FFFFFF"
                                 trackStyle={styles.trackStyle}
+                                thumbTouchSize={{ width: 40, height: 50 }}
                                 onSlidingComplete={async value => {
                                     if (videoRef.current != null && playbackStatus.isLoaded) {
                                         await videoRef.current.setPositionAsync(value);
