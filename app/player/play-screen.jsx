@@ -85,24 +85,6 @@ export default function PlayScreen() {
     }, [playbackStatus]);
 
     useEffect(() => {
-        const playOrPauseVideo = async () => {
-            if (videoRef.current) {
-                try {
-                    if (playing) {
-                        await videoRef.current.playAsync();
-                    } else {
-                        await videoRef.current.pauseAsync();
-                    }
-                } catch (error) {
-                    console.error('Error in playOrPauseVideo:', error);
-                }
-            }
-        };
-
-        playOrPauseVideo();
-    }, [playing]);
-
-    useEffect(() => {
         // 初始化时仅设置一次
         setSafeAreaInsets({
             top: insets.top,
@@ -328,7 +310,7 @@ export default function PlayScreen() {
                         ]}
                         resizeMode={ResizeMode.CONTAIN}
                         useNativeControls={false}
-                        shouldPlay
+                        shouldPlay={playing}
                         onPlaybackStatusUpdate={status => setPlaybackStatus(() => status)}
                     />
                 </TouchableWithoutFeedback>
