@@ -409,6 +409,8 @@ const styles = StyleSheet.create({
         gap: 0,
     },
     bottomBarFS: {
+        backgroundColor: 'rgba(50, 50, 50, 0.7)',
+        width: '80%',
         position: 'absolute',
         bottom: 15, // 距底部的距离
         left: 0,
@@ -416,15 +418,17 @@ const styles = StyleSheet.create({
         height: 40, // 固定高度
         alignItems: 'center', // 垂直居中
         justifyContent: 'center', // 水平居中
-        paddingHorizontal: 70, // 左右内边距
+        paddingHorizontal: 15, // 左右内边距
         zIndex: 10, // 确保在视频上方
         flexDirection: 'row', // 水平布局
         gap: 15, // 间距
+        marginLeft: '10%'
     },
     slider: {
         flex: 1,  // 设置Slider的宽度
         height: 40,  // 设置Slider的高度
         marginVertical: 10, // 可选，调整Slider的上下间距
+        marginLeft: -15,
     },
     trackStyle: {
         height: 4, // 设置进度条的高度
