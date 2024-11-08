@@ -264,13 +264,13 @@ export default function PlayScreen() {
 
                         <View style={[styles.bottomBarFS]}>
                             <Slider
-                                style={styles.slider}
+                                style={styles.sliderFS}
                                 value={0}
                                 onValueChange={() => { }}  // value => 控制视频进度(value)
                                 minimumValue={0}
                                 maximumValue={1}
-                                minimumTrackTintColor="#FFFFFF"
-                                maximumTrackTintColor="#000000"
+                                minimumTrackTintColor="blue"
+                                maximumTrackTintColor="#87CEEB"
                                 trackStyle={styles.trackStyle}
                             />
                             <TouchableOpacity onPress={handleExitFullscreen}>
@@ -303,14 +303,14 @@ export default function PlayScreen() {
                                 onValueChange={() => { }}  // value => 控制视频进度(value)
                                 minimumValue={0}
                                 maximumValue={1}
-                                minimumTrackTintColor="#FFFFFF"
-                                maximumTrackTintColor="#000000"
+                                minimumTrackTintColor="#87CEEB"
+                                maximumTrackTintColor="#FFFFFF"
                                 trackStyle={styles.trackStyle}
                             />
                             <TouchableOpacity onPress={handleEnterFullscreen}>
                                 <Image
                                     source={fullscreenIcon}
-                                    style={{ width: 20, height: 20, marginRight: 10 }}
+                                    style={{ width: 15, height: 15, marginRight: 10 }}
                                     resizeMode="contain"
                                 />
                             </TouchableOpacity>
@@ -401,12 +401,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     bottomBar: {
+        backgroundColor: 'rgba(50, 50, 50, 0.7)',
+        width: '90%',
         position: 'absolute',
         zIndex: 20,
         flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 10,
-        gap: 0,
+        alignItems: 'center', // 垂直居中
+        justifyContent: 'center', // 水平居中
+        paddingHorizontal: 15, // 左右内边距
+        gap: 15,
+        marginLeft: '5%'
     },
     bottomBarFS: {
         backgroundColor: 'rgba(50, 50, 50, 0.7)',
@@ -424,11 +428,16 @@ const styles = StyleSheet.create({
         gap: 15, // 间距
         marginLeft: '10%'
     },
-    slider: {
+    sliderFS: {
         flex: 1,  // 设置Slider的宽度
         height: 40,  // 设置Slider的高度
         marginVertical: 10, // 可选，调整Slider的上下间距
         marginLeft: -15,
+    },
+    slider: {
+        flex: 1,  // 设置Slider的宽度
+        height: 10,  // 设置Slider的高度
+        marginVertical: 10, // 可选，调整Slider的上下间距
     },
     trackStyle: {
         height: 4, // 设置进度条的高度
