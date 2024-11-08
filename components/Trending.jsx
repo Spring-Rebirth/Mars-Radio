@@ -149,20 +149,16 @@ function TrendingItem({ activeItem, item }) {
 
                 {/* 图片容器，增加内边距和圆角 */}
                 <View style={{
-                    width: '90%',
-                    height: '40%',
+                    width: '100%',
+                    height: '45%',
                     backgroundColor: '#2C3E5C',
-                    borderRadius: 18,
-                    overflow: 'hidden',
-                    padding: 5, // 内边距
+                    paddingVertical: 5, // 内边距
                 }}>
                     <ImageBackground
                         source={{ uri: item.thumbnail }}
                         style={{
                             width: '100%',
                             height: '100%',
-                            borderRadius: 18,
-                            overflow: 'hidden',
                         }}
                         resizeMode="cover"
                         onLoad={() => setImageLoaded(true)}

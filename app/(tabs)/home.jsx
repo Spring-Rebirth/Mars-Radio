@@ -76,7 +76,7 @@ export default function Home() {
 								<View className='flex-row justify-between items-center mt-4 h-[60px]'>
 									<View >
 										<Text className='text-gray-100 text-lg'>{t('Welcome Back')}</Text>
-										<Text className='text-white text-2xl font-psemibold '>{user?.username}</Text>
+										<Text className='text-[#FF6B6B] text-2xl font-psemibold '>{user?.username}</Text>
 									</View>
 									<Image
 										source={images.logoSmall}
