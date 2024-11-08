@@ -269,8 +269,8 @@ export default function PlayScreen() {
                                 onValueChange={() => { }}  // value => 控制视频进度(value)
                                 minimumValue={0}
                                 maximumValue={1}
-                                minimumTrackTintColor="blue"
-                                maximumTrackTintColor="#87CEEB"
+                                minimumTrackTintColor="#87CEEB"
+                                maximumTrackTintColor="#FFFFFF"
                                 trackStyle={styles.trackStyle}
                             />
                             <TouchableOpacity onPress={handleExitFullscreen}>
