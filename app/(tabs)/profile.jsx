@@ -15,7 +15,7 @@ import { fetchFileUrl, updateAvatar, getCurrentUser } from '../../lib/appwrite'
 import { createFile } from '../../lib/appwrite';
 import settingIcon from '../../assets/icons/setting-red.png'
 import SettingModal from '../../components/modal/SettingModal'
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export default function profile() {
     const [userPostsData, setUserPostsData] = useState([]);
@@ -27,7 +27,7 @@ export default function profile() {
     const [currentPlayingPost, setCurrentPlayingPost] = useState(null);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [settingModalVisible, setSettingModalVisible] = useState(false);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         setLoading(true);
@@ -204,7 +204,7 @@ export default function profile() {
                         <View>
                             <EmptyState />
                             <CustomButton
-                                title={'Create Video'}
+                                title={t('Create Video')}
                                 textStyle={'text-black'}
                                 style={'h-16 my-5 mx-4'}
                                 onPress={() => router.push('/create')}
