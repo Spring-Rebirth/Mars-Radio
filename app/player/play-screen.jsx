@@ -285,7 +285,17 @@ export default function PlayScreen() {
         <SafeAreaView style={styles.safeArea}>
             <View style={[styles.container, { backgroundColor: fullscreen ? 'black' : '#161622' }]}>
                 {loading && (
-                    <ActivityIndicator size="large" color="#fff" style={styles.activityIndicator} />
+                    <ActivityIndicator
+                        size="large"
+                        color="#fff"
+                        style={[
+                            styles.activityIndicator,
+                            {
+                                top: fullscreen ? '50%' : '10%',
+                                transform: fullscreen ? [{ translateX: -34 }, { translateY: -20 }] : [{ translateX: -20 }]
+                            }
+                        ]}
+                    />
                 )}
 
                 {isEnded && (
@@ -361,7 +371,9 @@ export default function PlayScreen() {
                                         showControlsWithTimer();
                                     }}
                                 />
-                                <TouchableOpacity onPress={handleExitFullscreen}>
+                                <TouchableOpacity onPress={handleExitFullscreen}
+                                    className='justify-center items-center w-14 h-14'
+                                >
                                     <Image
                                         source={exitFullscreenIcon}
                                         style={{ width: 20, height: 20 }}
@@ -415,10 +427,12 @@ export default function PlayScreen() {
                                         showControlsWithTimer();
                                     }}
                                 />
-                                <TouchableOpacity onPress={handleEnterFullscreen}>
+                                <TouchableOpacity onPress={handleEnterFullscreen}
+                                    className='justify-center items-center w-10 h-10'
+                                >
                                     <Image
                                         source={fullscreenIcon}
-                                        style={{ width: 15, height: 15, marginRight: 10 }}
+                                        style={{ width: 15, height: 15 }}
                                         resizeMode="contain"
                                     />
                                 </TouchableOpacity>
@@ -455,9 +469,7 @@ const styles = StyleSheet.create({
     activityIndicator: {
         zIndex: 10,
         position: 'absolute',
-        top: '10%',
         left: '50%',
-        transform: [{ translateX: -20 }],
     },
     loadingText: {
         color: '#fff',
@@ -520,7 +532,7 @@ const styles = StyleSheet.create({
         alignItems: 'center', // 垂直居中
         justifyContent: 'center', // 水平居中
         paddingHorizontal: 15, // 左右内边距
-        gap: 15,
+        gap: 5,
         marginLeft: '5%'
     },
     bottomBarFS: {
@@ -536,7 +548,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15, // 左右内边距
         zIndex: 10, // 确保在视频上方
         flexDirection: 'row', // 水平布局
-        gap: 15, // 间距
+        gap: 5, // 间距
         marginLeft: '10%'
     },
     sliderFS: {
