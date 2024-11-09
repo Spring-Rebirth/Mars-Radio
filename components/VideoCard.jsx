@@ -19,6 +19,7 @@ export default function VideoCard({
     post,
     handleRefresh,
     isFullscreen,
+    adminList
 }) {
     const { t } = useTranslation();
     const { $id, $createdAt, title, thumbnail, creator: { accountId, username, avatar } } = post;
@@ -35,14 +36,7 @@ export default function VideoCard({
 
     const route = useRoute();
     const currentPath = route.name;
-    const adminList = ['cjunwei6249@gmail.com', '1392600130@qq.com', 'zhangwww1998@outlook.com'];
-    let admin = adminList.includes(user?.email);
-
-    for (let index = 0; index < adminList.length; index++) {
-        if (user?.email === adminList[index]) {
-            admin = true;
-        }
-    }
+    let admin = adminList?.includes(user?.email);
 
     const handleAddSaved = async () => {
         try {

@@ -14,6 +14,7 @@ import { updateSavedVideo } from '../../lib/appwrite'
 import downIcon from '../../assets/icons/down.png'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
+import { fetchAdminData } from '../../lib/appwrite'
 
 export default function Home() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -23,6 +24,23 @@ export default function Home() {
 	const { user } = useGlobalContext();
 	const { fetchPosts, fetchPopularPosts } = useGetData({ setLoading, setData, setPopularData });
 	const { t } = useTranslation();
+	const [adminList, setAdminList] = useState([]);
+
+	useEffect(() => {
+		const addAdminData = async () => {
+			await fetchAdminData()
+				.then(data => {
+					const adminArray = data.map(doc => doc.account);
+					console.log('adminArray:', adminArray);
+					setAdminList(adminArray);
+				})
+				.catch(error => {
+					console.error("Error fetching admin data:", error);
+				});
+		}
+
+		addAdminData();
+	}, []);
 
 	const toggleFullscreen = (fullscreen) => {
 		setIsFullscreen(fullscreen);
@@ -128,7 +146,7 @@ export default function Home() {
 					renderItem={({ item }) => {
 						return (
 							<VideoCard post={item} handleRefresh={handleRefresh} isFullscreen={isFullscreen}
-								toggleFullscreen={toggleFullscreen}
+								toggleFullscreen={toggleFullscreen} adminList={adminList}
 							/>
 						)
 					}}
