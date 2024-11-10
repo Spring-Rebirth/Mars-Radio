@@ -106,7 +106,7 @@ export default function Home() {
 								<SearchInput containerStyle={'mt-6'} />
 
 								<View className='mt-8'>
-									<Text className=' mb-8 font-psemibold text-lg text-sky-300 text-center'>{t('Top  Hits')}</Text>
+									<Text className=' mb-8 font-psemibold text-lg text-[#FFB300] text-center'>{t('Top  Hits')}</Text>
 									{/* 头部视频 */}
 									{popularData.length === 0 ? (
 										<View className='items-center'>
@@ -130,7 +130,7 @@ export default function Home() {
 										resizeMode='contain'
 										className='w-6 h-6'
 									/>
-									<Text className='text-sky-300  font-psemibold text-lg text-center mx-12'>
+									<Text className='text-[#FFB300]  font-psemibold text-lg text-center mx-12'>
 										{t("Latest")}
 									</Text>
 									<Image
