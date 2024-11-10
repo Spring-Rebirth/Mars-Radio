@@ -49,7 +49,7 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
                     // 二级视图
                     <View className='items-center'>
                         <TouchableOpacity onPress={goToPreviousLevel}
-                            className="absolute -top-2 -left-[68]"
+                            className="absolute -top-4 -left-[80] w-8 h-8 justify-center items-center"
                         >
                             <Image source={backIcon} resizeMode={'contain'}
                                 className={'w-5 h-5'}
