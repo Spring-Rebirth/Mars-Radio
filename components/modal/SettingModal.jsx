@@ -37,7 +37,7 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
             <View style={styles.modalContent}>
                 {viewLevel === 1 ? (
                     // 一级视图
-                    <View>
+                    <View className='items-center'>
                         <Text style={styles.title}>{t("Setting")}</Text>
                         <TouchableOpacity onPress={goToNextLevel}>
                             <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
@@ -47,7 +47,7 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
                     </View>
                 ) : (
                     // 二级视图
-                    <View>
+                    <View className='items-center'>
                         <TouchableOpacity onPress={goToPreviousLevel}
                             className="absolute -top-2 -left-[68]"
                         >
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         position: 'relative',
-        backgroundColor: 'black',
+        backgroundColor: 'white',
         padding: 20,
         borderRadius: 10,
         justifyContent: 'center',
