@@ -43,7 +43,7 @@ export default function Welcome() {
                             resizeMode='contain'
                             className='w-9 h-10'
                         />
-                        <Text className='text-black text-4xl font-semibold'>Aura</Text>
+                        <Text className='text-black text-4xl font-semibold'>MarsX</Text>
                     </View>
                     <View className='w-80 h-48 rounded-2xl overflow-hidden my-8'>
                         <Image
@@ -56,17 +56,17 @@ export default function Welcome() {
                         <Text className='text-black text-3xl font-bold text-center'>
                             Discover Endless{'\n'}
                             Possibilities with{' '}
-                            <Text className='text-secondary-200'>Aura</Text>
+                            <Text className='text-secondary-200'>MarsX</Text>
                         </Text>
                         <Image
                             source={images.path}
-                            className='w-[136] h-[15] absolute -bottom-2 -right-8'
+                            className='w-[136] h-[15] absolute -bottom-2.5 right-[58]'
                             resizeMode='contain'
                         />
                     </View>
                     <Text className='text-[#808080] text-center mt-6 font-pregular text-sm'>
                         Where Creativity Meets Innovation: Embark on a Journey of Limitless
-                        Exploration with Aura
+                        Exploration with MarsX
                     </Text>
 
                     {isLoading ? (
