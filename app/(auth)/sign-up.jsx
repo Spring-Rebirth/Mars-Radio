@@ -119,7 +119,15 @@ export default function SignUp() {
                                 onPress={submit}
                                 isLoading={isSubmitting}
                             />
-
+                            <View className='items-center mt-6'>
+                                <Text className='text-[#808080]'>
+                                    Already have an account ?&nbsp;&nbsp;
+                                    <Link
+                                        href='/sign-in'
+                                        className='text-secondary'>Sign in
+                                    </Link>
+                                </Text>
+                            </View>
                         </View>
                     </View>
                 </ScrollView>

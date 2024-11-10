@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Aura",
+    "name": "MarsX",
     "slug": "aura",
     "scheme": "aura",
-    "version": "15.0.0",
+    "version": "16.0.0",
     "orientation": "default",
     "icon": "./assets/app_icon3.png",
     "userInterfaceStyle": "light",

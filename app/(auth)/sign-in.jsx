@@ -97,7 +97,7 @@ export default function SignIn() {
                             />
                             <View className='items-center mt-6'>
                                 <Text className='text-[#808080]'>
-                                    Don't have an account?&nbsp;&nbsp;
+                                    Don't have an account ?&nbsp;&nbsp;
                                     <Link
                                         href='/sign-up'
                                         className='text-secondary'>Sign up

@@ -31,9 +31,7 @@ export default function Welcome() {
     }
 
     return (
-
         <SafeAreaView className="bg-primary h-full">
-
             <StatusBar style='auto' backgroundColor='#F5F5F5' />
             <ScrollView contentContainerStyle={{ height: '100%' }}>
                 <View className='justify-center items-center min-h-[85vh] px-4'>
@@ -82,7 +80,6 @@ export default function Welcome() {
                             textStyle={'text-lg text-[#F5F5F5]'}
                         />
                     )}
-
                 </View>
             </ScrollView>
         </SafeAreaView>
