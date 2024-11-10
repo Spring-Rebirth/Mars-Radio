@@ -260,9 +260,10 @@ const styles = StyleSheet.create({
         margin: 0,
     },
     modalContent: {
-        backgroundColor: '#212121',
+        backgroundColor: '#f5f5f5',
         padding: 16,
-        borderRadius: 10,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
     },
     input: {
         height: 40,
@@ -270,7 +271,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 10,
-        color: 'black',
+        color: '#333333',
     },
 });
 
