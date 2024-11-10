@@ -123,7 +123,7 @@ export default function SignUp() {
                         </View>
                     </View>
                 </ScrollView>
-                <StatusBar style='light' />
+                <StatusBar style='auto' />
             </SafeAreaView>
         </>
     );

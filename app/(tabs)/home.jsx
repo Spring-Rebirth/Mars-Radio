@@ -83,7 +83,7 @@ export default function Home() {
 	return (
 		<SafeAreaView className="bg-primary h-full">
 			<View className={`flex-1 bg-primary ${isFullscreen ? 'w-full h-full' : 'h-full'}`}>
-				<StatusBar style='light' />
+				<StatusBar style='auto' />
 				<FlatList
 					data={loading ? [] : data}
 					keyExtractor={(item) => item.$id}

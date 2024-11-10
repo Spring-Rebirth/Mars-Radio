@@ -87,7 +87,7 @@ export default function Search() {
                 }
             />
 
-            <StatusBar style='light' />
+            <StatusBar style='auto' />
 
         </SafeAreaView>
     )

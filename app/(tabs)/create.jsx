@@ -303,7 +303,7 @@ export default function Create() {
                 textStyle={'text-white'}
                 isLoading={uploading}
             />
-            <StatusBar style='light' />
+            <StatusBar style='auto' />
         </SafeAreaView>
     )
 }

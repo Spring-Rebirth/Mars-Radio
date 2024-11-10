@@ -218,7 +218,7 @@ export default function profile() {
                 }
 
             />
-            <StatusBar style='light' />
+            <StatusBar style='auto' />
         </SafeAreaView>
     )
 }

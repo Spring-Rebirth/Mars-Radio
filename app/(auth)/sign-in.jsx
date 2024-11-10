@@ -107,7 +107,7 @@ export default function SignIn() {
                         </View>
                     </View>
                 </ScrollView>
-                <StatusBar style='light' />
+                <StatusBar style='auto' />
             </SafeAreaView>
         </>
     )

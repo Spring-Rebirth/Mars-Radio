@@ -34,7 +34,7 @@ export default function Welcome() {
 
         <SafeAreaView className="bg-primary h-full">
 
-            <StatusBar style="light" backgroundColor='#F5F5F5' />
+            <StatusBar style='auto' backgroundColor='#F5F5F5' />
             <ScrollView contentContainerStyle={{ height: '100%' }}>
                 <View className='justify-center items-center min-h-[85vh] px-4'>
                     <View className='flex-row items-center space-x-2 mb-1'>
