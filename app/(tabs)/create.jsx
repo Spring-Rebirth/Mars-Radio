@@ -204,7 +204,7 @@ export default function Create() {
                 {/* TODO：视频存在则显示视频 */}
                 {!isVideoSelected ? (
                     <TouchableOpacity onPress={handlePickVideo}>
-                        <View className='w-full h-44 bg-[#1e1e2d] rounded-2xl mt-2 justify-center items-center'>
+                        <View className='w-full h-44 bg-[#D9D9D9] rounded-2xl mt-2 justify-center items-center'>
                             <View className='w-14 h-14 border border-dashed border-secondary-100
                                                 justify-center items-center'>
                                 <Image
