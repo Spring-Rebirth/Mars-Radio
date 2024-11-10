@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     commentText: {
-        color: '#fff',
+        color: '#000',
         marginTop: 10,
         marginBottom: 5,
         marginLeft: 40,

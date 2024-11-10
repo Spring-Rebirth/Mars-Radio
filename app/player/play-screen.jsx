@@ -514,7 +514,7 @@ const styles = StyleSheet.create({
         position: 'absolute', // 让按钮浮动在视频上
         zIndex: 10, // 确保按钮在视频之上
         transform: [{ translateX: -20 }],
-        backgroundColor: 'black',
+        backgroundColor: 'white',
         width: 40,
         height: 40,
         borderRadius: 20,
