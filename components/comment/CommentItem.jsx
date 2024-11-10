@@ -162,9 +162,11 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
             {repliesCount > 0 && (
                 <TouchableOpacity
                     onPress={toggleReplies}
-                    className='mt-[10] ml-[40] h-10 w-20 justify-center'
+                    className='mt-[10] ml-[40] h-10 w-28 justify-center'
                 >
-                    <Text className='text-blue-500'>{repliesCount} {t('replies')}</Text>
+                    <Text className='text-blue-500'>
+                        {showReplies ? t('Collapse Reply') : `${repliesCount}  ${t('replies')}`}
+                    </Text>
                 </TouchableOpacity>
             )}
 
