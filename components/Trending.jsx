@@ -138,7 +138,7 @@ function TrendingItem({ activeItem, item }) {
             >
                 {/* 渐变背景 */}
                 <LinearGradient
-                    colors={['#6A0DAD', '#2E86DE']}
+                    colors={['#FFA500', '#FF69B4']}
                     style={{
                         position: 'absolute',
                         width: '100%',
