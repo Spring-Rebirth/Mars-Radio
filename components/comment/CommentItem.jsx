@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'start',
     },
     avatar: {
         width: 25,
@@ -228,14 +228,15 @@ const styles = StyleSheet.create({
         marginLeft: 0
     },
     username: {
-        fontWeight: 'bold',
+        fontSize: 13,
+        fontWeight: '300',
         marginLeft: 15,
-        color: '#A9A9A9',
-        marginBottom: 5
+        color: '#4F4F4F',
+        marginBottom: 0
     },
     commentText: {
-        color: '#000',
-        marginTop: 10,
+        color: '#333333',
+        marginTop: 0,
         marginBottom: 5,
         marginLeft: 40,
         marginRight: 40,
