@@ -6,7 +6,7 @@ export default function CustomForm({ title, handleChangeText, value, placeholder
     const [showPassword, setShowPassword] = React.useState(false)
     return (
         <View className={`mt-4 space-y-2`}>
-            <Text className={`text-gray-100 text-lg`}>{title}</Text>
+            <Text className={`text-[#808080] text-lg`}>{title}</Text>
 
             <View className='w-full h-16 bg-[#1e1e2d] border-2 border-black-200 rounded-2xl
                             focus:border-secondary relative'
@@ -14,7 +14,7 @@ export default function CustomForm({ title, handleChangeText, value, placeholder
             >
 
                 <TextInput
-                    className='w-full h-full px-4 text-white'
+                    className='w-full h-full px-4 text-black'
                     placeholder={` ${placeholder}`}
                     placeholderTextColor='#7f7f7f'
                     style={{ outline: 'none' }}

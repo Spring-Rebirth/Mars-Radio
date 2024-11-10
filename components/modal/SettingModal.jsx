@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Modal from 'react-native-modal';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -81,7 +81,7 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
                     onPress={() => setModalVisible(false)}
                 >
                     <Image source={closeIcon} resizeMode={'contain'}
-                           className={'w-5 h-5'}
+                        className={'w-5 h-5'}
                     />
                 </TouchableOpacity>
             </View>
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         position: 'relative',
-        backgroundColor: 'white',
+        backgroundColor: 'black',
         padding: 20,
         borderRadius: 10,
         justifyContent: 'center',

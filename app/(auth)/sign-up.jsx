@@ -86,10 +86,10 @@ export default function SignUp() {
                                     resizeMode='contain'
                                     className='w-9 h-10'
                                 />
-                                <Text className='text-white text-4xl font-semibold'>Aura</Text>
+                                <Text className='text-black text-4xl font-semibold'>Aura</Text>
                             </View>
 
-                            <Text className='text-white text-2xl font-psemibold mt-6'>Sign up</Text>
+                            <Text className='text-black text-2xl font-psemibold mt-6'>Sign up</Text>
 
                             <CustomForm title='User Name'
                                 handleChangeText={(text) => setForm({ ...form, username: text })}
@@ -115,7 +115,7 @@ export default function SignUp() {
                             <CustomButton
                                 title='Sign Up'
                                 style='h-16 mt-6 py-3'
-                                textStyle={'text-lg text-[#161622]'}
+                                textStyle={'text-lg text-[#F5F5F5]'}
                                 onPress={submit}
                                 isLoading={isSubmitting}
                             />

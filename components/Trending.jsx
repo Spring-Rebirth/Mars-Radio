@@ -216,7 +216,7 @@ export default function Trending({ video, loading }) {
     return loading ? (
         <View className="flex-1 justify-center items-center bg-primary mt-12">
             <ActivityIndicator size="large" color="#ffffff" />
-            <Text className='mt-[10] text-white text-xl'>{t('Loading, please wait...')}</Text>
+            <Text className='mt-[10] text-black text-xl'>{t('Loading, please wait...')}</Text>
         </View>
     ) : (
         <FlatList

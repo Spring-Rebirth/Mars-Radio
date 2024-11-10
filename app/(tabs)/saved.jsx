@@ -8,7 +8,7 @@ import VideoCard from '../../components/VideoCard'
 import useGetData from '../../hooks/useGetData'
 import { StatusBar } from 'expo-status-bar'
 import { useGlobalContext } from '../../context/GlobalProvider'
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export default function Saved() {
     const [refreshing, setRefreshing] = useState(false);
@@ -16,7 +16,7 @@ export default function Saved() {
     const [savedPostsData, setSavedPostsData] = useState([]);
     const { fetchSavedPosts } = useGetData({ setLoading, setSavedPostsData });
     const { user } = useGlobalContext();
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const handleRefresh = async () => {
         setRefreshing(true);
@@ -42,7 +42,7 @@ export default function Saved() {
 
                             <View className='flex-row justify-between items-center mt-4 h-[60px]'>
                                 <View >
-                                    <Text className='text-white text-2xl font-psemibold'>{t("Saved Videos")}</Text>
+                                    <Text className='text-black text-2xl font-psemibold'>{t("Saved Videos")}</Text>
                                 </View>
                                 <Image
                                     source={images.logoSmall}
@@ -66,7 +66,7 @@ export default function Saved() {
                     return loading ? (
                         <View className="flex-1 justify-center items-center bg-primary">
                             <ActivityIndicator size="large" color="#ffffff" />
-                            <Text className='mt-[10] text-white text-xl'>{t("Loading, please wait...")}</Text>
+                            <Text className='mt-[10] text-black text-xl'>{t("Loading, please wait...")}</Text>
                         </View>
                     ) : (
                         <View className='items-center'>
@@ -75,7 +75,7 @@ export default function Saved() {
                                 className='w-[270px] h-[215px]'
                                 resizeMode='contain'
                             />
-                            <Text className='mt-2 text-white font-psemibold text-xl'>{t("No Videos Saved")}</Text>
+                            <Text className='mt-2 text-black font-psemibold text-xl'>{t("No Videos Saved")}</Text>
                         </View>
                     );
                 }}

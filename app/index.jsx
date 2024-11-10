@@ -34,7 +34,7 @@ export default function Welcome() {
 
         <SafeAreaView className="bg-primary h-full">
 
-            <StatusBar style="light" backgroundColor='#161622' />
+            <StatusBar style="light" backgroundColor='#F5F5F5' />
             <ScrollView contentContainerStyle={{ height: '100%' }}>
                 <View className='justify-center items-center min-h-[85vh] px-4'>
                     <View className='flex-row items-center space-x-2 mb-1'>
@@ -43,7 +43,7 @@ export default function Welcome() {
                             resizeMode='contain'
                             className='w-9 h-10'
                         />
-                        <Text className='text-white text-4xl font-semibold'>Aura</Text>
+                        <Text className='text-black text-4xl font-semibold'>Aura</Text>
                     </View>
                     <View className='w-80 h-48 rounded-2xl overflow-hidden my-8'>
                         <Image
@@ -53,7 +53,7 @@ export default function Welcome() {
                         />
                     </View>
                     <View className='relative mt-1'>
-                        <Text className='text-white text-3xl font-bold text-center'>
+                        <Text className='text-black text-3xl font-bold text-center'>
                             Discover Endless{'\n'}
                             Possibilities with{' '}
                             <Text className='text-secondary-200'>Aura</Text>
@@ -64,7 +64,7 @@ export default function Welcome() {
                             resizeMode='contain'
                         />
                     </View>
-                    <Text className='text-gray-100 text-center mt-6 font-pregular text-sm'>
+                    <Text className='text-[#808080] text-center mt-6 font-pregular text-sm'>
                         Where Creativity Meets Innovation: Embark on a Journey of Limitless
                         Exploration with Aura
                     </Text>
@@ -72,14 +72,14 @@ export default function Welcome() {
                     {isLoading ? (
                         <View className="w-full h-20 justify-center items-center bg-primary mt-6">
                             <ActivityIndicator size="large" color="#ffffff" />
-                            <Text className='mt-[10] text-white text-xl'>Identifying login status</Text>
+                            <Text className='mt-[10] text-black text-xl'>Identifying login status</Text>
                         </View>
                     ) : (
                         <CustomButton
                             onPress={() => { router.push('/sign-in') }}
                             style={'w-full mt-6 py-3'}
                             title={'Login to continue'}
-                            textStyle={'text-lg text-[#161622]'}
+                            textStyle={'text-lg text-[#F5F5F5]'}
                         />
                     )}
 

@@ -16,8 +16,8 @@ export default function EmptyState() {
                 className='w-[270px] h-[215px]'
                 resizeMode='contain'
             />
-            <Text className='mt-2 text-white font-psemibold text-xl'>{t("No Videos Found")}</Text>
-            <Text className='text-gray-100'>{t("Be the first one to upload a video")}</Text>
+            <Text className='mt-2 text-black font-psemibold text-xl'>{t("No Videos Found")}</Text>
+            <Text className='text-[#808080]'>{t("Be the first one to upload a video")}</Text>
         </View>
     )
 }

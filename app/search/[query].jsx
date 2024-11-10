@@ -42,8 +42,8 @@ export default function Search() {
 
                             <View className='flex-row justify-between items-center'>
                                 <View >
-                                    <Text className='text-gray-100 text-lg'>Search Result</Text>
-                                    <Text className='text-white text-2xl font-psemibold '>{query}</Text>
+                                    <Text className='text-[#808080] text-lg'>Search Result</Text>
+                                    <Text className='text-black text-2xl font-psemibold '>{query}</Text>
                                 </View>
                                 <Image
                                     source={images.logoSmall}
@@ -67,7 +67,7 @@ export default function Search() {
                     return loading ? (
                         <View className="flex-1 justify-center items-center bg-primary">
                             <ActivityIndicator size="large" color="#ffffff" />
-                            <Text className='mt-[10] text-white text-xl'>Loading, please wait...</Text>
+                            <Text className='mt-[10] text-black text-xl'>Loading, please wait...</Text>
                         </View>
                     ) : (
                         <View>

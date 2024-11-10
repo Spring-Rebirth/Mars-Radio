@@ -185,7 +185,7 @@ export default function VideoCard({
                                     source={isSaved ? star : starThree}
                                     className='w-5 h-5 mr-3'
                                 />
-                                <Text className='text-white text-lg'>
+                                <Text className='text-black text-lg'>
                                     {currentPath === 'saved' ? 'Remove' : (isSaved ? 'Saved' : 'Save')}
                                 </Text>
                             </Pressable>
@@ -199,7 +199,7 @@ export default function VideoCard({
                                         source={trash}
                                         className='w-5 h-5 mr-3'
                                     />
-                                    <Text className='text-white text-lg'>Delete</Text>
+                                    <Text className='text-black text-lg'>Delete</Text>
                                 </Pressable>
                             ) : null}
                         </View>
@@ -216,10 +216,10 @@ export default function VideoCard({
                             onPress={handlePlay}
                             className='gap-y-1 justify-center flex-1 ml-5'
                         >
-                            <Text className='text-white font-psemibold text-sm' numberOfLines={2}>
+                            <Text className='text-black font-psemibold text-sm' numberOfLines={2}>
                                 {title}
                             </Text>
-                            <Text className='text-gray-100 font-pregular text-xs' numberOfLines={1}>
+                            <Text className='text-[#808080] font-pregular text-xs' numberOfLines={1}>
                                 {username}  ·  {formatNumberWithUnits(playCount, t)} {t("views")}  ·  {getRelativeTime($createdAt, t)}
                             </Text>
                         </TouchableOpacity>

@@ -171,17 +171,17 @@ export default function profile() {
 
                                     </View>
                                 </TouchableOpacity>
-                                <Text className='text-white text-xl font-psemibold mt-2.5 '>{user?.username}</Text>
+                                <Text className='text-black text-xl font-psemibold mt-2.5 '>{user?.username}</Text>
                             </View>
                             {/* 待实现的数据视图 */}
                             {/* <View className='flex-row space-x-14 mt-4 justify-center'>
                                 <View className='items-center'>
-                                    <Text className='text-white font-psemibold text-xl'>?</Text>
-                                    <Text className='text-gray-100 text-sm'>Posts</Text>
+                                    <Text className='text-black font-psemibold text-xl'>?</Text>
+                                    <Text className='text-[#808080] text-sm'>Posts</Text>
                                 </View>
                                 <View className='items-center'>
-                                    <Text className='text-white font-psemibold text-xl'>?</Text>
-                                    <Text className='text-gray-100 text-sm'>Views</Text>
+                                    <Text className='text-black font-psemibold text-xl'>?</Text>
+                                    <Text className='text-[#808080] text-sm'>Views</Text>
                                 </View>
 
                             </View> */}
@@ -198,7 +198,7 @@ export default function profile() {
                     return loading ? (
                         <View className="flex-1 justify-center items-center bg-primary">
                             <ActivityIndicator size="large" color="#ffffff" />
-                            <Text className='mt-[10] text-white text-xl'>{t("Loading, please wait...")}</Text>
+                            <Text className='mt-[10] text-black text-xl'>{t("Loading, please wait...")}</Text>
                         </View>
                     ) : (
                         <View>

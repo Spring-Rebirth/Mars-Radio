@@ -17,7 +17,7 @@ import * as VideoThumbnails from 'expo-video-thumbnails';
 import * as FileSystem from 'expo-file-system';
 import * as Progress from 'react-native-progress';
 import mime from 'mime';
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export default function Create() {
     const { user } = useGlobalContext();
@@ -29,7 +29,7 @@ export default function Create() {
     const isImageSelected = imageFile?.uri != null;
     const isVideoSelected = videoFile?.uri != null;
     const [progress, setProgress] = useState({ type: '', percent: 0 });
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     // 处理图片选择
     const handlePickImage = async () => {
@@ -184,7 +184,7 @@ export default function Create() {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 {/* Upload Video */}
                 <View className='flex-row justify-between items-center mt-10 h-[60px]'>
-                    <Text className='text-white text-2xl font-psemibold'>{t("Upload Video")}</Text>
+                    <Text className='text-black text-2xl font-psemibold'>{t("Upload Video")}</Text>
                     <Image
                         source={images.logoSmall}
                         className='w-9 h-10'
@@ -200,7 +200,7 @@ export default function Create() {
                 />
 
                 {/* Upload Video */}
-                <Text className='text-gray-100 mt-5 text-lg'>{t('Video')}</Text>
+                <Text className='text-[#808080] mt-5 text-lg'>{t('Video')}</Text>
                 {/* TODO：视频存在则显示视频 */}
                 {!isVideoSelected ? (
                     <TouchableOpacity onPress={handlePickVideo}>
@@ -235,19 +235,19 @@ export default function Create() {
                 )}
 
                 {/* Thumbnail Image */}
-                <Text className='text-gray-100 mt-5 text-lg'>{t("Thumbnail")}</Text>
+                <Text className='text-[#808080] mt-5 text-lg'>{t("Thumbnail")}</Text>
                 {/* TODO：图片存在则显示图片 */}
                 {!isImageSelected ? (
                     <View className='flex-row w-full justify-around mt-6 mb-8'>
                         <TouchableOpacity onPress={handlePickImage}>
                             <View className='w-36 h-16 bg-[#5454eb] rounded-3xl  flex-row justify-center items-center px-4'>
-                                <Text className='text-white'>{t("Choose File")}</Text>
+                                <Text className='text-black'>{t("Choose File")}</Text>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={generateThumbnailFromVideo}>
                             <View className='w-36 h-16 bg-[#517ae1] rounded-3xl  flex-row justify-center items-center px-4'>
-                                <Text className='text-white'>{t("Auto Generate")}</Text>
+                                <Text className='text-black'>{t("Auto Generate")}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -277,7 +277,7 @@ export default function Create() {
                         {progress.type !== 'Video' ? (
                             <>
                                 <ActivityIndicator size="small" color="#ffffff" />
-                                <Text className='text-white text-xl text-center mt-2'>
+                                <Text className='text-black text-xl text-center mt-2'>
                                     {t("Image Uploading")}
                                 </Text>
                             </>
@@ -287,7 +287,7 @@ export default function Create() {
                                     color="#02C2CC" unfilledColor='#fff'
                                     progress={progress.percent / 100} width={230} borderWidth={1}
                                 />
-                                <Text className=' text-white text-xl text-center mt-2'>
+                                <Text className=' text-black text-xl text-center mt-2'>
                                     {progress.percent} %
                                 </Text>
                             </>

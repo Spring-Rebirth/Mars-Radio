@@ -283,7 +283,7 @@ export default function PlayScreen() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={[styles.container, { backgroundColor: fullscreen ? 'black' : '#161622' }]}>
+            <View style={[styles.container, { backgroundColor: fullscreen ? 'black' : '#F5F5F5' }]}>
                 {loading && (
                     <ActivityIndicator
                         size="large"
@@ -460,7 +460,7 @@ export default function PlayScreen() {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#161622', // adjust for your bg-primary color
+        backgroundColor: '#F5F5F5', // adjust for your bg-primary color
     },
     container: {
         width: '100%',
@@ -514,7 +514,7 @@ const styles = StyleSheet.create({
         position: 'absolute', // 让按钮浮动在视频上
         zIndex: 10, // 确保按钮在视频之上
         transform: [{ translateX: -20 }],
-        backgroundColor: 'white',
+        backgroundColor: 'black',
         width: 40,
         height: 40,
         borderRadius: 20,

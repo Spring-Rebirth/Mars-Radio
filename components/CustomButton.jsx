@@ -11,7 +11,7 @@ export default function CustomButton({ onPress, title, style, textStyle, isLoadi
             className={`bg-secondary justify-center items-center rounded-xl 
                         ${isLoading ? 'opacity-50' : ''} ${style}`}
         >
-            <Text className={`text-white text-center text-lg font-psemibold ${textStyle}`}>
+            <Text className={`text-black text-center text-lg font-psemibold ${textStyle}`}>
                 {title}
             </Text>
         </TouchableOpacity>

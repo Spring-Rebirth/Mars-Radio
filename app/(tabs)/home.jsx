@@ -93,7 +93,7 @@ export default function Home() {
 
 								<View className='flex-row justify-between items-center mt-4 h-[60px]'>
 									<View >
-										<Text className='text-gray-100 text-lg'>{t('Welcome Back')}</Text>
+										<Text className='text-[#808080] text-lg'>{t('Welcome Back')}</Text>
 										<Text className='text-[#FF6B6B] text-2xl font-psemibold '>{user?.username}</Text>
 									</View>
 									<Image
@@ -154,7 +154,7 @@ export default function Home() {
 						return loading ? (
 							<View className="flex-1 justify-center items-center bg-primary mt-64">
 								<ActivityIndicator size="large" color="#ffffff" />
-								<Text className='mt-[10] text-white text-xl'>{t('Loading, please wait...')}</Text>
+								<Text className='mt-[10] text-black text-xl'>{t('Loading, please wait...')}</Text>
 							</View>
 						) : (
 							<View>

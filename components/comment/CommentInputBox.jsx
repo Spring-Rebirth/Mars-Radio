@@ -33,7 +33,7 @@ export default function CommentInputBox({ videoId, userId, onCommentSubmitted })
 
     return (
         <View>
-            <Text className={'text-white text-xl mb-4 font-bold'}>
+            <Text className={'text-black text-xl mb-4 font-bold'}>
                 {t("Comment")}
             </Text>
             <TextInput
@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 10,
         paddingHorizontal: 16,
-        color: 'white'
+        color: 'black'
     }
 })

@@ -72,10 +72,10 @@ export default function SignIn() {
                                     resizeMode='contain'
                                     className='w-9 h-10'
                                 />
-                                <Text className='text-white text-4xl font-semibold'>Aura</Text>
+                                <Text className='text-black text-4xl font-semibold'>Aura</Text>
                             </View>
 
-                            <Text className='text-white text-2xl font-psemibold mt-6'>Sign in</Text>
+                            <Text className='text-black text-2xl font-psemibold mt-6'>Sign in</Text>
 
                             <CustomForm title='Email'
                                 handleChangeText={(text) => setForm({ ...form, email: text })}
@@ -91,12 +91,12 @@ export default function SignIn() {
                             <CustomButton
                                 title='Sign In'
                                 style='h-16 mt-6 py-3'
-                                textStyle={'text-lg text-[#161622]'}
+                                textStyle={'text-lg text-[#F5F5F5]'}
                                 onPress={submit}
                                 isLoading={isSubmitting}
                             />
                             <View className='items-center mt-6'>
-                                <Text className='text-gray-100'>
+                                <Text className='text-[#808080]'>
                                     Don't have an account?&nbsp;&nbsp;
                                     <Link
                                         href='/sign-up'
