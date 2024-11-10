@@ -9,6 +9,16 @@ export default function SearchInput({ containerStyle }) {
     const pathname = usePathname();
     const { t } = useTranslation();
 
+    const handlePressSearch = () => {
+        if (!queryText) {
+            Alert.alert('Please enter your search keyword');
+        } else if (pathname.startsWith('/search')) {
+            router.setParams({ query: queryText });
+        } else {
+            router.push(`/search/${queryText}`);
+        }
+    }
+
     return (
         <View className={`w-full h-16 bg-[#F0F0F0] border-2 border-black-200 rounded-2xl \
                         focus:border-secondary relative flex-row items-center ${containerStyle}`}
@@ -20,16 +30,11 @@ export default function SearchInput({ containerStyle }) {
                 style={{ outline: 'none' }}
                 value={queryText}
                 onChangeText={(text) => { setQueryText(text) }}
+                onSubmitEditing={handlePressSearch}
             />
 
             <TouchableOpacity className='mr-4'
-                onPress={
-                    (!queryText)
-                        ? () => { Alert.alert('Please enter your search keyword') }
-                        : (pathname.startsWith('/search')
-                            ? () => { router.setParams({ query: queryText }) }
-                            : () => { router.push(`/search/${queryText}`) })
-                }
+                onPress={handlePressSearch}
             >
                 <Image
                     source={icons.search}
