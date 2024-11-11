@@ -5,14 +5,14 @@
     "scheme": "aura",
     "version": "16.0.0",
     "orientation": "default",
-    "icon": "./assets/app_icon3.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "updates": {
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/b42e4b62-07a8-4671-b223-82c614092207"
     },
     "splash": {
-      "image": "./assets/app_icon3.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#F5F5F5"
     },
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/app_icon3.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.mystseed.aura"
