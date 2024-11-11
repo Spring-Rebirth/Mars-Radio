@@ -17,14 +17,14 @@ import { useTranslation } from 'react-i18next'
 import { fetchAdminData } from '../../lib/appwrite'
 
 export default function Home() {
-	const [refreshing, setRefreshing] = useState(false);
-	const [loading, setLoading] = useState(false);
-	const [data, setData] = useState([]);
-	const [popularData, setPopularData] = useState([]);
-	const { user } = useGlobalContext();
-	const { fetchPosts, fetchPopularPosts } = useGetData({ setLoading, setData, setPopularData });
 	const { t } = useTranslation();
+	const { user } = useGlobalContext();
+	const [data, setData] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [refreshing, setRefreshing] = useState(false);
 	const [adminList, setAdminList] = useState([]);
+	const [popularData, setPopularData] = useState([]);
+	const { fetchPosts, fetchPopularPosts } = useGetData({ setLoading, setData, setPopularData });
 
 	useEffect(() => {
 		const addAdminData = async () => {
@@ -41,20 +41,6 @@ export default function Home() {
 
 		addAdminData();
 	}, []);
-
-	const toggleFullscreen = (fullscreen) => {
-		setIsFullscreen(fullscreen);
-	};
-
-	const handleRefresh = () => {
-		setRefreshing(true);
-		fetchPosts();
-		fetchPopularPosts();
-		setRefreshing(false);
-		console.log('user.favorite:', user?.favorite);
-	}
-
-	const [isFullscreen, setIsFullscreen] = useState(false);
 
 	useEffect(() => {
 		const fetchDataAndUpdateVideo = async () => {
@@ -79,6 +65,20 @@ export default function Home() {
 
 		fetchDataAndUpdateVideo();  // 调用异步函数 	
 	}, [user]);
+
+	const toggleFullscreen = (fullscreen) => {
+		setIsFullscreen(fullscreen);
+	};
+
+	const handleRefresh = () => {
+		setRefreshing(true);
+		fetchPosts();
+		fetchPopularPosts();
+		setRefreshing(false);
+		console.log('user.favorite:', user?.favorite);
+	}
+
+	const [isFullscreen, setIsFullscreen] = useState(false);
 
 	return (
 		<SafeAreaView className="bg-primary h-full">
