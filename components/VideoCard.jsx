@@ -175,7 +175,7 @@ export default function VideoCard({
                     {/* 菜单弹窗 */}
                     {showControlMenu ? (
                         <View
-                            className='absolute right-2 bottom-[77px] bg-[#1E1E2D] w-40 h-auto rounded-md z-10 px-6 py-0'
+                            className='absolute right-2 bottom-[77px] bg-primary w-40 h-auto rounded-md z-10 px-6 py-0'
                         >
                             <Pressable
                                 onPress={handleClickSave}
@@ -185,7 +185,7 @@ export default function VideoCard({
                                     source={isSaved ? star : starThree}
                                     className='w-5 h-5 mr-3'
                                 />
-                                <Text className='text-black text-lg'>
+                                <Text className='text-[#333333] text-lg'>
                                     {currentPath === 'saved' ? 'Remove' : (isSaved ? 'Saved' : 'Save')}
                                 </Text>
                             </Pressable>
