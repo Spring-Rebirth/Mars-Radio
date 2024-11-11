@@ -287,7 +287,7 @@ export default function PlayScreen() {
                 {loading && (
                     <ActivityIndicator
                         size="large"
-                        color="#fff"
+                        color="#000"
                         style={[
                             styles.activityIndicator,
                             {

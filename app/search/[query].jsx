@@ -66,7 +66,7 @@ export default function Search() {
                 ListEmptyComponent={() => {
                     return loading ? (
                         <View className="flex-1 justify-center items-center bg-primary">
-                            <ActivityIndicator size="large" color="#ffffff" />
+                            <ActivityIndicator size="large" color="#000" />
                             <Text className='mt-[10] text-black text-xl'>Loading, please wait...</Text>
                         </View>
                     ) : (

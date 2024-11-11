@@ -68,7 +68,7 @@ export default function SignUp() {
     if (isSubmitting || isTransitioning) {
         return (
             <View className="flex-1 justify-center items-center bg-primary">
-                <ActivityIndicator size="large" color="#ffffff" />
+                <ActivityIndicator size="large" color="#000" />
             </View>
         );
     }

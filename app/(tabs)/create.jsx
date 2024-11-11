@@ -275,7 +275,7 @@ export default function Create() {
 
                     {progress.type !== 'Video' ? (
                         <>
-                            <ActivityIndicator size="small" color="#ffffff" />
+                            <ActivityIndicator size="small" color="#000" />
                             <Text className='text-black text-xl text-center mt-2'>
                                 {t("Image Uploading")}
                             </Text>

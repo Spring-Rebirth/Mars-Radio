@@ -186,7 +186,7 @@ function TrendingItem({ activeItem, item }) {
                 {!imageLoaded && (
                     <ActivityIndicator
                         size="large"
-                        color="#fff"
+                        color="#000"
                         style={{
                             position: 'absolute',
                             top: '50%',
@@ -215,7 +215,7 @@ export default function Trending({ video, loading }) {
 
     return loading ? (
         <View className="flex-1 justify-center items-center bg-primary mt-12">
-            <ActivityIndicator size="large" color="#ffffff" />
+            <ActivityIndicator size="large" color="#000" />
             <Text className='mt-[10] text-black text-xl'>{t('Loading, please wait...')}</Text>
         </View>
     ) : (

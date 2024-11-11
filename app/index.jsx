@@ -25,7 +25,7 @@ export default function Welcome() {
     if (isNavigating || isLoading) {
         return (
             <View className="flex-1 justify-center items-center bg-primary">
-                <ActivityIndicator size="large" color="#ffffff" />
+                <ActivityIndicator size="large" color="#000" />
             </View>
         );
     }
@@ -69,7 +69,7 @@ export default function Welcome() {
 
                     {isLoading ? (
                         <View className="w-full h-20 justify-center items-center bg-primary mt-6">
-                            <ActivityIndicator size="large" color="#ffffff" />
+                            <ActivityIndicator size="large" color="#000" />
                             <Text className='mt-[10] text-black text-xl'>Identifying login status</Text>
                         </View>
                     ) : (

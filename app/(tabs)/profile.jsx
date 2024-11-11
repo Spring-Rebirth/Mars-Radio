@@ -116,7 +116,7 @@ export default function profile() {
     if (isTransitioning) {
         return (
             <View className="flex-1 justify-center items-center bg-primary">
-                <ActivityIndicator size="large" color="#ffffff" />
+                <ActivityIndicator size="large" color="#000" />
             </View>
         );
     }
@@ -160,7 +160,7 @@ export default function profile() {
                                                     justify-center'
                                     >
                                         {avatarUploading ? (
-                                            <ActivityIndicator size="large" color="#ffffff" />
+                                            <ActivityIndicator size="large" color="#000" />
                                         ) : (
                                             <Image
                                                 source={{ uri: user?.avatar }}
@@ -197,7 +197,7 @@ export default function profile() {
                 ListEmptyComponent={() => {
                     return loading ? (
                         <View className="flex-1 justify-center items-center bg-primary">
-                            <ActivityIndicator size="large" color="#ffffff" />
+                            <ActivityIndicator size="large" color="#000" />
                             <Text className='mt-[10] text-black text-xl'>{t("Loading, please wait...")}</Text>
                         </View>
                     ) : (
