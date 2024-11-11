@@ -9,6 +9,8 @@ import ReactNativeModal from 'react-native-modal';
 import { useTranslation } from 'react-i18next';
 import { databases } from '../../lib/appwrite';
 import { config } from '../../lib/appwrite';
+import upIcon from '../../assets/icons/arrow-up.png';
+import downIcon from '../../assets/icons/arrow-down.png';
 
 const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply, onReplyDeleted }) => {
     const [replies, setReplies] = useState([]);
@@ -162,10 +164,15 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
             {repliesCount > 0 && (
                 <TouchableOpacity
                     onPress={toggleReplies}
-                    className='mt-[10] ml-[40] h-10 w-28 justify-center'
+                    className='mt-[10] ml-[36] h-10 w-28 justify-center flex-row space-x-2.5'
                 >
+                    <Image
+                        source={showReplies ? upIcon : downIcon}
+                        style={{ width: 20, height: 20 }}
+                        resizeMode='contain'
+                    />
                     <Text className='text-blue-500'>
-                        {showReplies ? t('Collapse Reply') : `${repliesCount}  ${t('replies')}`}
+                        {`${repliesCount} ${t('replies')}`}
                     </Text>
                 </TouchableOpacity>
             )}
