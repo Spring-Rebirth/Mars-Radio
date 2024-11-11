@@ -8,10 +8,10 @@ import EmptyState from '../../components/EmptyState'
 import CustomButton from '../../components/CustomButton'
 import VideoCard from '../../components/VideoCard'
 import useGetData from '../../hooks/useGetData'
+import downIcon from '../../assets/icons/down.png'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { StatusBar } from 'expo-status-bar'
 import { updateSavedVideo } from '../../lib/appwrite'
-import downIcon from '../../assets/icons/down.png'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { fetchAdminData } from '../../lib/appwrite'
@@ -64,7 +64,8 @@ export default function Home() {
 		};
 
 		fetchDataAndUpdateVideo();  // 调用异步函数 	
-	}, [user]);
+		console.log('user:', user);
+	}, [user.$id]);
 
 	const toggleFullscreen = (fullscreen) => {
 		setIsFullscreen(fullscreen);

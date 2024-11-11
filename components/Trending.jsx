@@ -1,4 +1,7 @@
-// cSpell:ignore Pressable
+// cSpell:ignore Pressable cooldown
+import {
+    FlatList, ImageBackground, Text, TouchableOpacity, View, Image, ActivityIndicator, Alert
+} from 'react-native'
 import { useState, useContext } from 'react'
 import * as Animatable from 'react-native-animatable'
 import star from '../assets/menu/star-solid.png'
@@ -6,10 +9,6 @@ import starThree from '../assets/menu/star3.png'
 import { useGlobalContext } from '../context/GlobalProvider'
 import { updateSavedCounts } from '../lib/appwrite';
 import { PlayDataContext } from '../context/PlayDataContext';
-import {
-    FlatList, ImageBackground, Text, TouchableOpacity, View, Image, ActivityIndicator,
-    Alert
-} from 'react-native'
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next'
@@ -23,20 +22,12 @@ function TrendingItem({ activeItem, item }) {
     const { updatePlayData, playDataRef } = useContext(PlayDataContext);
 
     const zoomIn = {
-        0: {
-            scale: 0.9,
-        },
-        1: {
-            scale: 1,
-        }
+        0: { scale: 0.9 },
+        1: { scale: 1 }
     }
     const zoomOut = {
-        0: {
-            scale: 1,
-        },
-        1: {
-            scale: 0.9,
-        }
+        0: { scale: 1 },
+        1: { scale: 0.9 }
     }
 
     const handleAddSaved = async () => {
@@ -89,9 +80,6 @@ function TrendingItem({ activeItem, item }) {
             console.log('冷却时间未过，播放次数不增加');
         }
 
-        // 继续播放视频
-        // setPlaying(true);
-        // setLoading(true);
         router.push({
             pathname: 'player/play-screen',
             params: {
@@ -99,7 +87,6 @@ function TrendingItem({ activeItem, item }) {
             }
         });
     };
-
 
     return (
         <Animatable.View
