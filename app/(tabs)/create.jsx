@@ -180,130 +180,131 @@ export default function Create() {
 
     return (
         <SafeAreaView className='bg-primary h-full px-4 '>
-
-            {/* Upload Video */}
-            <View className='flex-row justify-between items-center mt-10 h-[60px]'>
-                <Text className='text-black text-2xl font-psemibold'>{t("Upload Video")}</Text>
-                <Image
-                    source={images.logoSmall}
-                    className='w-9 h-10'
-                    resizeMode='contain'
-                />
-            </View>
-
-            <CustomForm
-                title={t('Title')}
-                handleChangeText={(text) => setForm({ ...form, title: text })}
-                value={form.title}
-                placeholder={t('Catchy titles get more clicks !')}
-            />
-
-            {/* Upload Video */}
-            <Text className='text-[#808080] mt-5 text-lg'>{t('Video')}</Text>
-            {/* TODO：视频存在则显示视频 */}
-            {!isVideoSelected ? (
-                <TouchableOpacity onPress={handlePickVideo}>
-                    <View className='w-full h-44 bg-[#D9D9D9] rounded-2xl mt-2 justify-center items-center'>
-                        <View className='w-14 h-14 border border-dashed border-secondary-100
-                                                justify-center items-center'>
-                            <Image
-                                source={icons.upload}
-                                className='w-1/2 h-1/2'
-                            />
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            ) : (
-                <View className='w-full h-56 bg-[#1e1e2d] rounded-2xl mt-2 justify-center items-center relative'>
-                    <Video
-                        source={{ uri: videoFile?.uri }}
-                        className='w-full h-full rounded-xl'
-                        resizeMode={ResizeMode.COVER}
-                        useNativeControls={true}
-                    />
-                    <TouchableOpacity
-                        onPress={() => handleCancelSelected('video')}
-                        className='absolute top-0 right-0 z-10 w-16 h-16 justify-center items-center'
-                    >
-                        <Image
-                            source={closeY}
-                            className='w-8 h-8'
-                        />
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {/* Thumbnail Image */}
-            <Text className='text-[#808080] mt-5 text-lg'>{t("Thumbnail")}</Text>
-            {/* TODO：图片存在则显示图片 */}
-            {!isImageSelected ? (
-                <View className='flex-row w-full justify-around mt-6 mb-8'>
-                    <TouchableOpacity onPress={handlePickImage}>
-                        <View className='w-36 h-16 bg-[#7979f6] rounded-3xl  flex-row justify-center items-center px-4'>
-                            <Text className='text-white'>{t("Choose File")}</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={generateThumbnailFromVideo}>
-                        <View className='w-36 h-16 bg-[#7979f6] rounded-3xl  flex-row justify-center items-center px-4'>
-                            <Text className='text-white'>{t("Auto Generate")}</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            ) : (
-                <View className='w-full h-56 bg-[#1e1e2d] rounded-2xl mt-2 mb-8 flex-row justify-center items-center overflow-hidden relative'>
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+                {/* Upload Video */}
+                <View className='flex-row justify-between items-center mt-10 h-[60px]'>
+                    <Text className='text-black text-2xl font-psemibold'>{t("Upload Video")}</Text>
                     <Image
-                        source={{ uri: imageFile?.uri }}
-                        className='w-full h-full'
-                        resizeMode='cover'
+                        source={images.logoSmall}
+                        className='w-9 h-10'
+                        resizeMode='contain'
                     />
-                    <TouchableOpacity
-                        onPress={() => handleCancelSelected('image')}
-                        className='absolute top-0 right-0 z-10 w-16 h-16 justify-center items-center'
-                    >
-                        <Image
-                            source={closeY}
-                            className='w-8 h-8'
-                        />
+                </View>
+
+                <CustomForm
+                    title={t('Title')}
+                    handleChangeText={(text) => setForm({ ...form, title: text })}
+                    value={form.title}
+                    placeholder={t('Catchy titles get more clicks !')}
+                />
+
+                {/* Upload Video */}
+                <Text className='text-[#808080] mt-5 text-lg'>{t('Video')}</Text>
+                {/* TODO：视频存在则显示视频 */}
+                {!isVideoSelected ? (
+                    <TouchableOpacity onPress={handlePickVideo}>
+                        <View className='w-full h-44 bg-[#D9D9D9] rounded-2xl mt-2 justify-center items-center'>
+                            <View className='w-14 h-14 border border-dashed border-secondary-100
+                                                justify-center items-center'>
+                                <Image
+                                    source={icons.upload}
+                                    className='w-1/2 h-1/2'
+                                />
+                            </View>
+                        </View>
                     </TouchableOpacity>
-                </View>
-            )}
-
-
-            {uploading ? (
-                <View className="w-full h-20 justify-center items-center bg-primary mb-4">
-
-                    {progress.type !== 'Video' ? (
-                        <>
-                            <ActivityIndicator size="small" color="#000" />
-                            <Text className='text-black text-xl text-center mt-2'>
-                                {t("Image Uploading")}
-                            </Text>
-                        </>
-                    ) : (
-                        <>
-                            <Progress.Bar
-                                color="#02C2CC" unfilledColor='#fff'
-                                progress={progress.percent / 100} width={230} borderWidth={1}
+                ) : (
+                    <View className='w-full h-56 bg-[#1e1e2d] rounded-2xl mt-2 justify-center items-center relative'>
+                        <Video
+                            source={{ uri: videoFile?.uri }}
+                            className='w-full h-full rounded-xl'
+                            resizeMode={ResizeMode.COVER}
+                            useNativeControls={true}
+                        />
+                        <TouchableOpacity
+                            onPress={() => handleCancelSelected('video')}
+                            className='absolute top-0 right-0 z-10 w-16 h-16 justify-center items-center'
+                        >
+                            <Image
+                                source={closeY}
+                                className='w-8 h-8'
                             />
-                            <Text className=' text-black text-xl text-center mt-2'>
-                                {progress.percent} %
-                            </Text>
-                        </>
-                    )}
+                        </TouchableOpacity>
+                    </View>
+                )}
 
-                </View>
-            ) : false}
+                {/* Thumbnail Image */}
+                <Text className='text-[#808080] mt-5 text-lg'>{t("Thumbnail")}</Text>
+                {/* TODO：图片存在则显示图片 */}
+                {!isImageSelected ? (
+                    <View className='flex-row w-full justify-around mt-6 mb-8'>
+                        <TouchableOpacity onPress={handlePickImage}>
+                            <View className='w-36 h-16 bg-[#7979f6] rounded-3xl  flex-row justify-center items-center px-4'>
+                                <Text className='text-white'>{t("Choose File")}</Text>
+                            </View>
+                        </TouchableOpacity>
 
-            {/* submit button */}
-            <CustomButton
-                onPress={() => { handleUpload() }}
-                title={t('Submit & Publish')}
-                style={'h-16 mb-8 bg-[#5f89f4]'}
-                textStyle={'text-white'}
-                isLoading={uploading}
-            />
-            <StatusBar style='auto' />
+                        <TouchableOpacity onPress={generateThumbnailFromVideo}>
+                            <View className='w-36 h-16 bg-[#7979f6] rounded-3xl  flex-row justify-center items-center px-4'>
+                                <Text className='text-white'>{t("Auto Generate")}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <View className='w-full h-56 bg-[#1e1e2d] rounded-2xl mt-2 mb-8 flex-row justify-center items-center overflow-hidden relative'>
+                        <Image
+                            source={{ uri: imageFile?.uri }}
+                            className='w-full h-full'
+                            resizeMode='cover'
+                        />
+                        <TouchableOpacity
+                            onPress={() => handleCancelSelected('image')}
+                            className='absolute top-0 right-0 z-10 w-16 h-16 justify-center items-center'
+                        >
+                            <Image
+                                source={closeY}
+                                className='w-8 h-8'
+                            />
+                        </TouchableOpacity>
+                    </View>
+                )}
+
+
+                {uploading ? (
+                    <View className="w-full h-20 justify-center items-center bg-primary mb-4">
+
+                        {progress.type !== 'Video' ? (
+                            <>
+                                <ActivityIndicator size="small" color="#000" />
+                                <Text className='text-black text-xl text-center mt-2'>
+                                    {t("Image Uploading")}
+                                </Text>
+                            </>
+                        ) : (
+                            <>
+                                <Progress.Bar
+                                    color="#02C2CC" unfilledColor='#fff'
+                                    progress={progress.percent / 100} width={230} borderWidth={1}
+                                />
+                                <Text className=' text-black text-xl text-center mt-2'>
+                                    {progress.percent} %
+                                </Text>
+                            </>
+                        )}
+
+                    </View>
+                ) : false}
+
+                {/* submit button */}
+                <CustomButton
+                    onPress={() => { handleUpload() }}
+                    title={t('Submit & Publish')}
+                    style={'h-16 mb-8 bg-[#5f89f4]'}
+                    textStyle={'text-white'}
+                    isLoading={uploading}
+                />
+                <StatusBar style='auto' />
+            </ScrollView>
         </SafeAreaView>
     )
 }
