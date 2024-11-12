@@ -14,6 +14,7 @@ import { PlayDataContext } from '../context/PlayDataContext';
 import { formatNumberWithUnits, getRelativeTime } from '../utils/numberFormatter';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next'
+import VideoLoadingSkeleton from './loading-view/VideoLoadingSkeleton'
 
 export default function VideoCard({
     post,

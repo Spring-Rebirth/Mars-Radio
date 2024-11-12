@@ -15,6 +15,7 @@ import { updateSavedVideo } from '../../lib/appwrite'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { fetchAdminData } from '../../lib/appwrite'
+import VideoLoadingSkeleton from '../../components/loading-view/VideoLoadingSkeleton'
 
 export default function Home() {
 	const { t } = useTranslation();
@@ -153,10 +154,15 @@ export default function Home() {
 					}}
 					ListEmptyComponent={() => {
 						return loading ? (
-							<View className="flex-1 justify-center items-center bg-primary mt-64">
-								<ActivityIndicator size="large" color="#000" />
-								<Text className='mt-[10] text-black text-xl'>{t('Loading, please wait...')}</Text>
-							</View>
+							// <View className="flex-1 justify-center items-center bg-primary mt-64">
+							// 	<ActivityIndicator size="large" color="#000" />
+							// 	<Text className='mt-[10] text-black text-xl'>{t('Loading, please wait...')}</Text>
+							// </View>
+							<>
+								<VideoLoadingSkeleton />
+								<VideoLoadingSkeleton />
+								<VideoLoadingSkeleton />
+							</>
 						) : (
 							<View>
 								<EmptyState />
