@@ -12,6 +12,7 @@ import { PlayDataContext } from '../context/PlayDataContext';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next'
+import TrendingItemSkeleton from './loading-view/TredingItenSkeleton'
 
 function TrendingItem({ activeItem, item }) {
     const [imageLoaded, setImageLoaded] = useState(false);
@@ -201,9 +202,10 @@ export default function Trending({ video, loading }) {
     };
 
     return loading ? (
-        <View className="flex-1 justify-center items-center bg-primary mt-12">
-            <ActivityIndicator size="large" color="#000" />
-            <Text className='mt-[10] text-black text-xl'>{t('Loading, please wait...')}</Text>
+        <View className='flex-row'>
+            <TrendingItemSkeleton />
+            <TrendingItemSkeleton />
+            <TrendingItemSkeleton />
         </View>
     ) : (
         <FlatList
