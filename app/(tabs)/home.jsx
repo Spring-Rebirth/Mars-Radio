@@ -65,7 +65,6 @@ export default function Home() {
 		};
 
 		fetchDataAndUpdateVideo();  // 调用异步函数 	
-		console.log('user:', user);
 	}, [user.$id]);
 
 	const toggleFullscreen = (fullscreen) => {
@@ -154,10 +153,6 @@ export default function Home() {
 					}}
 					ListEmptyComponent={() => {
 						return loading ? (
-							// <View className="flex-1 justify-center items-center bg-primary mt-64">
-							// 	<ActivityIndicator size="large" color="#000" />
-							// 	<Text className='mt-[10] text-black text-xl'>{t('Loading, please wait...')}</Text>
-							// </View>
 							<>
 								<VideoLoadingSkeleton />
 								<VideoLoadingSkeleton />
