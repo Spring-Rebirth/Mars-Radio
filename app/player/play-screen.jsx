@@ -292,8 +292,8 @@ export default function PlayScreen() {
                     style={[
                         styles.activityIndicator,
                         {
-                            top: fullscreen ? '50%' : '10%',
-                            transform: fullscreen ? [{ translateX: -34 }, { translateY: -20 }] : [{ translateX: -20 }]
+                            top: fullscreen ? '50%' : '12.5%',
+                            transform: fullscreen ? [{ translateX: -20 }, { translateY: -20 }] : [{ translateX: -20 }]
                         }
                     ]}
                 />
@@ -332,7 +332,7 @@ export default function PlayScreen() {
                         {/* 播放/暂停按钮 */}
                         <TouchableOpacity
                             style={[styles.controlButton, {
-                                top: '50%', left: '50%', transform: [{ translateX: -34 }, { translateY: -20 }]
+                                top: '50%', left: '50%', transform: [{ translateX: -20 }, { translateY: -20 }]
                             }]} // 定位到视频上方
                             onPress={() => {
                                 setPlaying(prev => !prev);
@@ -389,7 +389,7 @@ export default function PlayScreen() {
                     <>
                         {/* 播放/暂停按钮 */}
                         <TouchableOpacity
-                            style={[styles.controlButton, { top: '12.5%', left: '50%' }]} // 定位到视频上方
+                            style={[styles.controlButton]} // 定位到视频上方
                             onPress={() => {
                                 setPlaying(prev => !prev);
                                 showControlsWithTimer();
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
     },
     replayIconContainer: {
         position: 'absolute',
-        top: '10%',
+        top: '12.5%',
         left: '50%',
         zIndex: 1, // 确保图标在最前面
         transform: [{ translateX: -15 }, { translateY: 0 }],
@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
         top: '50%',
         left: '50%',
         zIndex: 1, // 确保图标在最前面
-        transform: [{ translateX: -15 - 14 }, { translateY: -15 }],
+        transform: [{ translateX: -15 }, { translateY: -15 }],
     },
     replayIcon: {
         width: 30,
@@ -501,6 +501,8 @@ const styles = StyleSheet.create({
     // 增加一半的偏移量
     controlButton: {
         position: 'absolute', // 让按钮浮动在视频上
+        top: '12.5%',
+        left: '50%',
         zIndex: 10, // 确保按钮在视频之上
         transform: [{ translateX: -20 }],
         backgroundColor: 'white',
@@ -511,6 +513,7 @@ const styles = StyleSheet.create({
         borderWidth: 0,
         justifyContent: 'center',
         alignItems: 'center',
+
     },
     bottomBar: {
         backgroundColor: 'rgba(50, 50, 50, 0.7)',
