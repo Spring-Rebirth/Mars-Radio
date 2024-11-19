@@ -31,7 +31,8 @@
       "favicon": "./assets/icon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "react-native-edge-to-edge"
     ],
     "extra": {
       "eas": {
