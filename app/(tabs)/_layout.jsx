@@ -8,7 +8,7 @@ function TabIcon({ name, icon, color, focused }) {
     const { width, height } = useWindowDimensions();
     const isLandscape = width > height;
     return (
-        <View className='justify-center items-center gap-1.5'>
+        <View className='justify-center items-center gap-1.5 my-auto w-14'>
             <Image
                 source={icon}
                 resizeMode='contain'
@@ -20,8 +20,6 @@ function TabIcon({ name, icon, color, focused }) {
                 <Text
                     style={{ color: color }}
                     className={`text-xs ${focused ? 'font-psemibold' : 'font-pregular'}`}
-                    numberOfLines={1}
-                    ellipsizeMode={'clip'}
                 >
                     {name}
                 </Text>
@@ -40,7 +38,8 @@ export default function TabsLayout() {
             tabBarStyle: {
                 backgroundColor: '#F5F5F5',
                 borderTopWidth: 0,
-                height: 60
+                height: 60,
+
             }
         }}>
             <Tabs.Screen
