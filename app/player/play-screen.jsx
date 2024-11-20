@@ -15,6 +15,7 @@ import pauseIcon from '../../assets/icons/pause.png';
 import Slider from '@react-native-community/slider';
 import { fetchReplies, fetchCommentUser, fetchCommentUsername, submitReply } from '../../services/commentService';
 import useVideoControls from '../../hooks/useVideoControls';
+// cSpell: ignore Millis
 
 export default function PlayScreen() {
   const { user } = useGlobalContext();
@@ -143,7 +144,6 @@ export default function PlayScreen() {
       />
     );
   }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply]);
-
 
   return (
     <View style={[styles.container, {
