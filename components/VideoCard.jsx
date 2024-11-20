@@ -7,7 +7,6 @@ import starThree from '../assets/menu/star3.png'
 import trash from '../assets/menu/trash-solid.png'
 import { useGlobalContext } from '../context/GlobalProvider'
 import { deleteVideoDoc, deleteVideoFiles } from '../lib/appwrite'
-import { useRoute } from '@react-navigation/native';
 import { updateSavedCounts, getVideoDetails } from '../lib/appwrite';
 import { StatusBar } from 'expo-status-bar';
 import { PlayDataContext } from '../context/PlayDataContext';
