@@ -15,6 +15,7 @@ import pauseIcon from '../../assets/icons/pause.png';
 import Slider from '@react-native-community/slider';
 import { fetchReplies, fetchCommentUser, fetchCommentUsername, submitReply } from '../../services/commentService';
 import useVideoControls from '../../hooks/useVideoControls';
+import useComments from '../../hooks/useComments';
 // cSpell: ignore Millis
 
 export default function PlayScreen() {
@@ -25,7 +26,7 @@ export default function PlayScreen() {
   const { $id: userId, avatar, username } = user;
 
   const { playing, setPlaying, loading, setLoading, isEnded, setIsEnded, showControls,
-    setShowControls, replayVideo, handleClickedVideo, showControlsWithTimer,
+    setShowControls, replayVideo, handleClickedVideo, showControlsWithTimer, hideControlsTimer
   } = useVideoControls(videoRef);
 
   const videoRef = useRef(null);
@@ -164,7 +165,7 @@ export default function PlayScreen() {
       )}
 
       {isEnded && (
-        <TouchableOpacity onPress={replayVideo}
+        <TouchableOpacity onPress={() => replayVideo(videoRef)}
           style={fullscreen ? styles.replayIconContainerFS : styles.replayIconContainer}
         >
           <Image
@@ -186,6 +187,7 @@ export default function PlayScreen() {
           resizeMode={ResizeMode.CONTAIN}
           useNativeControls={false}
           shouldPlay={playing}
+          isLooping={false}
           onPlaybackStatusUpdate={status => setPlaybackStatus(() => status)}
         />
       </TouchableWithoutFeedback>

@@ -23,7 +23,7 @@ export default function useVideoControls(videoRef) {
     }, 3000);
   };
 
-  const replayVideo = async () => {
+  const replayVideo = async (videoRef) => {
     if (videoRef.current) {
       try {
         await videoRef.current.replayAsync();
@@ -62,5 +62,6 @@ export default function useVideoControls(videoRef) {
     replayVideo,
     handleClickedVideo,
     showControlsWithTimer,
+    hideControlsTimer
   };
 }
