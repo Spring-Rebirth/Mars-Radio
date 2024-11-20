@@ -52,7 +52,7 @@ export default function Home() {
 			try {
 				// 获取用户信息，更新收藏视频
 				const favorite = user.favorite || []; // 确保 favorite 至少是一个空数组
-				await updateSavedVideo(user.$id, { favorite });
+				await updateSavedVideo(user?.$id, { favorite });
 
 				// 并行请求 fetchPosts 和 fetchPopularPosts
 				await Promise.all([fetchPosts(), fetchPopularPosts()]);
@@ -65,7 +65,7 @@ export default function Home() {
 		};
 
 		fetchDataAndUpdateVideo();  // 调用异步函数 	
-	}, [user.$id]);
+	}, [user?.$id]);
 
 	const toggleFullscreen = (fullscreen) => {
 		setIsFullscreen(fullscreen);

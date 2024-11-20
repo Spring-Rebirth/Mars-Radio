@@ -14,7 +14,6 @@ import { PlayDataContext } from '../context/PlayDataContext';
 import { formatNumberWithUnits, getRelativeTime } from '../utils/numberFormatter';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next'
-import VideoLoadingSkeleton from './loading-view/VideoLoadingSkeleton'
 
 export default function VideoCard({
     post,
@@ -35,8 +34,8 @@ export default function VideoCard({
     const { updatePlayData, playDataRef } = useContext(PlayDataContext);
     const [playCount, setPlayCount] = useState(post.played_counts || 0);
 
-    const route = useRoute();
-    const currentPath = route.name;
+    // const route = useRoute();
+    // const currentPath = route.name;
     let admin = adminList?.includes(user?.email);
 
     const handleAddSaved = async () => {
@@ -187,7 +186,7 @@ export default function VideoCard({
                                     className='w-5 h-5 mr-3'
                                 />
                                 <Text className='text-[#333333] text-lg'>
-                                    {currentPath === 'saved' ? 'Remove' : (isSaved ? 'Saved' : 'Save')}
+                                    {isSaved ? 'Saved' : 'Save'}
                                 </Text>
                             </Pressable>
 
