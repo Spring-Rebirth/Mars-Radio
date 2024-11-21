@@ -142,22 +142,20 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
 
   const handleClickLike = async () => {
     try {
+      const newLikedStatus = !liked;
+      const newLikeCount = newLikedStatus ? likeCount + 1 : likeCount - 1;
+
+      // 更新本地状态
+      setLiked(newLikedStatus);
+      setLikeCount(newLikeCount);
+
       // 调用 sendLikedStatus 更新数据库中的点赞状态
-      await sendLikedStatus(commentId, userId, !liked);
-
-      // 更新点赞状态和点赞数
-      setLiked(!liked);
-
-      // 重新获取评论点赞用户列表，计算点赞数
-      const comment = await databases.getDocument(
-        config.databaseId,
-        config.commentsCollectionId,
-        commentId
-      );
-      const updatedLikedUsers = comment.liked_users || [];
-      setLikeCount(updatedLikedUsers.length); // 更新点赞数
+      await sendLikedStatus(commentId, userId, newLikedStatus);
     } catch (error) {
       console.error("处理点赞时出错:", error);
+      setLiked(liked);
+      setLikeCount(likeCount);
+      Alert.alert('Failed to like comment');
     }
   }
 
