@@ -8,7 +8,7 @@ function TabIcon({ name, icon, color, focused }) {
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   return (
-    <View className='justify-center items-center gap-1.5 my-auto w-14'>
+    <View className='justify-center items-center gap-1.5 mt-5 w-14'>
       <Image
         source={icon}
         resizeMode='contain'
