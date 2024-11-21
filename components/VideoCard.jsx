@@ -182,7 +182,7 @@ export default function VideoCard({
               >
                 <Image
                   source={isSaved ? star : starThree}
-                  className='w-5 h-5 mr-3'
+                  className='w-6 h-6 mr-3'
                 />
                 <Text className='text-[#333333] text-lg'>
                   {isSaved ? 'Saved' : 'Save'}

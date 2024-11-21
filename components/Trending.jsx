@@ -109,7 +109,7 @@ function TrendingItem({ activeItem, item }) {
           shadowOpacity: 0.8,
           shadowRadius: 6,
         }}>
-          <Image source={isSaved ? star : starThree} style={{ width: 20, height: 20 }} />
+          <Image source={isSaved ? star : starThree} style={{ width: 25, height: 25 }} />
         </View>
       </TouchableOpacity>
 
