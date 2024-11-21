@@ -7,17 +7,17 @@ import { useTranslation } from 'react-i18next'
 //cSpell:words psemibold
 
 export default function EmptyState() {
-    const { t } = useTranslation()
+  const { t } = useTranslation()
 
-    return (
-        <View className='items-center '>
-            <Image
-                source={images.empty}
-                className='w-[270px] h-[215px]'
-                resizeMode='contain'
-            />
-            <Text className='mt-2 text-black font-psemibold text-xl'>{t("No Videos Found")}</Text>
-            <Text className='text-[#808080]'>{t("Be the first one to upload a video")}</Text>
-        </View>
-    )
+  return (
+    <View className='items-center '>
+      <Image
+        source={images.empty}
+        className='w-[270px] h-[215px]'
+        resizeMode='contain'
+      />
+      <Text className='mt-2 text-black font-psemibold text-xl'>{t("No Videos Found")}</Text>
+      <Text className='text-[#808080]'>{t("Be the first one to upload a video")}</Text>
+    </View>
+  )
 }

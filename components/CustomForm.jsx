@@ -3,45 +3,45 @@ import React from 'react'
 import { icons } from '../constants'
 
 export default function CustomForm({ title, handleChangeText, value, placeholder }) {
-    const [showPassword, setShowPassword] = React.useState(false)
-    return (
-        <View className={`mt-4 space-y-2`}>
-            <Text className={`text-[#808080] text-lg`}>{title}</Text>
+  const [showPassword, setShowPassword] = React.useState(false)
+  return (
+    <View className={`mt-4 space-y-2`}>
+      <Text className={`text-[#808080] text-lg`}>{title}</Text>
 
-            <View className='w-full h-16 bg-[#F0F0F0] border-2 border-black-200 rounded-2xl
+      <View className='w-full h-16 bg-[#F0F0F0] border-2 border-black-200 rounded-2xl
                             focus:border-secondary relative'
 
-            >
+      >
 
-                <TextInput
-                    className='w-full h-full px-4 text-black'
-                    placeholder={` ${placeholder}`}
-                    placeholderTextColor='#7f7f7f'
-                    style={{ outline: 'none' }}
-                    secureTextEntry={(title === 'Password' || title === 'Confirm Password') && !showPassword}
-                    value={value}
-                    // Callback that is called when the text input's text changes. 
-                    // Changed text is passed as a single string argument to the callback handler.
-                    onChangeText={handleChangeText}
+        <TextInput
+          className='w-full h-full px-4 text-black'
+          placeholder={` ${placeholder}`}
+          placeholderTextColor='#7f7f7f'
+          style={{ outline: 'none' }}
+          secureTextEntry={(title === 'Password' || title === 'Confirm Password') && !showPassword}
+          value={value}
+          // Callback that is called when the text input's text changes. 
+          // Changed text is passed as a single string argument to the callback handler.
+          onChangeText={handleChangeText}
+        />
+        {/* Show password icon */}
+        {
+          (title === 'Password' || title === 'Confirm Password')
+            ? (
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}
+                className='absolute right-4 top-4'
+              >
+                <Image
+                  source={showPassword ? icons.eye : icons.eyeHide}
+                  resizeMode='contain'
+                  className='w-6 h-6'
                 />
-                {/* Show password icon */}
-                {
-                    (title === 'Password' || title === 'Confirm Password')
-                        ? (
-                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}
-                                className='absolute right-4 top-4'
-                            >
-                                <Image
-                                    source={showPassword ? icons.eye : icons.eyeHide}
-                                    resizeMode='contain'
-                                    className='w-6 h-6'
-                                />
-                            </TouchableOpacity>
-                        )
-                        : null
-                }
+              </TouchableOpacity>
+            )
+            : null
+        }
 
-            </View>
-        </View>
-    )
+      </View>
+    </View>
+  )
 }
