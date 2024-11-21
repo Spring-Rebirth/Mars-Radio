@@ -44,29 +44,8 @@ export default function RootLayout() {
           await Updates.fetchUpdateAsync();
           console.log('Update fetched.');
 
-          Alert.alert(
-            'Update Available',
-            'A new update has been downloaded. Would you like to restart the app now?',
-            [
-              {
-                text: 'Later',
-                onPress: () => {
-                  setIsUpdating(false);
-                  setCanNavigate(true);
-                },
-                style: 'cancel',
-              },
-              {
-                text: 'Restart Now',
-                onPress: async () => {
-                  console.log('Reloading app...');
-                  await Updates.reloadAsync();
-                },
-              },
-            ],
-            { cancelable: false }
-          );
-
+          console.log('Reloading app...');
+          await Updates.reloadAsync();
         } else {
           console.log('No updates available.');
           setCanNavigate(true);
