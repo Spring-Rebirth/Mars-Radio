@@ -5,7 +5,7 @@ import {
 import { useState, useContext } from 'react'
 import * as Animatable from 'react-native-animatable'
 import star from '../assets/menu/star-solid.png'
-import starThree from '../assets/menu/star3.png'
+import starTwo from '../assets/menu/star2.png'
 import { useGlobalContext } from '../context/GlobalProvider'
 import { updateSavedCounts } from '../lib/appwrite';
 import { PlayDataContext } from '../context/PlayDataContext';
@@ -109,7 +109,7 @@ function TrendingItem({ activeItem, item }) {
           shadowOpacity: 0.8,
           shadowRadius: 6,
         }}>
-          <Image source={isSaved ? star : starThree} style={{ width: 25, height: 25 }} />
+          <Image source={isSaved ? star : starTwo} style={{ width: 25, height: 25 }} />
         </View>
       </TouchableOpacity>
 
