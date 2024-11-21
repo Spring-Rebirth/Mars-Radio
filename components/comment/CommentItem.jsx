@@ -11,6 +11,8 @@ import { databases } from '../../lib/appwrite';
 import { config } from '../../lib/appwrite';
 import upIcon from '../../assets/icons/arrow-up.png';
 import downIcon from '../../assets/icons/arrow-down.png';
+import { sendLikedStatus } from '../../services/commentService';
+import { formatCommentsCounts } from '../../utils/numberFormatter';
 
 const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply, onReplyDeleted }) => {
   const [replies, setReplies] = useState([]);
@@ -19,6 +21,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
   const [showReplies, setShowReplies] = useState(false);
   const [loadingReplies, setLoadingReplies] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const { t } = useTranslation();
   const [cmtUsername, setCmtUsername] = useState(t('loading...'));
   const [cmtAvatar, setCmtAvatar] = useState(require('../../assets/images/default-avatar.png'));
@@ -57,6 +60,32 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
       }, 100);
     }
   }, [showReplyModal]);
+
+  useEffect(() => {
+    // 异步获取评论点赞状态
+    const fetchLikedStatus = async () => {
+      try {
+        // 获取评论文档
+        const comment = await databases.getDocument(
+          config.databaseId, // 替换为你的数据库 ID
+          config.commentsCollectionId, // 替换为你的评论集合 ID
+          commentId
+        );
+        setLikeCount(comment.liked_users.length || 0); // 设置点赞数
+        // 检查用户是否已点赞
+        if (comment.liked_users && comment.liked_users.includes(userId)) {
+          setLiked(true); // 设置为已点赞
+        } else {
+          setLiked(false); // 设置为未点赞
+        }
+      } catch (error) {
+        console.error("获取评论点赞状态时出错:", error);
+        setLiked(false); // 获取出错时默认未点赞
+      }
+    };
+
+    fetchLikedStatus();
+  }, [commentId, userId]); // 依赖项: 当 commentId 或 userId 变化时重新获取状态
 
   // 切换显示/隐藏子评论
   const toggleReplies = useCallback(async () => {
@@ -111,6 +140,27 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
     setRefreshFlag(prev => !prev);
   }, [replyMsg, parentCommentId]);
 
+  const handleClickLike = async () => {
+    try {
+      // 调用 sendLikedStatus 更新数据库中的点赞状态
+      await sendLikedStatus(commentId, userId, !liked);
+
+      // 更新点赞状态和点赞数
+      setLiked(!liked);
+
+      // 重新获取评论点赞用户列表，计算点赞数
+      const comment = await databases.getDocument(
+        config.databaseId,
+        config.commentsCollectionId,
+        commentId
+      );
+      const updatedLikedUsers = comment.liked_users || [];
+      setLikeCount(updatedLikedUsers.length); // 更新点赞数
+    } catch (error) {
+      console.error("处理点赞时出错:", error);
+    }
+  }
+
   if (!commentId) {
     return null;
   }
@@ -126,13 +176,18 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
       </Text>
       <View style={styles.actions}>
         <TouchableOpacity
-          onPress={() => setLiked(!liked)}
-          className='w-[60] h-[40] items-center justify-center'
+          onPress={handleClickLike}
+          className='w-[60] h-[40] items-center justify-center relative'
         >
           <Image
             source={liked ? likedIcon : likeIcon}
             style={{ width: 20, height: 20 }}
           />
+          {likeCount > 0 && (
+            <Text className='absolute -right-0 top-2.5 text-[#333]'>
+              {formatCommentsCounts(likeCount)}
+            </Text>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {

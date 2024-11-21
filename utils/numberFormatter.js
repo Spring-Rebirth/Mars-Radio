@@ -47,3 +47,14 @@ export const getRelativeTime = ($createdAt, t) => {
     }
 };
 
+export const formatCommentsCounts = (num) => {
+    if (num < 1000) {
+        return num.toString(); // 小于1000直接返回原始数字的字符串形式
+    }
+
+    // 格式化成千的单位
+    const formattedNum = num / 1000;
+
+    // 返回格式化的数字，并保留1位小数，单位是k
+    return `${formattedNum.toFixed(1)}k`;
+};
