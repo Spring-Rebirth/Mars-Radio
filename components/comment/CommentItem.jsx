@@ -182,7 +182,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
             style={{ width: 20, height: 20 }}
           />
           {likeCount > 0 && (
-            <Text className='absolute -right-0 top-2.5 text-[#333]'>
+            <Text className='absolute right-0.5 top-2 text-[#333] text-base'>
               {formatCommentsCounts(likeCount)}
             </Text>
           )}
