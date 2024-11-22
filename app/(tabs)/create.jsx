@@ -12,7 +12,7 @@ import { useUploadFile } from '../../hooks/useUploadFile'
 import { fetchFileUrl, uploadData } from '../../lib/appwrite'
 import { StatusBar } from 'expo-status-bar'
 import { images } from '../../constants'
-import closeY from '../../assets/menu/close-yuan.png'
+import closeY from '../../assets/icons/close.png'
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import * as FileSystem from 'expo-file-system';
 import * as Progress from 'react-native-progress';
@@ -223,7 +223,7 @@ export default function Create() {
             />
             <TouchableOpacity
               onPress={() => handleCancelSelected('video')}
-              className='absolute top-0 right-0 z-10 w-16 h-16 justify-start items-end p-2'
+              className='absolute top-0 right-0 z-10 w-16 h-16 justify-start items-end p-1.5'
             >
               <Image
                 source={closeY}
@@ -259,7 +259,7 @@ export default function Create() {
             />
             <TouchableOpacity
               onPress={() => handleCancelSelected('image')}
-              className='absolute top-0 right-0 z-10 w-16 h-16 justify-start items-end p-2'
+              className='absolute top-0 right-0 z-10 w-16 h-16 justify-start items-end p-1.5'
             >
               <Image
                 source={closeY}
