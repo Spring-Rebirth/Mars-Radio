@@ -223,7 +223,7 @@ export default function Create() {
             />
             <TouchableOpacity
               onPress={() => handleCancelSelected('video')}
-              className='absolute top-0 right-0 z-10 w-16 h-16 justify-center items-center'
+              className='absolute top-0 right-0 z-10 w-16 h-16 justify-start items-end p-2'
             >
               <Image
                 source={closeY}
@@ -259,7 +259,7 @@ export default function Create() {
             />
             <TouchableOpacity
               onPress={() => handleCancelSelected('image')}
-              className='absolute top-0 right-0 z-10 w-16 h-16 justify-center items-center'
+              className='absolute top-0 right-0 z-10 w-16 h-16 justify-start items-end p-2'
             >
               <Image
                 source={closeY}
