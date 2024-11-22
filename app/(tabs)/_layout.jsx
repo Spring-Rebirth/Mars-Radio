@@ -3,6 +3,8 @@ import { Tabs } from 'expo-router'
 import icons from '../../constants/icons'
 import { useWindowDimensions } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { useEffect } from 'react';
 
 function TabIcon({ name, icon, color, focused }) {
   const { width, height } = useWindowDimensions();
@@ -30,6 +32,17 @@ function TabIcon({ name, icon, color, focused }) {
 
 export default function TabsLayout() {
   const { t } = useTranslation();
+
+  // 全局锁定竖屏方向
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+
+    return () => {
+      // 可选：在组件卸载时解锁方向
+      ScreenOrientation.unlockAsync();
+    };
+  }, []);
+
   return (
     <Tabs screenOptions={{
       tabBarShowLabel: false,
