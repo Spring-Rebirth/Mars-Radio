@@ -227,7 +227,7 @@ export default function Create() {
             >
               <Image
                 source={closeY}
-                className='w-8 h-8'
+                className='w-6 h-6'
               />
             </TouchableOpacity>
           </View>
@@ -263,7 +263,7 @@ export default function Create() {
             >
               <Image
                 source={closeY}
-                className='w-8 h-8'
+                className='w-6 h-6'
               />
             </TouchableOpacity>
           </View>
