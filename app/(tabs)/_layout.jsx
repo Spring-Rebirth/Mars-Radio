@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, TouchableWithoutFeedback } from 'react-native'
 import { Tabs } from 'expo-router'
 import icons from '../../constants/icons'
 import { useWindowDimensions } from 'react-native'
@@ -39,7 +39,6 @@ export default function TabsLayout() {
         backgroundColor: '#F5F5F5',
         borderTopWidth: 0,
         height: 60,
-
       }
     }}>
       <Tabs.Screen
@@ -53,7 +52,12 @@ export default function TabsLayout() {
               icon={icons.home}
               color={color}
               focused={focused} />
-          )
+          ),
+          tabBarButton: (props) => (
+            <TouchableWithoutFeedback {...props}>
+              <View {...props} />
+            </TouchableWithoutFeedback>
+          ),
         }}
       />
       <Tabs.Screen
@@ -67,7 +71,12 @@ export default function TabsLayout() {
               icon={icons.plus}
               color={color}
               focused={focused} />
-          )
+          ),
+          tabBarButton: (props) => (
+            <TouchableWithoutFeedback {...props}>
+              <View {...props} />
+            </TouchableWithoutFeedback>
+          ),
         }}
       />
       <Tabs.Screen
@@ -81,7 +90,12 @@ export default function TabsLayout() {
               icon={icons.bookmark}
               color={color}
               focused={focused} />
-          )
+          ),
+          tabBarButton: (props) => (
+            <TouchableWithoutFeedback {...props}>
+              <View {...props} />
+            </TouchableWithoutFeedback>
+          ),
         }}
       />
       <Tabs.Screen
@@ -95,10 +109,14 @@ export default function TabsLayout() {
               icon={icons.profile}
               color={color}
               focused={focused} />
-          )
+          ),
+          tabBarButton: (props) => (
+            <TouchableWithoutFeedback {...props}>
+              <View {...props} />
+            </TouchableWithoutFeedback>
+          ),
         }}
       />
-
     </Tabs>
   )
 }
