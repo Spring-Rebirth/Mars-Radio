@@ -35,12 +35,15 @@
       "react-native-edge-to-edge",
       "expo-font"
     ],
-    "extra": {
-      "eas": {
-        "projectId": "b42e4b62-07a8-4671-b223-82c614092207"
-      }
-    },
     "runtimeVersion": "1.0",
-    "owner": "fk-expo"
+    "owner": "fk-expo",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a8640a18-c37e-4c8b-8b18-48f78543849d"
+      }
+    }
   }
 }
