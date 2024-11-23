@@ -95,22 +95,35 @@ export default function PlayScreen() {
   }, []);
 
   useEffect(() => {
-    const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
-      const orientation = event.orientationInfo.orientation;
-      if (
-        orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
-        orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
-      ) {
-        setFullscreen(true);
-      } else {
-        setFullscreen(false);
-      }
-    });
+    const subscribe = async () => {
+      await ScreenOrientation.unlockAsync(); // 解锁屏幕方向限制
+      const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
+        const orientation = event.orientationInfo.orientation;
 
-    // 清除监听器
-    return () => {
-      ScreenOrientation.removeOrientationChangeListener(subscription);
+        if (
+          orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+          orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
+        ) {
+          setFullscreen(true);
+        } else if (
+          orientation === ScreenOrientation.Orientation.PORTRAIT_UP ||
+          orientation === ScreenOrientation.Orientation.PORTRAIT_DOWN
+        ) {
+          setFullscreen(false);
+        }
+      });
+
+      // 清理监听器
+      return () => {
+        if (subscription && subscription.remove) {
+          subscription.remove(); // 新版本推荐的移除方式
+        } else {
+          ScreenOrientation.removeOrientationChangeListeners(); // 旧版本移除方式
+        }
+      };
     };
+
+    subscribe(); // 注册订阅
   }, []);
 
   useEffect(() => {
