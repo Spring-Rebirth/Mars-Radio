@@ -95,26 +95,21 @@ export default function PlayScreen() {
   }, []);
 
   useEffect(() => {
-    const lockOrientation = async () => {
-      try {
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-      } catch (error) {
-        console.error('Error locking orientation:', error);
+    const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
+      const orientation = event.orientationInfo.orientation;
+      if (
+        orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+        orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
+      ) {
+        setFullscreen(true);
+      } else {
+        setFullscreen(false);
       }
-    };
+    });
 
-    lockOrientation();
-
+    // 清除监听器
     return () => {
-      const unlockOrientation = async () => {
-        try {
-          await ScreenOrientation.unlockAsync();
-        } catch (error) {
-          console.error('Error unlocking orientation:', error);
-        }
-      };
-
-      unlockOrientation();
+      ScreenOrientation.removeOrientationChangeListener(subscription);
     };
   }, []);
 
