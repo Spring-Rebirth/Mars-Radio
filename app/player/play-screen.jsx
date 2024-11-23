@@ -63,7 +63,7 @@ export default function PlayScreen() {
   const handlePlaybackStatusUpdate = () => {
     if (playbackStatus.isLoaded) {
       // 当视频已加载时，根据是否正在缓冲更新 loading 状态
-      setLoading(playbackStatus.isBuffering);
+      setLoading(false);
     } else {
       // 视频尚未加载，保持 loading 为 true
       setLoading(true);
