@@ -42,24 +42,6 @@ export default function PlayScreen() {
   const insets = useSafeAreaInsets();
   const safeAreaInset = safeAreaInsets.top;
 
-  const handleEnterFullscreen = async () => {
-    try {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-      setFullscreen(true);
-    } catch (error) {
-      console.error('Error in handleEnterFullscreen:', error);
-    }
-  };
-
-  const handleExitFullscreen = async () => {
-    try {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-      setFullscreen(false);
-    } catch (error) {
-      console.error('Error in handleExitFullscreen:', error);
-    }
-  };
-
   const handlePlaybackStatusUpdate = () => {
     if (playbackStatus.isLoaded) {
       // 当视频已加载时，根据是否正在缓冲更新 loading 状态
@@ -255,21 +237,6 @@ export default function PlayScreen() {
                 showControlsWithTimer();
               }}
             />
-            <TouchableOpacity
-              onPress={fullscreen ? handleExitFullscreen : handleEnterFullscreen}
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: fullscreen ? 56 : 40,
-                height: fullscreen ? 56 : 40,
-              }}
-            >
-              <Image
-                source={fullscreen ? exitFullscreenIcon : fullscreenIcon}
-                style={{ width: fullscreen ? 20 : 15, height: fullscreen ? 20 : 15 }}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
           </View>
         </>
       )}
