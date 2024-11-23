@@ -1,7 +1,7 @@
 import { View, Text, FlatList, Image, ActivityIndicator, TouchableOpacity, RefreshControl, Alert } from 'react-native'
 import { useEffect, useState } from 'react'
 import useGetData from '../../hooks/useGetData'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import EmptyState from '../../components/EmptyState'
 import CustomButton from '../../components/CustomButton'
@@ -18,6 +18,7 @@ import SettingModal from '../../components/modal/SettingModal'
 import { useTranslation } from "react-i18next";
 
 export default function profile() {
+  const insetTop = useSafeAreaInsets().top;
   const [userPostsData, setUserPostsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
@@ -122,13 +123,14 @@ export default function profile() {
   }
 
   return (
-    <SafeAreaView className='bg-primary h-full'>
+    <View className='bg-primary h-full'>
       <SettingModal
         showModal={settingModalVisible}
         setModalVisible={setSettingModalVisible}
       />
       <FlatList
         data={loading ? [] : userPostsData}
+        style={{ paddingTop: insetTop }}
         // item 是 data 数组中的每一项
         keyExtractor={(item) => item.$id}
 
@@ -219,6 +221,6 @@ export default function profile() {
 
       />
       <StatusBar style='auto' />
-    </SafeAreaView>
+    </View>
   )
 }

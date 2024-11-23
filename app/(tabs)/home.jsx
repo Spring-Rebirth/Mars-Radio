@@ -12,12 +12,13 @@ import downIcon from '../../assets/icons/down.png'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { StatusBar } from 'expo-status-bar'
 import { updateSavedVideo } from '../../lib/appwrite'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { fetchAdminData } from '../../lib/appwrite'
 import VideoLoadingSkeleton from '../../components/loading-view/VideoLoadingSkeleton'
 
 export default function Home() {
+  const insetTop = useSafeAreaInsets().top;
   const { t } = useTranslation();
   const { user } = useGlobalContext();
   const [data, setData] = useState([]);
@@ -82,10 +83,11 @@ export default function Home() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View className="bg-primary h-full">
       <View className={`flex-1 bg-primary ${isFullscreen ? 'w-full h-full' : 'h-full'}`}>
         <StatusBar style='auto' />
         <FlatList
+          style={{ paddingTop: insetTop }}
           data={loading ? [] : data}
           keyExtractor={(item) => item.$id}
           ListHeaderComponent={() => {
@@ -175,6 +177,6 @@ export default function Home() {
           }
         />
       </View>
-    </SafeAreaView>
+    </View>
   )
 }

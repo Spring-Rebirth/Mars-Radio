@@ -1,7 +1,7 @@
 //cSpell:words psemibold appwrite
 import { View, Text, FlatList, Image, ActivityIndicator, RefreshControl } from 'react-native'
 import { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { images } from '../../constants'
 import SearchInput from '../../components/SearchInput'
 import VideoCard from '../../components/VideoCard'
@@ -11,6 +11,7 @@ import { useGlobalContext } from '../../context/GlobalProvider'
 import { useTranslation } from "react-i18next";
 
 export default function Saved() {
+  const insetTop = useSafeAreaInsets().top;
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [savedPostsData, setSavedPostsData] = useState([]);
@@ -29,10 +30,11 @@ export default function Saved() {
   }, [user])
 
   return (
-    <SafeAreaView className='bg-primary h-full'>
+    <View className='bg-primary h-full'>
 
       <FlatList
         data={loading ? [] : savedPostsData}
+        style={{ paddingTop: insetTop }}
         // item 是 data 数组中的每一项
         keyExtractor={(item) => item.$id}
 
@@ -85,7 +87,7 @@ export default function Saved() {
       />
 
       <StatusBar style='auto' />
-    </SafeAreaView>
+    </View>
   )
 }
 

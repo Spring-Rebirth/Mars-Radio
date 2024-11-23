@@ -8,8 +8,6 @@ import CommentList from "../../components/comment/CommentList";
 import { useGlobalContext } from '../../context/GlobalProvider';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import replayIcon from '../../assets/icons/replay.png';
-import fullscreenIcon from '../../assets/icons/fullscreen.png';
-import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.png';
 import playbackIcon from '../../assets/icons/playback.png';
 import pauseIcon from '../../assets/icons/pause.png';
 import Slider from '@react-native-community/slider';

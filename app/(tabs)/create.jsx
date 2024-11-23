@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import CustomForm from '../../components/CustomForm'
 import CustomButton from '../../components/CustomButton'
 import { icons } from '../../constants'
@@ -20,6 +20,7 @@ import mime from 'mime';
 import { useTranslation } from "react-i18next";
 
 export default function Create() {
+  const insetTop = useSafeAreaInsets().top;
   const { user } = useGlobalContext();
   const [form, setForm] = useState({ title: '' });
   const { pickImage, pickVideo } = usePickFile();
@@ -179,8 +180,8 @@ export default function Create() {
   };
 
   return (
-    <SafeAreaView className='bg-primary h-full px-4 '>
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+    <View className='bg-primary h-full px-4 '>
+      <ScrollView style={{ flex: 1, marginTop: insetTop }} showsVerticalScrollIndicator={false}>
         {/* Upload Video */}
         <View className='flex-row justify-between items-center mt-10 h-[60px]'>
           <Text className='text-black text-2xl font-psemibold'>{t("Upload Video")}</Text>
@@ -305,6 +306,6 @@ export default function Create() {
         />
         <StatusBar style='auto' />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }
