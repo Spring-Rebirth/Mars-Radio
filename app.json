@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "MarsX",
-    "slug": "aura",
-    "scheme": "aura",
+    "slug": "marsx",
+    "scheme": "marsx",
     "version": "20.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
@@ -18,14 +18,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mystseed.aura"
+      "bundleIdentifier": "com.mystseed.marsx"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mystseed.aura"
+      "package": "com.mystseed.marsx"
     },
     "web": {
       "favicon": "./assets/icon.png"
