@@ -207,7 +207,7 @@ export default function PlayScreen() {
           <View
             style={[
               fullscreen ? styles.bottomBarFS : styles.bottomBar,
-              !fullscreen && { top: '22.5%', left: 0 },
+              !fullscreen && { top: '24%', left: 0 },
             ]}
           >
             <Slider
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     width: '78%',
     position: 'absolute',
     marginHorizontal: '11%',
-    bottom: 15, // 距底部的距离
+    bottom: 10, // 距底部的距离
     height: 40, // 固定高度
     paddingHorizontal: 15, // 左右内边距
     zIndex: 10, // 确保在视频上方
