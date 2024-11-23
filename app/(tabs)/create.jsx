@@ -180,8 +180,8 @@ export default function Create() {
   };
 
   return (
-    <View className='bg-primary h-full px-4 '>
-      <ScrollView style={{ flex: 1, marginTop: insetTop }} showsVerticalScrollIndicator={false}>
+    <View className='bg-primary h-full px-4 ' style={{ marginTop: insetTop }}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* Upload Video */}
         <View className='flex-row justify-between items-center mt-10 h-[60px]'>
           <Text className='text-black text-2xl font-psemibold'>{t("Upload Video")}</Text>

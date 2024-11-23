@@ -83,11 +83,10 @@ export default function Home() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   return (
-    <View className="bg-primary h-full">
+    <View className="bg-primary h-full" style={{ marginTop: insetTop }}>
       <View className={`flex-1 bg-primary ${isFullscreen ? 'w-full h-full' : 'h-full'}`}>
         <StatusBar style='auto' />
         <FlatList
-          style={{ paddingTop: insetTop }}
           data={loading ? [] : data}
           keyExtractor={(item) => item.$id}
           ListHeaderComponent={() => {

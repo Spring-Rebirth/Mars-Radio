@@ -123,14 +123,13 @@ export default function profile() {
   }
 
   return (
-    <View className='bg-primary h-full'>
+    <View className='bg-primary h-full' style={{ marginTop: insetTop }}>
       <SettingModal
         showModal={settingModalVisible}
         setModalVisible={setSettingModalVisible}
       />
       <FlatList
         data={loading ? [] : userPostsData}
-        style={{ paddingTop: insetTop }}
         // item 是 data 数组中的每一项
         keyExtractor={(item) => item.$id}
 

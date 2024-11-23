@@ -30,14 +30,11 @@ export default function Saved() {
   }, [user])
 
   return (
-    <View className='bg-primary h-full'>
-
+    <View className='bg-primary h-full' style={{ marginTop: insetTop }}>
       <FlatList
         data={loading ? [] : savedPostsData}
-        style={{ paddingTop: insetTop }}
         // item 是 data 数组中的每一项
         keyExtractor={(item) => item.$id}
-
         ListHeaderComponent={() => {
           return (
             <View className='my-6 px-4'>
