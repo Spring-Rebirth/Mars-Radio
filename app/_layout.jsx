@@ -24,33 +24,36 @@ export default function RootLayout() {
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
 
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [canNavigate, setCanNavigate] = useState(false);
+  const [appState, setAppState] = useState('loading'); // 'loading', 'updating', 'ready'
+
+  if (error) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Error loading fonts: {error.message}</Text>
+      </View>
+    );
+  }
 
   useEffect(() => {
-    if (error) throw error;
-
     async function checkForUpdates() {
       try {
-        console.log('Checking for updates...');
+        console.log('Checking for updates');
         const update = await Updates.checkForUpdateAsync();
-        console.log('Update available:', update.isAvailable);
 
         if (update.isAvailable) {
           console.log('Fetching update...');
-          setIsUpdating(true);
+          setAppState('updating');
           await Updates.fetchUpdateAsync();
-          console.log('Update fetched.');
 
           console.log('Reloading app...');
           await Updates.reloadAsync();
         } else {
           console.log('No updates available.');
-          setCanNavigate(true);
+          setAppState('ready');
         }
       } catch (e) {
         console.log('Error checking for updates:', e);
-        setCanNavigate(true);
+        setAppState('ready');
       }
     }
 
@@ -58,10 +61,10 @@ export default function RootLayout() {
       checkForUpdates();
     }
 
-  }, [fontsLoaded, error]);
+  }, [fontsLoaded]);
 
   useEffect(() => {
-    if (fontsLoaded && canNavigate && !isUpdating) {
+    if (fontsLoaded && appState === 'ready') {
       AsyncStorage.getItem('language').then((lang) => {
         if (lang) {
           i18n.changeLanguage(lang);
@@ -69,10 +72,17 @@ export default function RootLayout() {
       });
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, canNavigate, isUpdating]);
+  }, [fontsLoaded, appState]);
 
+  if (appState === 'updating') {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Updating...</Text>
+      </View>
+    );
+  }
 
-  if (!fontsLoaded || isUpdating || !canNavigate) {
+  if (appState === 'loading') {
     return null;
   }
 
