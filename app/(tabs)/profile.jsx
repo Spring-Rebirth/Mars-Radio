@@ -25,16 +25,17 @@ export default function profile() {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [currentPlayingPost, setCurrentPlayingPost] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [settingModalVisible, setSettingModalVisible] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
     setLoading(true);
-    fetchUserPosts(user.$id)
+    if (user?.$id) {
+      fetchUserPosts(user.$id)
+    }
     setLoading(false);
-  }, [user.$id, user.avatar])
+  }, [user?.$id, user?.avatar])
 
   const handleSignOut = async () => {
     try {
@@ -59,7 +60,7 @@ export default function profile() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchUserPosts(user.$id);
+    await fetchUserPosts(user?.$id);
     await getCurrentUser()
       .then(res => setUser(res))
       .catch(error => {
@@ -97,7 +98,7 @@ export default function profile() {
             const StorageAvatarUrl = await fetchFileUrl(fileId);
 
             console.log(`StorageAvatarUrl: ${StorageAvatarUrl}`);
-            const result = await updateAvatar(StorageAvatarUrl, user.$id);
+            const result = await updateAvatar(StorageAvatarUrl, user?.$id);
             console.log('updateAvatar result:', result);
             setUser(result);
             if (result) {
@@ -131,7 +132,7 @@ export default function profile() {
       <FlatList
         data={loading ? [] : userPostsData}
         // item 是 data 数组中的每一项
-        keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item?.$id}
 
         ListHeaderComponent={() => {
           return (
@@ -192,7 +193,7 @@ export default function profile() {
         // renderItem 接受一个对象参数，通常解构为 { item, index, separators }
         renderItem={({ item }) => {
           return (
-            <VideoCard post={item} handleRefresh={handleRefresh} setCurrentPlayingPost={setCurrentPlayingPost} />
+            <VideoCard post={item} handleRefresh={handleRefresh} />
           )
         }}
         ListEmptyComponent={() => {
