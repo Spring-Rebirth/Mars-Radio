@@ -1,14 +1,13 @@
 // cSpell:ignore Pressable cooldown
 import {
-  FlatList, ImageBackground, Text, TouchableOpacity, View, Image, ActivityIndicator, Alert
+  FlatList, ImageBackground, TouchableOpacity, View, Image, ActivityIndicator, Alert
 } from 'react-native'
 import { useState, useContext } from 'react'
 import * as Animatable from 'react-native-animatable'
 import star from '../assets/menu/star-solid.png'
 import starTwo from '../assets/menu/star2.png'
-import { useGlobalContext } from '../context/GlobalProvider'
+import { GlobalContext, useGlobalContext } from '../context/GlobalProvider'
 import { updateSavedCounts } from '../lib/appwrite';
-import { PlayDataContext } from '../context/PlayDataContext';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next'
@@ -20,7 +19,7 @@ function TrendingItem({ activeItem, item }) {
   const { played_counts, $id } = item;
   const [isSaved, setIsSaved] = useState(user?.favorite.includes($id));
   const [playCount, setPlayCount] = useState(played_counts || 0);
-  const { updatePlayData, playDataRef } = useContext(PlayDataContext);
+  const { updatePlayData, playDataRef } = useContext(GlobalContext);
 
   const zoomIn = {
     0: { scale: 0.9 },

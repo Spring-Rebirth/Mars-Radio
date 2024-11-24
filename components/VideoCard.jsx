@@ -5,11 +5,10 @@ import { icons } from '../constants'
 import star from '../assets/menu/star-solid.png'
 import starThree from '../assets/menu/star3.png'
 import trash from '../assets/menu/trash-solid.png'
-import { useGlobalContext } from '../context/GlobalProvider'
+import { GlobalContext, useGlobalContext } from '../context/GlobalProvider'
 import { deleteVideoDoc, deleteVideoFiles } from '../lib/appwrite'
 import { updateSavedCounts, getVideoDetails } from '../lib/appwrite';
 import { StatusBar } from 'expo-status-bar';
-import { PlayDataContext } from '../context/PlayDataContext';
 import { formatNumberWithUnits, getRelativeTime } from '../utils/numberFormatter';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next'
@@ -30,7 +29,7 @@ export default function VideoCard({
   const [isSaved, setIsSaved] = useState(user?.favorite.includes($id));
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const { updatePlayData, playDataRef } = useContext(PlayDataContext);
+  const { updatePlayData, playDataRef } = useContext(GlobalContext);
   const [playCount, setPlayCount] = useState(post.played_counts || 0);
 
   // const route = useRoute();

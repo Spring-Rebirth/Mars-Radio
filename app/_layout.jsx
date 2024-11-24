@@ -4,8 +4,6 @@ import { SplashScreen } from "expo-router";
 import { useFonts } from 'expo-font';
 import { GlobalProvider } from '../context/GlobalProvider';
 import * as Updates from 'expo-updates';
-import { Alert } from 'react-native';
-import { PlayDataProvider } from '../context/PlayDataContext';
 import AppContent from '../context/AppContent';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
@@ -81,11 +79,8 @@ export default function RootLayout() {
   return (
     <I18nextProvider i18n={i18n}>
       <GlobalProvider>
-        <PlayDataProvider>
-          <AppContent />
-        </PlayDataProvider>
+        <AppContent />
       </GlobalProvider>
     </I18nextProvider>
   );
-
 }

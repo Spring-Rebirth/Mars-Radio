@@ -1,10 +1,10 @@
 import React, { useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PlayDataContext } from '../context/PlayDataContext';
+import { GlobalContext } from './GlobalProvider';
 import { Stack } from "expo-router";
 
 const AppContent = () => {
-    const { playDataRef } = useContext(PlayDataContext);
+    const { playDataRef } = useContext(GlobalContext);
 
     useEffect(() => {
         const loadPlayData = async () => {
