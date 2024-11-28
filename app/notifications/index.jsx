@@ -1,6 +1,16 @@
-import { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, Button } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Button, Platform } from 'react-native';
+import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const notificationsData = [
   { id: '1', title: 'Notification 1', message: 'This is the first notification' },
@@ -16,31 +26,33 @@ const NotificationItem = ({ title, message }) => (
 );
 
 const NotificationScreen = () => {
-  const expoPushToken = useRef(null);
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [channels, setChannels] = useState([]);
+  const [notification, setNotification] = useState(undefined);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   useEffect(() => {
-    requestNotificationPermissions();
-    setupNotificationListeners();
-  }, []);
+    registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
 
-  const requestNotificationPermissions = async () => {
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== 'granted') {
-      alert('通知权限未授权');
-      return false;
+    if (Platform.OS === 'android') {
+      Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
     }
-    return true;
-  };
-
-  const setupNotificationListeners = () => {
-    Notifications.addNotificationReceivedListener(notification => {
-      console.log('Notification received:', notification);
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
     });
 
-    Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('Notification clicked:', response);
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
     });
-  };
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   const handleGetPushToken = async () => {
     const hasPermission = await requestNotificationPermissions();
@@ -49,6 +61,7 @@ const NotificationScreen = () => {
     try {
       const token = await Notifications.getExpoPushTokenAsync();
       console.log('Expo Push Token:', token.data);
+      setExpoPushToken(token);
     } catch (error) {
       console.error('Error getting push token:', error);
     }
