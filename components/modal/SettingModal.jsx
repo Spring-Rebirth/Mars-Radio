@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import backIcon from '../../assets/icons/left-arrow.png'
 import closeIcon from '../../assets/icons/close.png'
 
-export default function SettingModal({ showModal = false, setModalVisible }) {
+export default function SettingModal({ showModal = false, setModalVisible, signOut }) {
   const [viewLevel, setViewLevel] = useState(1); // 控制当前视图层级
   const { t, i18n } = useTranslation();
 
@@ -39,9 +39,16 @@ export default function SettingModal({ showModal = false, setModalVisible }) {
           // 一级视图
           <View className='items-center'>
             <Text style={styles.title}>{t("Setting")}</Text>
+
             <TouchableOpacity onPress={goToNextLevel}>
               <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
                 <Text>{t("Language")}</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={signOut}>
+              <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center mt-2">
+                <Text>{t("Sign Out")}</Text>
               </View>
             </TouchableOpacity>
           </View>

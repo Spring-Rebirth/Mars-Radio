@@ -13,9 +13,10 @@ import { StatusBar } from 'expo-status-bar'
 import * as ImagePicker from 'expo-image-picker';
 import { fetchFileUrl, updateAvatar, getCurrentUser } from '../../lib/appwrite'
 import { createFile } from '../../lib/appwrite';
-import settingIcon from '../../assets/icons/setting-red.png'
+import settingIcon from '../../assets/menu/setting.png'
 import SettingModal from '../../components/modal/SettingModal'
 import { useTranslation } from "react-i18next";
+import notifyIcon from '../../assets/menu/notify.png'
 
 export default function profile() {
   const insetTop = useSafeAreaInsets().top;
@@ -128,6 +129,7 @@ export default function profile() {
       <SettingModal
         showModal={settingModalVisible}
         setModalVisible={setSettingModalVisible}
+        signOut={handleSignOut}
       />
       <FlatList
         data={loading ? [] : userPostsData}
@@ -139,18 +141,18 @@ export default function profile() {
             <View className='my-6 px-4 mb-8 relative'>
               <View className='flex-row items-center justify-between'>
                 <TouchableOpacity onPress={() => { setSettingModalVisible(true) }}
-                  className='w-8 h-8'
+                  className='w-6 h-6'
                 >
                   <Image
                     source={settingIcon}
-                    className='w-8 h-8 mt-[0.5]'
+                    className='w-6 h-6'
                     resizeMode='contain'
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSignOut}>
+                <TouchableOpacity onPress={() => { }}>
                   <Image
-                    source={icons.logout}
-                    className='w-6 h-6 '
+                    source={notifyIcon}
+                    className='w-6 h-6'
                     resizeMode='contain'
                   />
                 </TouchableOpacity>
