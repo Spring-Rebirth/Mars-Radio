@@ -29,6 +29,7 @@ const AppContent = () => {
             <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
             <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
             <Stack.Screen name='player/play-screen' options={{ headerShown: false }} />
+            <Stack.Screen name='notifications/index' options={{ headerShown: false }} />
         </Stack>
     );
 };
