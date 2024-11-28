@@ -36,6 +36,7 @@ export default function TabsLayout() {
       tabBarShowLabel: false,
       tabBarActiveTintColor: '#FFA001',
       tabBarInactiveTintColor: '#B0B0B0',
+      tabBarHideOnKeyboard: true,
       tabBarStyle: {
         backgroundColor: '#F5F5F5',
         borderTopWidth: 0,
