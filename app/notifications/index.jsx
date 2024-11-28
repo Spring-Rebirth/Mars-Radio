@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, Button } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
@@ -16,6 +16,8 @@ const NotificationItem = ({ title, message }) => (
 );
 
 const NotificationScreen = () => {
+  const expoPushToken = useRef(null);
+
   useEffect(() => {
     requestNotificationPermissions();
     setupNotificationListeners();
@@ -24,8 +26,10 @@ const NotificationScreen = () => {
   const requestNotificationPermissions = async () => {
     const { status } = await Notifications.requestPermissionsAsync();
     if (status !== 'granted') {
-      alert('You need to enable notifications to use this feature');
+      alert('通知权限未授权');
+      return false;
     }
+    return true;
   };
 
   const setupNotificationListeners = () => {
@@ -39,9 +43,15 @@ const NotificationScreen = () => {
   };
 
   const handleGetPushToken = async () => {
-    const token = await Notifications.getExpoPushTokenAsync();
-    console.log('Expo Push Token:', token.data);
-    // 保存 token 以便发送推送通知
+    const hasPermission = await requestNotificationPermissions();
+    if (!hasPermission) return;
+
+    try {
+      const token = await Notifications.getExpoPushTokenAsync();
+      console.log('Expo Push Token:', token.data);
+    } catch (error) {
+      console.error('Error getting push token:', error);
+    }
   };
 
   // 推送通知
