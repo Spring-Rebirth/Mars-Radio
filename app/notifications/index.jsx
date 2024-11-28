@@ -83,6 +83,11 @@ const NotificationScreen = () => {
       />
 
       <Button title="Get Push Token" onPress={handleGetPushToken} />
+
+      <Button
+        title="Send Push Notification"
+        onPress={() => sendPushNotification('ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]')}
+      />
     </View>
   );
 };
