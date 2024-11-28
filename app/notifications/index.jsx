@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Button, Platform } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
@@ -12,20 +12,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const notificationsData = [
-  { id: '1', title: 'Notification 1', message: 'This is the first notification' },
-  { id: '2', title: 'Notification 2', message: 'This is the second notification' },
-  { id: '3', title: 'Notification 3', message: 'This is the third notification' },
-];
-
-const NotificationItem = ({ title, message }) => (
-  <View style={styles.notificationItem}>
-    <Text style={styles.title}>{title}</Text>
-    <Text style={styles.message}>{message}</Text>
-  </View>
-);
-
-const NotificationScreen = () => {
+function NotificationScreen() {
   const [expoPushToken, setExpoPushToken] = useState('');
   const [channels, setChannels] = useState([]);
   const [notification, setNotification] = useState(undefined);
@@ -54,89 +41,92 @@ const NotificationScreen = () => {
     };
   }, []);
 
-  const handleGetPushToken = async () => {
-    const hasPermission = await requestNotificationPermissions();
-    if (!hasPermission) return;
-
-    try {
-      const token = await Notifications.getExpoPushTokenAsync();
-      console.log('Expo Push Token:', token.data);
-      setExpoPushToken(token);
-    } catch (error) {
-      console.error('Error getting push token:', error);
-    }
-  };
-
-  // 推送通知
-  const sendPushNotification = async (expoPushToken) => {
-    const message = {
-      to: expoPushToken,
-      sound: 'default',
-      title: 'New Message',
-      body: 'You have a new notification!',
-      data: { extraData: 'any extra data' },
-    };
-
-    try {
-      const response = await fetch('https://exp.host/--/api/v2/push/send', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(message),
-      });
-
-      const responseJson = await response.json();
-      console.log('Push notification sent:', responseJson);
-    } catch (error) {
-      console.error('Error sending push notification:', error);
-    }
-  };
-
-
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={notificationsData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <NotificationItem title={item.title} message={item.message} />
-        )}
-      />
-
-      <Button title="Get Push Token" onPress={handleGetPushToken} />
-
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-around',
+      }}>
+      <Text>Your expo push token: {expoPushToken}</Text>
+      <Text>{`Channels: ${JSON.stringify(
+        channels.map(c => c.id),
+        null,
+        2
+      )}`}</Text>
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <Text>Title: {notification && notification.request.content.title} </Text>
+        <Text>Body: {notification && notification.request.content.body}</Text>
+        <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
+      </View>
       <Button
-        title="Send Push Notification"
-        onPress={() => sendPushNotification('ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]')}
+        title="Press to schedule a notification"
+        onPress={async () => {
+          await schedulePushNotification();
+        }}
       />
     </View>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  notificationItem: {
-    padding: 15,
-    marginVertical: 8,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  message: {
-    fontSize: 14,
-    color: '#555',
-  },
-});
+async function schedulePushNotification() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "You've got mail! 📬",
+      body: 'Here is the notification body',
+      data: { data: 'goes here', test: { test1: 'more data' } },
+    },
+    trigger: { seconds: 2 },
+  });
+}
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    // Learn more about projectId:
+    // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+    // EAS projectId is used here.
+    try {
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+      if (!projectId) {
+        throw new Error('Project ID not found');
+      }
+      token = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+      console.log(token);
+    } catch (e) {
+      token = `${e}`;
+    }
+  } else {
+    alert('Must use physical device for Push Notifications');
+  }
+
+  return token;
+}
+
 
 export default NotificationScreen;
