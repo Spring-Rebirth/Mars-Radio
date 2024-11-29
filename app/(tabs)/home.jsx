@@ -113,11 +113,22 @@ export default function Home() {
   }, [user?.$id]);
 
   useEffect(() => {
-    if (user) {
-      console.log('expoPushToken:', expoPushToken);
-      updateUserInfo(user.$id, { expo_push_token: expoPushToken });
-    }
-  }, [])
+    const updatePushToken = async () => {
+      if (user && expoPushToken) {
+        console.log('expoPushToken:', expoPushToken);  // 确保 token 正确
+        const content = { expo_push_token: expoPushToken };
+        console.log('Content to update:', content);
+        try {
+          const result = await updateUserInfo(user.$id, content);  // 使用 await 等待更新操作
+          console.log('updateUserInfo result:', result);  // 打印更新结果
+        } catch (error) {
+          console.error('Error updating user info:', error);
+        }
+      }
+    };
+
+    updatePushToken();
+  }, [user, expoPushToken]);
 
   const toggleFullscreen = (fullscreen) => {
     setIsFullscreen(fullscreen);
