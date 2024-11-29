@@ -35,5 +35,3 @@ yarn-error.*
 *.tsbuildinfo
 
 .VSCodeCounter
-
-google-services.json
