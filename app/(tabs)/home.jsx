@@ -120,7 +120,7 @@ export default function Home() {
         console.log('Content to update:', content);
         try {
           const result = await updateUserInfo(user.$id, content);  // 使用 await 等待更新操作
-          console.log('updateUserInfo result:', result);  // 打印更新结果
+          if (result) console.log('Update expo push token successful');
         } catch (error) {
           console.error('Error updating user info:', error);
         }

@@ -62,4 +62,31 @@ async function schedulePushNotification() {
   });
 }
 
-export { registerForPushNotificationsAsync, schedulePushNotification };
+// 发送推送通知的函数
+async function sendPushNotification(expoPushToken, title, body) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: title,
+    body: body,
+  };
+
+  try {
+    // 使用 Expo Push API 发送通知
+    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+
+    const responseJson = await response.json();
+    console.log('Push notification sent:', responseJson);
+  } catch (error) {
+    console.error('Error sending push notification:', error);
+  }
+}
+
+export { registerForPushNotificationsAsync, schedulePushNotification, sendPushNotification };

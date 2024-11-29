@@ -3,8 +3,9 @@ import { useState } from 'react'
 import { useTranslation } from "react-i18next";
 import { ID } from "react-native-appwrite";
 import { config, databases } from "../../lib/appwrite";
+import { sendPushNotification } from "../../functions/notifications";
 
-export default function CommentInputBox({ videoId, userId, onCommentSubmitted }) {
+export default function CommentInputBox({ videoId, userId, videoCreator, onCommentSubmitted }) {
   const { t } = useTranslation()
   const [comment, setComment] = useState('');
 
@@ -24,6 +25,12 @@ export default function CommentInputBox({ videoId, userId, onCommentSubmitted })
         newComment
       );
       Alert.alert('Publish successfully');
+      // 根据视频ID获取视频的发布者信息
+      if (videoCreator.expo_push_token) {
+        // 发送推送通知
+        sendPushNotification(videoCreator.expo_push_token, 'New comment', comment);
+
+      }
       setComment('');
       onCommentSubmitted(response); // 调用回调，传递新评论数据
     } catch (error) {

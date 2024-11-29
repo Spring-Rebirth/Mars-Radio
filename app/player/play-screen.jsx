@@ -20,7 +20,7 @@ export default function PlayScreen() {
   const { user } = useGlobalContext();
   const { post } = useLocalSearchParams();
   const parsedVideoUrl = post ? JSON.parse(post).video : null;
-  const { $id: videoId } = JSON.parse(post);
+  const { $id: videoId, creator: videoCreator } = JSON.parse(post);
   const { $id: userId, avatar, username } = user;
 
   const { playing, setPlaying, loading, setLoading, isEnded, setIsEnded, showControls,
@@ -244,6 +244,7 @@ export default function PlayScreen() {
           <CommentInputBox
             userId={userId}
             videoId={videoId}
+            videoCreator={videoCreator}
             onCommentSubmitted={onCommentSubmitted}
           />
         </View>
