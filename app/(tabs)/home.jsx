@@ -19,6 +19,7 @@ import VideoLoadingSkeleton from '../../components/loading-view/VideoLoadingSkel
 import * as Notifications from 'expo-notifications';
 import { registerForPushNotificationsAsync } from '../../functions/notifications';
 import { router } from 'expo-router'
+import { updateUserInfo } from '../../services/userService'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -111,7 +112,12 @@ export default function Home() {
     fetchDataAndUpdateVideo();  // 调用异步函数 	
   }, [user?.$id]);
 
-
+  useEffect(() => {
+    if (user) {
+      console.log('expoPushToken:', expoPushToken);
+      updateUserInfo(user.$id, { expo_push_token: expoPushToken });
+    }
+  }, [])
 
   const toggleFullscreen = (fullscreen) => {
     setIsFullscreen(fullscreen);
