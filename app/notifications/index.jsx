@@ -3,6 +3,7 @@ import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -31,6 +32,9 @@ function NotificationScreen() {
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
+      setTimeout(() => {
+        router.push('/(tabs)/create');
+      }, 500); // 延迟 500 毫秒后跳转
     });
 
     return () => {
