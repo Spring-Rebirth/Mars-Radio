@@ -149,7 +149,7 @@ export default function profile() {
                     resizeMode='contain'
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { router.navigate('/notifications') }}>
+                <TouchableOpacity onPress={() => { router.navigate('/notifications/notice-screen') }}>
                   <Image
                     source={notifyIcon}
                     className='w-6 h-6'

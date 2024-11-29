@@ -1,6 +1,6 @@
 //cSpell:words psemibold appwrite
-import { View, Text, FlatList, Image, RefreshControl } from 'react-native'
-import { useEffect, useState } from 'react'
+import { View, Text, FlatList, Image, RefreshControl, Platform } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
 import { images } from '../../constants'
 import SearchInput from '../../components/SearchInput'
 import Trending from "../../components/Trending"
@@ -16,6 +16,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { fetchAdminData } from '../../lib/appwrite'
 import VideoLoadingSkeleton from '../../components/loading-view/VideoLoadingSkeleton'
+import * as Notifications from 'expo-notifications';
+import { registerForPushNotificationsAsync } from '../../functions/notifications';
+import { router } from 'expo-router'
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function Home() {
   const insetTop = useSafeAreaInsets().top;
@@ -27,6 +38,38 @@ export default function Home() {
   const [adminList, setAdminList] = useState([]);
   const [popularData, setPopularData] = useState([]);
   const { fetchPosts, fetchPopularPosts } = useGetData({ setLoading, setData, setPopularData });
+
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [channels, setChannels] = useState([]);
+  const [notification, setNotification] = useState(undefined);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
+
+    if (Platform.OS === 'android') {
+      Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
+    }
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+      setTimeout(() => {
+        // router.push('/(tabs)/create');
+        router.push('/notifications');
+      }, 500); // 延迟 500 毫秒后跳转
+    });
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   useEffect(() => {
     const addAdminData = async () => {
@@ -67,6 +110,8 @@ export default function Home() {
 
     fetchDataAndUpdateVideo();  // 调用异步函数 	
   }, [user?.$id]);
+
+
 
   const toggleFullscreen = (fullscreen) => {
     setIsFullscreen(fullscreen);
