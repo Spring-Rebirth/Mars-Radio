@@ -60,7 +60,7 @@ export default function Home() {
       console.log(response);
       setTimeout(() => {
         // router.push('/(tabs)/create');
-        router.push('/notifications');
+        router.push('/notifications/notice-screen');
       }, 500); // 延迟 500 毫秒后跳转
     });
 
@@ -115,11 +115,11 @@ export default function Home() {
   useEffect(() => {
     const updatePushToken = async () => {
       if (user && expoPushToken) {
-        console.log('expoPushToken:', expoPushToken);  // 确保 token 正确
+        console.log('expoPushToken:', expoPushToken);
         const content = { expo_push_token: expoPushToken };
-        console.log('Content to update:', content);
+
         try {
-          const result = await updateUserInfo(user.$id, content);  // 使用 await 等待更新操作
+          const result = await updateUserInfo(user.$id, content);
           if (result) console.log('Update expo push token successful');
         } catch (error) {
           console.error('Error updating user info:', error);

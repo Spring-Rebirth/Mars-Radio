@@ -26,6 +26,7 @@ export default function CommentInputBox({ videoId, userId, videoCreator, onComme
       );
       Alert.alert('Publish successfully');
       // 根据视频ID获取视频的发布者信息
+      console.log('videoCreator.expo_push_token:', videoCreator.expo_push_token);
       if (videoCreator.expo_push_token) {
         // 发送推送通知
         sendPushNotification(videoCreator.expo_push_token, 'New comment', comment);
