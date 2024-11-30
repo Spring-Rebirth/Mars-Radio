@@ -52,6 +52,7 @@ export default function Home() {
     if (Platform.OS === 'android') {
       Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
     }
+
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
@@ -115,6 +116,7 @@ export default function Home() {
   useEffect(() => {
     const updatePushToken = async () => {
       if (user && expoPushToken) {
+        if (user.expo_push_token === expoPushToken) return;
         console.log('expoPushToken:', expoPushToken);
         const content = { expo_push_token: expoPushToken };
 
@@ -124,6 +126,7 @@ export default function Home() {
         } catch (error) {
           console.error('Error updating user info:', error);
         }
+
       }
     };
 
