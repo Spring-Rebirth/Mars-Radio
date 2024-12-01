@@ -63,12 +63,13 @@ async function schedulePushNotification() {
 }
 
 // 发送推送通知的函数
-async function sendPushNotification(expoPushToken, title, body) {
+async function sendPushNotification(expoPushToken, title, body, data) {
   const message = {
     to: expoPushToken,
     sound: 'default',
     title: title,
     body: body,
+    data: data,
   };
 
   try {

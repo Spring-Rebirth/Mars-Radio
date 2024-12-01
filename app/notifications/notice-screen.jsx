@@ -2,22 +2,39 @@ import { Text, View, Button, FlatList } from 'react-native';
 import { schedulePushNotification } from '../../functions/notifications';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NoticeItem from '../../components/NoticeItem';
-
-const notificationsData = [
-  { id: '1', title: 'Notification 1', content: 'This is the first notification' },
-  { id: '2', title: 'Notification 2', content: 'This is the second notification' },
-  { id: '3', title: 'Notification 3', content: 'This is the third notification' },
-];
+import { useEffect } from 'react';
+import { useLocalSearchParams } from 'expo-router';
 
 function NoticeScreen() {
-  const handlePress = (id) => {
-    console.log('Notification clicked:', id);
+  const { data } = useLocalSearchParams();
+
+  if (data) {
+    const notificationsData = JSON.parse(data);
+    console.log('notificationsData:', notificationsData);
+  }
+
+  const handlePress = () => {
+    console.log('Notification clicked');
     // 在这里处理点击通知后的逻辑
   };
 
   return (
     <SafeAreaView>
-      <FlatList
+      {data ? (
+        <NoticeItem
+          title={notificationsData.title}
+          content={notificationsData.body}
+          onPress={() => handlePress()}
+        />
+      ) : (
+        <NoticeItem
+          title={'Do not have message'}
+          content={'No message'}
+          onPress={() => { }}
+        />
+      )}
+
+      {/* <FlatList
         data={notificationsData}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -27,7 +44,7 @@ function NoticeScreen() {
             onPress={() => handlePress(item.id)} // 传递点击事件
           />
         )}
-      />
+      /> */}
     </SafeAreaView>
   );
 }

@@ -60,8 +60,10 @@ export default function Home() {
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
       setTimeout(() => {
-        // router.push('/(tabs)/create');
-        router.push('/notifications/notice-screen');
+        router.push({
+          pathname: '/notifications/notice-screen',
+          params: { data: JSON.stringify(response.notification.request.content) },
+        });
       }, 500); // 延迟 500 毫秒后跳转
     });
 
