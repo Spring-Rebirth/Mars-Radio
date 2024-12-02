@@ -163,81 +163,80 @@ export default function PlayScreen() {
           />
         </TouchableOpacity>
       )}
-      <TouchableWithoutFeedback onPress={handleClickedVideo}>
-        <Video
-          ref={videoRef}
-          source={{ uri: parsedVideoUrl }}
-          style={[
-            styles.video,
-            { height: fullscreen ? '100%' : screenHeight },
-            { marginTop: fullscreen ? 0 : safeAreaInset }
-          ]}
-          resizeMode={ResizeMode.CONTAIN}
-          useNativeControls={false}
-          shouldPlay={playing}
-          isLooping={false}
-          onPlaybackStatusUpdate={status => setPlaybackStatus(() => status)}
-        />
-      </TouchableWithoutFeedback>
 
-      {showControls && (
-        <>
-          {/* 播放/暂停按钮 */}
-          <TouchableOpacity
+      <View className='relative'>
+        <TouchableWithoutFeedback onPress={handleClickedVideo}>
+          <Video
+            ref={videoRef}
+            source={{ uri: parsedVideoUrl }}
             style={[
-              styles.controlButton,
-              fullscreen && {
-                top: '50%',
-                left: '50%',
-                transform: [{ translateX: -20 }, { translateY: -20 }],
-              },
-            ]} // 根据 fullscreen 状态调整样式
-            onPress={() => {
-              setPlaying(prev => !prev);
-              showControlsWithTimer();
-            }} // 添加点击事件来控制播放暂停
-          >
-            <Image
-              source={playing ? pauseIcon : playbackIcon}
-              style={{ width: '100%', height: '100%' }}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-
-          <View
-            style={[
-              fullscreen ? styles.bottomBarFS : styles.bottomBar,
-              !fullscreen && { top: '24%', left: 0 },
+              styles.video,
+              { height: fullscreen ? '100%' : screenHeight },
+              { marginTop: fullscreen ? 0 : safeAreaInset }
             ]}
-          >
-            <Slider
-              style={fullscreen ? styles.sliderFS : styles.slider}
-              value={currentProgress}
-              onValueChange={() => { }} // value => 控制视频进度(value)
-              minimumValue={0}
-              maximumValue={totalDuration}
-              minimumTrackTintColor="#87CEEB"
-              maximumTrackTintColor="#FFFFFF"
-              trackStyle={styles.trackStyle}
-              thumbTouchSize={{ width: 40, height: 50 }}
-              onSlidingStart={() => {
-                // 用户开始滑动，显示控件并清除隐藏定时器
-                if (hideControlsTimer.current) {
-                  clearTimeout(hideControlsTimer.current);
-                  hideControlsTimer.current = null;
-                }
-                setShowControls(true);
-              }}
-              onSlidingComplete={async value => {
-                if (videoRef.current != null && playbackStatus.isLoaded) {
-                  await videoRef.current.setPositionAsync(value);
-                }
+            resizeMode={ResizeMode.CONTAIN}
+            useNativeControls={false}
+            shouldPlay={playing}
+            isLooping={false}
+            onPlaybackStatusUpdate={status => setPlaybackStatus(() => status)}
+          />
+        </TouchableWithoutFeedback>
+
+        {showControls && (
+          <>
+            {/* 播放/暂停按钮 */}
+            <TouchableOpacity
+              style={[styles.controlButton]} // 根据 fullscreen 状态调整样式
+              onPress={() => {
+                setPlaying(prev => !prev);
                 showControlsWithTimer();
-              }}
-            />
-          </View>
-        </>
-      )}
+              }} // 添加点击事件来控制播放暂停
+            >
+              <Image
+                source={playing ? pauseIcon : playbackIcon}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+
+            <View
+              style={[
+                fullscreen ? styles.bottomBarFS : styles.bottomBar,
+                !fullscreen && { bottom: '5%', left: 0 },
+              ]}
+            >
+              <Slider
+                style={fullscreen ? styles.sliderFS : styles.slider}
+                value={currentProgress}
+                onValueChange={() => { }} // value => 控制视频进度(value)
+                minimumValue={0}
+                maximumValue={totalDuration}
+                minimumTrackTintColor="#87CEEB"
+                maximumTrackTintColor="#FFFFFF"
+                trackStyle={styles.trackStyle}
+                thumbTouchSize={{ width: 40, height: 50 }}
+                onSlidingStart={() => {
+                  // 用户开始滑动，显示控件并清除隐藏定时器
+                  if (hideControlsTimer.current) {
+                    clearTimeout(hideControlsTimer.current);
+                    hideControlsTimer.current = null;
+                  }
+                  setShowControls(true);
+                }}
+                onSlidingComplete={async value => {
+                  if (videoRef.current != null && playbackStatus.isLoaded) {
+                    await videoRef.current.setPositionAsync(value);
+                  }
+                  showControlsWithTimer();
+                }}
+              />
+            </View>
+          </>
+        )}
+
+
+      </View>
+
 
       <View className={'mt-4'}>
         <View className='px-6'>
@@ -293,15 +292,14 @@ const styles = StyleSheet.create({
   },
   video: {
     width: '100%',
-    position: 'relative',
   },
   // 增加一半的偏移量
   controlButton: {
     position: 'absolute', // 让按钮浮动在视频上
-    top: '12.5%',
+    top: '50%',
     left: '50%',
     zIndex: 10, // 确保按钮在视频之上
-    transform: [{ translateX: -20 }],
+    transform: [{ translateX: -20 }, { translateY: -20 }],
     backgroundColor: 'white',
     width: 40,
     height: 40,
