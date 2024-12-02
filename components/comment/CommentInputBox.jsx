@@ -4,10 +4,12 @@ import { useTranslation } from "react-i18next";
 import { ID } from "react-native-appwrite";
 import { config, databases } from "../../lib/appwrite";
 import { sendPushNotification } from "../../functions/notifications";
+import { useGlobalContext } from '../../context/GlobalProvider';
 
 export default function CommentInputBox({ videoId, userId, videoCreator, onCommentSubmitted }) {
   const { t } = useTranslation()
   const [comment, setComment] = useState('');
+  const { user } = useGlobalContext();
 
   const handleCommentSubmit = async () => {
     try {
@@ -29,7 +31,7 @@ export default function CommentInputBox({ videoId, userId, videoCreator, onComme
       console.log('videoCreator.expo_push_token:', videoCreator.expo_push_token);
       if (videoCreator.expo_push_token) {
         // 发送推送通知
-        sendPushNotification(videoCreator.expo_push_token, 'New comment', comment, {
+        sendPushNotification(videoCreator.expo_push_token, `${user?.username} sent you a comment`, comment, {
           videoId,
           userId,
         });
