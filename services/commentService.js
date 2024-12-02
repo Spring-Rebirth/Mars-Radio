@@ -1,5 +1,5 @@
 import { databases, config } from '../lib/appwrite';
-import { Query } from 'react-native-appwrite';
+import { ID, Query } from 'react-native-appwrite';
 
 export async function fetchCommentsData(videoId) {
   try {
@@ -61,7 +61,7 @@ export const fetchCommentUser = async (userId) => {
   }
 }
 
-export const submitReply = async (content, parentCommentId) => {
+export const submitReply = async (content, parentCommentId, userId, videoId) => {
   try {
     await databases.createDocument(
       config.databaseId,

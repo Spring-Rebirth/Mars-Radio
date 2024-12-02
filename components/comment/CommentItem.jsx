@@ -131,7 +131,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
     if (!replyMsg.trim()) return;
 
     const parentUsername = await fetchUsername(parentCommentUserId);
-    await submitReply(`@${parentUsername}\n${replyMsg}`, parentCommentId);
+    await submitReply(`@${parentUsername}\n${replyMsg}`, parentCommentId, userId, comment.video_ID);
     console.log('Submit reply:', replyMsg);
     setReplyMsg('');
     setParentCommentUserId(null);
