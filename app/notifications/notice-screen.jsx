@@ -2,16 +2,25 @@ import { Text, View, Button, FlatList } from 'react-native';
 import { schedulePushNotification } from '../../functions/notifications';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NoticeItem from '../../components/NoticeItem';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 
 function NoticeScreen() {
   const { data } = useLocalSearchParams();
+  const [notificationsData, setNotificationsData] = useState(null);
 
-  if (data) {
-    const notificationsData = JSON.parse(data);
-    console.log('notificationsData:', notificationsData);
-  }
+  useEffect(() => {
+    if (data) {
+      try {
+        const parsedData = JSON.parse(data);
+        setNotificationsData(parsedData);
+        console.log('notificationsData:', parsedData);
+      } catch (error) {
+        console.error('Failed to parse notification data:', error);
+        setNotificationsData(null);
+      }
+    }
+  }, [data]);
 
   const handlePress = () => {
     console.log('Notification clicked');
@@ -20,35 +29,14 @@ function NoticeScreen() {
 
   return (
     <SafeAreaView>
-      {data ? (
-        <NoticeItem
-          title={notificationsData.title}
-          content={notificationsData.body}
-          onPress={() => handlePress()}
-        />
-      ) : (
-        <NoticeItem
-          title={'Do not have message'}
-          content={'No message'}
-          onPress={() => { }}
-        />
-      )}
-
-      {/* <FlatList
-        data={notificationsData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <NoticeItem
-            title={item.title}
-            content={item.content}
-            onPress={() => handlePress(item.id)} // 传递点击事件
-          />
-        )}
-      /> */}
+      <NoticeItem
+        title={notificationsData?.title || 'Do not have message'}
+        content={notificationsData?.body || 'No message'}
+        onPress={notificationsData ? handlePress : null}
+      />
     </SafeAreaView>
   );
 }
-
 export default NoticeScreen;
 
 // example

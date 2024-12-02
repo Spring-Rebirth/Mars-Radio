@@ -47,7 +47,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
   useEffect(() => {
     const loadRepliesCount = async () => {
       const childComments = await fetchReplies(commentId);
-      setRepliesCount(childComments.length); // 设置子评论数量
+      setRepliesCount(childComments?.length); // 设置子评论数量
     };
     loadRepliesCount();
   }, [commentId, fetchReplies]);
@@ -71,7 +71,7 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
           config.commentsCollectionId, // 替换为你的评论集合 ID
           commentId
         );
-        setLikeCount(comment.liked_users.length || 0); // 设置点赞数
+        setLikeCount(comment?.liked_users?.length || 0); // 设置点赞数
         // 检查用户是否已点赞
         if (comment.liked_users && comment.liked_users.includes(userId)) {
           setLiked(true); // 设置为已点赞
