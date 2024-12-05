@@ -135,7 +135,7 @@ export default function profile() {
         data={loading ? [] : userPostsData}
         // item 是 data 数组中的每一项
         keyExtractor={(item) => item?.$id}
-        contentContainerStyle={{ paddingBottom: 45 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
         ListHeaderComponent={() => {
           return (
             <View className='my-6 px-4 mb-8 relative'>
@@ -177,18 +177,6 @@ export default function profile() {
                 </TouchableOpacity>
                 <Text className='text-black text-xl font-psemibold mt-2.5 '>{user?.username}</Text>
               </View>
-              {/* 待实现的数据视图 */}
-              {/* <View className='flex-row space-x-14 mt-4 justify-center'>
-                                <View className='items-center'>
-                                    <Text className='text-black font-psemibold text-xl'>?</Text>
-                                    <Text className='text-[#808080] text-sm'>Posts</Text>
-                                </View>
-                                <View className='items-center'>
-                                    <Text className='text-black font-psemibold text-xl'>?</Text>
-                                    <Text className='text-[#808080] text-sm'>Views</Text>
-                                </View>
-
-                            </View> */}
             </View>
           );
         }}
