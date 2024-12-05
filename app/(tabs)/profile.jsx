@@ -135,7 +135,7 @@ export default function profile() {
         data={loading ? [] : userPostsData}
         // item 是 data 数组中的每一项
         keyExtractor={(item) => item?.$id}
-
+        contentContainerStyle={{ paddingBottom: 45 }}
         ListHeaderComponent={() => {
           return (
             <View className='my-6 px-4 mb-8 relative'>
