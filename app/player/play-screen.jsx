@@ -166,31 +166,7 @@ export default function PlayScreen() {
     <View style={[styles.container, {
       backgroundColor: fullscreen ? 'black' : '#F5F5F5'
     }]}>
-      {loading && (
-        <ActivityIndicator
-          size="large"
-          color="#000"
-          style={[
-            styles.activityIndicator,
-            {
-              top: fullscreen ? '50%' : '12.5%',
-              transform: fullscreen ? [{ translateX: -20 }, { translateY: -20 }] : [{ translateX: -20 }]
-            }
-          ]}
-        />
-      )}
 
-      {isEnded && (
-        <TouchableOpacity onPress={() => replayVideo(videoRef)}
-          style={fullscreen ? styles.replayIconContainerFS : styles.replayIconContainer}
-        >
-          <Image
-            source={replayIcon}
-            style={styles.replayIcon}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      )}
 
       <View className='relative'>
         <TouchableWithoutFeedback onPress={handleClickedVideo}>
@@ -209,6 +185,32 @@ export default function PlayScreen() {
             onPlaybackStatusUpdate={status => setPlaybackStatus(() => status)}
           />
         </TouchableWithoutFeedback>
+
+        {loading && (
+          <ActivityIndicator
+            size="large"
+            color="#000"
+            style={[
+              styles.activityIndicator,
+              {
+                top: '50%',
+                transform: [{ translateX: -20 }, { translateY: -20 }]
+              }
+            ]}
+          />
+        )}
+
+        {isEnded && (
+          <TouchableOpacity onPress={() => replayVideo(videoRef)}
+            style={fullscreen ? styles.replayIconContainerFS : styles.replayIconContainer}
+          >
+            <Image
+              source={replayIcon}
+              style={styles.replayIcon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        )}
 
         {showControls && (
           <>
@@ -300,10 +302,10 @@ const styles = StyleSheet.create({
   },
   replayIconContainer: {
     position: 'absolute',
-    top: '12.5%',
+    top: '50%',
     left: '50%',
     zIndex: 1, // 确保图标在最前面
-    transform: [{ translateX: -15 }, { translateY: 0 }],
+    transform: [{ translateX: -15 }, { translateY: -15 }],
   },
   replayIconContainerFS: {
     position: 'absolute',
