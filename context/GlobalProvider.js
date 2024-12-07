@@ -47,7 +47,7 @@ function GlobalProvider({ children }) {
         // 立即同步数据到后端
         try {
             await syncDataToBackend(playDataRef);
-            console.log('播放数据同步成功');
+            // console.log('播放数据同步成功');
         } catch (error) {
             console.error('同步播放数据失败:', error);
         }
