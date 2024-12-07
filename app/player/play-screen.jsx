@@ -167,8 +167,7 @@ export default function PlayScreen() {
       backgroundColor: fullscreen ? 'black' : '#F5F5F5'
     }]}>
 
-
-      <View className='relative'>
+      <View className='relative' style={{ marginTop: fullscreen ? 0 : safeAreaInset }}>
         <TouchableWithoutFeedback onPress={handleClickedVideo}>
           <Video
             ref={videoRef}
@@ -176,7 +175,6 @@ export default function PlayScreen() {
             style={[
               styles.video,
               { height: fullscreen ? '100%' : screenHeight },
-              { marginTop: fullscreen ? 0 : safeAreaInset }
             ]}
             resizeMode={ResizeMode.CONTAIN}
             useNativeControls={false}
