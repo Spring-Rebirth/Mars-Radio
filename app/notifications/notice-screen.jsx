@@ -22,10 +22,6 @@ function NoticeScreen() {
     };
 
     lockPortrait();
-
-    return () => {
-      ScreenOrientation.unlockAsync().catch(console.error);
-    };
   }, []);
 
   useEffect(() => {

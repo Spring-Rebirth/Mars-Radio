@@ -51,9 +51,6 @@ export default function TabsLayout() {
       lockPortrait();
     }
 
-    return () => {
-      ScreenOrientation.unlockAsync().catch(console.error);
-    };
   }, [segments]);
 
   return (
