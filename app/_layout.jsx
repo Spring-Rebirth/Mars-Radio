@@ -8,15 +8,17 @@ import AppContent from '../context/AppContent';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Text } from 'react-native';
 
+// 防止自动隐藏 SplashScreen
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [appState, setAppState] = useState('loading');
-  const [hasCheckedUpdates, setHasCheckedUpdates] = useState(false);
-  const [isLanguageLoaded, setIsLanguageLoaded] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [error, setError] = useState(null);
 
-  const [fontsLoaded, error] = useFonts({
+  // 加载字体
+  const [fontsLoaded, fontsError] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
     "Poppins-ExtraBold": require("../assets/fonts/Poppins-ExtraBold.ttf"),
@@ -29,76 +31,71 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    async function checkForUpdates() {
-      if (hasCheckedUpdates) return;
-
+    async function prepare() {
       try {
-        setHasCheckedUpdates(true);
-        const update = await Updates.checkForUpdateAsync();
+        // 确保字体已加载
+        if (fontsLoaded && !fontsError) {
+          // 检查更新
+          const update = await Updates.checkForUpdateAsync();
+          if (update.isAvailable) {
+            await Updates.fetchUpdateAsync();
+            await Updates.reloadAsync(); // 重新加载应用
+          }
 
-        if (update.isAvailable) {
-          setAppState('updating');
-          await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync();
-        } else {
-          setAppState('ready');
+          // 加载语言设置
+          const lang = await AsyncStorage.getItem('language');
+          if (lang) {
+            await i18n.changeLanguage(lang);
+          }
+        }
+
+        // 检查是否有字体加载错误
+        if (fontsError) {
+          throw fontsError;
         }
       } catch (e) {
-        console.error('Update error:', e);
-        setAppState('ready');
+        console.error('Initialization error:', e);
+        setError(e);
+      } finally {
+        setIsReady(true);
       }
     }
 
-    if (fontsLoaded && !error) {
-      checkForUpdates();
-    }
-  }, [fontsLoaded, error]);
+    prepare();
+  }, [fontsLoaded, fontsError]);
 
   useEffect(() => {
-    async function loadLanguage() {
-      try {
-        const lang = await AsyncStorage.getItem('language');
-        if (lang) {
-          await i18n.changeLanguage(lang);
-        }
-        setIsLanguageLoaded(true);
-      } catch (e) {
-        console.error('Language loading error:', e);
-        setIsLanguageLoaded(true); // 即使失败也继续
-      }
-    }
-
-    if (appState === 'ready') {
-      loadLanguage();
-    }
-  }, [appState]);
-
-  useEffect(() => {
-    if (fontsLoaded && appState === 'ready' && isLanguageLoaded) {
+    if (isReady && !fontsError && !error) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, appState, isLanguageLoaded]);
+  }, [isReady, fontsError, error]);
 
+  // 如果发生初始化错误，显示错误信息
   if (error) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Font loading error: {error.message}</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <Text style={{ fontSize: 16, color: 'red', textAlign: 'center' }}>
+          初始化错误: {error.message || '未知错误'}
+        </Text>
       </View>
     );
   }
 
-  if (appState === 'updating') {
+  // 如果字体加载出错，显示字体加载错误信息
+  if (fontsError) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Updating...</Text>
+        <Text style={{ fontSize: 16, color: 'red' }}>字体加载错误: {fontsError.message}</Text>
       </View>
     );
   }
 
-  if (appState === 'loading' || !isLanguageLoaded) {
+  // 如果应用未准备好，保持 SplashScreen 可见
+  if (!isReady) {
     return null;
   }
 
+  // 应用准备好后，渲染主要内容
   return (
     <I18nextProvider i18n={i18n}>
       <GlobalProvider>
