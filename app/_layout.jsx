@@ -24,7 +24,8 @@ export default function RootLayout() {
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
 
-  const [appState, setAppState] = useState('loading'); // 'loading', 'updating', 'ready'
+  const [appState, setAppState] = useState('ready'); // 'loading', 'updating', 'ready'
+  const [hasCheckedUpdates, setHasCheckedUpdates] = useState(false);
 
   if (error) {
     return (
@@ -37,6 +38,10 @@ export default function RootLayout() {
   useEffect(() => {
     async function checkForUpdates() {
       try {
+        if (hasCheckedUpdates) {
+          return;
+        }
+        setHasCheckedUpdates(true);
         console.log('Checking for updates');
         const update = await Updates.checkForUpdateAsync();
 
