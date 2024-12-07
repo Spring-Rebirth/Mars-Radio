@@ -1,5 +1,5 @@
 import { View, Image, Text, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import images from '../../constants/images';
 import CustomForm from '../../components/CustomForm';
@@ -11,12 +11,32 @@ import { useGlobalContext } from '../../context/GlobalProvider';
 import { databases } from '../../lib/appwrite';
 import { config } from '../../lib/appwrite';
 import { ID } from 'react-native-appwrite';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 export default function SignUp() {
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
+
+  useEffect(() => {
+    const lockPortrait = async () => {
+      try {
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT_UP
+        );
+      } catch (error) {
+        console.error('Failed to lock orientation:', error);
+      }
+    };
+
+    // 当路由在 (tabs) 下时，锁定竖屏
+    lockPortrait();
+
+    return () => {
+      ScreenOrientation.unlockAsync().catch(console.error);
+    };
+  }, []);
 
   async function submit() {
     if (form.username === '' || form.email === '' || form.password === '' || form.confirmPassword === '') {

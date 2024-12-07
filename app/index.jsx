@@ -3,10 +3,11 @@ import { Image, ScrollView, Text, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { images } from "../constants";
 import CustomButton from '../components/CustomButton';
-import { Redirect, router } from 'expo-router';
+import { router } from 'expo-router';
 import { useGlobalContext } from '../context/GlobalProvider';
 import home from '../assets/images/home.png';
 import { useEffect, useState } from 'react';
+import * as ScreenOrientation from 'expo-screen-orientation';
 // cSpell:word pregular appwrite
 //cSpell:ignore Aora pregular
 export default function Welcome() {
@@ -20,6 +21,25 @@ export default function Welcome() {
       router.replace('/home');
     }
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    const lockPortrait = async () => {
+      try {
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT_UP
+        );
+      } catch (error) {
+        console.error('Failed to lock orientation:', error);
+      }
+    };
+
+    // 当路由在 (tabs) 下时，锁定竖屏
+    lockPortrait();
+
+    return () => {
+      ScreenOrientation.unlockAsync().catch(console.error);
+    };
+  }, []);
 
   // 如果正在跳转或者正在加载登录状态，避免渲染 Welcome 页面内容
   if (isNavigating || isLoading) {
