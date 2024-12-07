@@ -9,10 +9,8 @@ import useGetData from '../../hooks/useGetData'
 import { StatusBar } from 'expo-status-bar'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { useTranslation } from "react-i18next";
-import useForcePortrait from '../../hooks/useForcePortrait'
 
 export default function Saved() {
-  useForcePortrait();
   const insetTop = useSafeAreaInsets().top;
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);

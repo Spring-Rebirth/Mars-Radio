@@ -1,8 +1,10 @@
 import { View, Text, Image, TouchableWithoutFeedback } from 'react-native'
-import { Tabs } from 'expo-router'
+import { Tabs, useSegments } from 'expo-router'
 import icons from '../../constants/icons'
 import { useWindowDimensions } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { useEffect } from 'react'
+import * as ScreenOrientation from 'expo-screen-orientation'
 
 function TabIcon({ name, icon, color, focused }) {
   const { width, height } = useWindowDimensions();
@@ -30,6 +32,29 @@ function TabIcon({ name, icon, color, focused }) {
 
 export default function TabsLayout() {
   const { t } = useTranslation();
+
+  const segments = useSegments();
+
+  useEffect(() => {
+    const lockPortrait = async () => {
+      try {
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT_UP
+        );
+      } catch (error) {
+        console.error('Failed to lock orientation:', error);
+      }
+    };
+
+    // 当路由在 (tabs) 下时，锁定竖屏
+    if (segments[0] === '(tabs)') {
+      lockPortrait();
+    }
+
+    return () => {
+      ScreenOrientation.unlockAsync().catch(console.error);
+    };
+  }, [segments]);
 
   return (
     <Tabs screenOptions={{

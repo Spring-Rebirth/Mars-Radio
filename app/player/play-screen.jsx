@@ -14,6 +14,8 @@ import Slider from '@react-native-community/slider';
 import { fetchReplies, fetchCommentUser, fetchCommentUsername, submitReply } from '../../services/commentService';
 import useVideoControls from '../../hooks/useVideoControls';
 import useComments from '../../hooks/useComments';
+import fullscreenIcon from '../../assets/icons/fullscreen.png';
+import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.png';
 // cSpell: ignore Millis
 
 export default function PlayScreen() {
@@ -57,6 +59,32 @@ export default function PlayScreen() {
     }
     // 您可以在这里添加更多对 playbackStatus 的处理
   };
+
+  const toggleFullscreen = async () => {
+    if (fullscreen) {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+      setFullscreen(false);
+    } else {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+      setFullscreen(true);
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      const lockPortrait = async () => {
+        try {
+          await ScreenOrientation.lockAsync(
+            ScreenOrientation.OrientationLock.PORTRAIT_UP
+          );
+        } catch (error) {
+          console.error('Failed to lock orientation to portrait:', error);
+        }
+      };
+
+      lockPortrait();
+    };
+  }, []);
 
   useEffect(() => {
     if (playbackStatus) {
@@ -230,13 +258,20 @@ export default function PlayScreen() {
                   showControlsWithTimer();
                 }}
               />
+              <TouchableOpacity onPress={toggleFullscreen}>
+                <Image
+                  source={fullscreen ? exitFullscreenIcon : fullscreenIcon}
+                  className={`${fullscreen
+                    ? 'w-6 h-6 mr-2'
+                    : 'w-4 h-4 mr-2'
+                    }`}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
             </View>
           </>
         )}
-
-
       </View>
-
 
       <View className={'mt-4'}>
         <View className='px-6'>

@@ -20,7 +20,6 @@ import * as Notifications from 'expo-notifications';
 import { registerForPushNotificationsAsync } from '../../functions/notifications';
 import { router } from 'expo-router'
 import { updateUserInfo } from '../../services/userService'
-import useForcePortrait from '../../hooks/useForcePortrait'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -31,7 +30,6 @@ Notifications.setNotificationHandler({
 });
 
 export default function Home() {
-  useForcePortrait();
   const insetTop = useSafeAreaInsets().top;
   const { t } = useTranslation();
   const { user } = useGlobalContext();
