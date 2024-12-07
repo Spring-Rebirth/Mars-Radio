@@ -154,14 +154,14 @@ export default function Create() {
       // 修改这里URI为从数据库获取
       const videoResult = await uploadData(formData);
 
-      Alert.alert('Upload Success !')
+      Alert.alert(t('Upload Success !'))
       console.log('Upload Success  videoResult:', JSON.stringify(videoResult, null, 2));
 
       setForm({ title: '' });
       setImageFile(null);
       setVideoFile(null);
     } catch (e) {
-      console.error("Upload Failed", e);
+      console.error(t("Upload Failed"), e);
       Alert.alert('File upload failed', 'Please try again.');
     } finally {
       setUploading(false);
