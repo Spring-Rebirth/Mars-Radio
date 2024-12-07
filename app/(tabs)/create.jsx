@@ -83,7 +83,7 @@ export default function Create() {
   // 生成视频缩略图
   const generateThumbnailFromVideo = async () => {
     if (!videoFile || !videoFile?.uri) {
-      Alert.alert('Please select a video first');
+      Alert.alert(t('Please select a video first'));
       return;
     }
 
