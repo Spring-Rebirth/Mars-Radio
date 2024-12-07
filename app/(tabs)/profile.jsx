@@ -17,8 +17,10 @@ import settingIcon from '../../assets/menu/setting.png'
 import SettingModal from '../../components/modal/SettingModal'
 import { useTranslation } from "react-i18next";
 import notifyIcon from '../../assets/menu/notify.png'
+import useForcePortrait from '../../hooks/useForcePortrait'
 
 export default function profile() {
+  useForcePortrait();
   const insetTop = useSafeAreaInsets().top;
   const [userPostsData, setUserPostsData] = useState([]);
   const [loading, setLoading] = useState(false);

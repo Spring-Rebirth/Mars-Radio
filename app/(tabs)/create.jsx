@@ -18,8 +18,10 @@ import * as FileSystem from 'expo-file-system';
 import * as Progress from 'react-native-progress';
 import mime from 'mime';
 import { useTranslation } from "react-i18next";
+import useForcePortrait from '../../hooks/useForcePortrait';
 
 export default function Create() {
+  useForcePortrait();
   const insetTop = useSafeAreaInsets().top;
   const { user } = useGlobalContext();
   const [form, setForm] = useState({ title: '' });

@@ -1,7 +1,7 @@
 //cSpell:words psemibold appwrite
 import { View, Text, FlatList, Image, ActivityIndicator, RefreshControl } from 'react-native'
 import { useEffect, useState } from 'react'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { images } from '../../constants'
 import SearchInput from '../../components/SearchInput'
 import VideoCard from '../../components/VideoCard'
@@ -9,8 +9,10 @@ import useGetData from '../../hooks/useGetData'
 import { StatusBar } from 'expo-status-bar'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { useTranslation } from "react-i18next";
+import useForcePortrait from '../../hooks/useForcePortrait'
 
 export default function Saved() {
+  useForcePortrait();
   const insetTop = useSafeAreaInsets().top;
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
