@@ -4,10 +4,29 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import NoticeItem from '../../components/NoticeItem';
 import { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 function NoticeScreen() {
   const { data } = useLocalSearchParams();
   const [notificationsData, setNotificationsData] = useState(null);
+
+  useEffect(() => {
+    const lockPortrait = async () => {
+      try {
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT_UP
+        );
+      } catch (error) {
+        console.error('Failed to lock orientation:', error);
+      }
+    };
+
+    lockPortrait();
+
+    return () => {
+      ScreenOrientation.unlockAsync().catch(console.error);
+    };
+  }, []);
 
   useEffect(() => {
     if (data) {

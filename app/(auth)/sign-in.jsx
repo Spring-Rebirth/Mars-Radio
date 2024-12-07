@@ -31,7 +31,6 @@ export default function SignIn() {
       }
     };
 
-    // 当路由在 (tabs) 下时，锁定竖屏
     lockPortrait();
 
     return () => {
