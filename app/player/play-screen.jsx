@@ -262,8 +262,8 @@ export default function PlayScreen() {
                 <Image
                   source={fullscreen ? exitFullscreenIcon : fullscreenIcon}
                   className={`${fullscreen
-                    ? 'w-6 h-6 mr-2'
-                    : 'w-4 h-4 mr-2'
+                    ? 'w-6 h-6 mr-3'
+                    : 'w-4 h-4 mr-4'
                     }`}
                   resizeMode="contain"
                 />
