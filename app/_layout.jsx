@@ -12,6 +12,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [appState, setAppState] = useState('loading');
+  const [hasCheckedUpdates, setHasCheckedUpdates] = useState(false);
+  const [isLanguageLoaded, setIsLanguageLoaded] = useState(false);
+
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -24,60 +28,64 @@ export default function RootLayout() {
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
 
-  const [appState, setAppState] = useState('ready'); // 'loading', 'updating', 'ready'
-  const [hasCheckedUpdates, setHasCheckedUpdates] = useState(false);
-
-  if (error) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Error loading fonts: {error.message}</Text>
-      </View>
-    );
-  }
-
   useEffect(() => {
     async function checkForUpdates() {
+      if (hasCheckedUpdates) return;
+
       try {
-        if (hasCheckedUpdates) {
-          return;
-        }
         setHasCheckedUpdates(true);
-        console.log('Checking for updates');
         const update = await Updates.checkForUpdateAsync();
 
         if (update.isAvailable) {
-          console.log('Fetching update...');
           setAppState('updating');
           await Updates.fetchUpdateAsync();
-
-          console.log('Reloading app...');
           await Updates.reloadAsync();
         } else {
-          console.log('No updates available.');
           setAppState('ready');
         }
       } catch (e) {
-        console.log('Error checking for updates:', e);
+        console.error('Update error:', e);
         setAppState('ready');
       }
     }
 
-    if (fontsLoaded) {
+    if (fontsLoaded && !error) {
       checkForUpdates();
     }
-
-  }, [fontsLoaded]);
+  }, [fontsLoaded, error]);
 
   useEffect(() => {
-    if (fontsLoaded && appState === 'ready') {
-      AsyncStorage.getItem('language').then((lang) => {
+    async function loadLanguage() {
+      try {
+        const lang = await AsyncStorage.getItem('language');
         if (lang) {
-          i18n.changeLanguage(lang);
+          await i18n.changeLanguage(lang);
         }
-      });
+        setIsLanguageLoaded(true);
+      } catch (e) {
+        console.error('Language loading error:', e);
+        setIsLanguageLoaded(true); // 即使失败也继续
+      }
+    }
+
+    if (appState === 'ready') {
+      loadLanguage();
+    }
+  }, [appState]);
+
+  useEffect(() => {
+    if (fontsLoaded && appState === 'ready' && isLanguageLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, appState]);
+  }, [fontsLoaded, appState, isLanguageLoaded]);
+
+  if (error) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Font loading error: {error.message}</Text>
+      </View>
+    );
+  }
 
   if (appState === 'updating') {
     return (
@@ -87,7 +95,7 @@ export default function RootLayout() {
     );
   }
 
-  if (appState === 'loading') {
+  if (appState === 'loading' || !isLanguageLoaded) {
     return null;
   }
 
