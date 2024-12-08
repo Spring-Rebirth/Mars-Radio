@@ -72,13 +72,7 @@ export default function RootLayout() {
 
   // 如果发生初始化错误，显示错误信息
   if (error) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-        <Text style={{ fontSize: 16, color: 'red', textAlign: 'center' }}>
-          初始化错误: {error.message || '未知错误'}
-        </Text>
-      </View>
-    );
+    alert(`初始化错误: ${error.message || '未知错误'}`)
   }
 
   // 如果字体加载出错，显示字体加载错误信息
