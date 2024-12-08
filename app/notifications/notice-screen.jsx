@@ -3,8 +3,9 @@ import { schedulePushNotification } from '../../functions/notifications';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NoticeItem from '../../components/NoticeItem';
 import { useEffect, useState } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { config, databases } from '../../lib/appwrite';
 
 function NoticeScreen() {
   const { data } = useLocalSearchParams();
@@ -37,9 +38,23 @@ function NoticeScreen() {
     }
   }, [data]);
 
-  const handlePress = () => {
-    console.log('Notification clicked');
+  const handlePress = async () => {
+    console.log('Notification clicked', notificationsData);
     // 在这里处理点击通知后的逻辑
+    const { userId, videoId } = notificationsData.data;
+
+    const videoPost = await databases.getDocument(
+      config.databaseId, // databaseId
+      config.videosCollectionId, // collectionId
+      videoId, // documentId
+    );
+
+    router.push({
+      pathname: 'player/play-screen',
+      params: {
+        post: JSON.stringify(videoPost)
+      },
+    });
   };
 
   return (
