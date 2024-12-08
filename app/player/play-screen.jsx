@@ -20,8 +20,9 @@ import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.png';
 
 export default function PlayScreen() {
   const { user } = useGlobalContext();
-  const { post } = useLocalSearchParams();
+  const { post, commentId } = useLocalSearchParams();
   const parsedVideoUrl = post ? JSON.parse(post).video : null;
+  const targetCommentId = commentId;
   const { $id: videoId, creator: videoCreator } = JSON.parse(post);
   const { $id: userId, avatar, username } = user;
 
@@ -158,9 +159,10 @@ export default function PlayScreen() {
         submitReply={submitReply}
         setRefreshFlag={setRefreshFlag}
         fetchCommentUser={fetchCommentUser}
+        scrollToComment={targetCommentId} // 传递用于滚动的评论ID
       />
     );
-  }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply]);
+  }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply, targetCommentId]);
 
   return (
     <View style={[styles.container, {

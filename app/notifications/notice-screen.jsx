@@ -41,7 +41,7 @@ function NoticeScreen() {
   const handlePress = async () => {
     console.log('Notification clicked', notificationsData);
     // 在这里处理点击通知后的逻辑
-    const { userId, videoId } = notificationsData.data;
+    const { userId, videoId, commentId } = notificationsData.data;
 
     const videoPost = await databases.getDocument(
       config.databaseId, // databaseId
@@ -52,7 +52,8 @@ function NoticeScreen() {
     router.push({
       pathname: 'player/play-screen',
       params: {
-        post: JSON.stringify(videoPost)
+        post: JSON.stringify(videoPost),
+        commentId: commentId,
       },
     });
   };
