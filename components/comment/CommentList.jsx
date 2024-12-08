@@ -61,7 +61,7 @@ export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag,
       renderItem={renderComment}
       keyExtractor={(item) => item.$id.toString()}
       getItemLayout={getItemLayout}
-      contentContainerStyle={{ paddingBottom: 330, paddingTop: 5, paddingHorizontal: 15 }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
     />
   );
 }

@@ -275,7 +275,7 @@ export default function PlayScreen() {
         )}
       </View>
 
-      <View className={'mt-4'}>
+      <View className={'flex-1 mt-4'}>
         <View className='px-6'>
           <CommentInputBox
             userId={userId}
@@ -284,7 +284,9 @@ export default function PlayScreen() {
             onCommentSubmitted={onCommentSubmitted}
           />
         </View>
-        {memoizedCommentView}
+        <View className='flex-1'>
+          {memoizedCommentView}
+        </View>
       </View>
     </View>
   )
