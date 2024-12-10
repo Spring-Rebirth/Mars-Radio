@@ -8,23 +8,36 @@ export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag,
   const flatListRef = useRef(null);
   const [hasScrolled, setHasScrolled] = useState(false);
 
-  // 估算每个评论项目的高度
-  const ESTIMATED_ITEM_HEIGHT = 315; // 根据您的分析
-
-  const getItemLayout = (data, index) => ({
-    length: ESTIMATED_ITEM_HEIGHT,
-    offset: ESTIMATED_ITEM_HEIGHT * index,
-    index
-  });
-
   useEffect(() => {
-    if (scrollToComment && flatListRef.current && commentsDoc && commentsDoc.length > 0 && !hasScrolled) {
-      const index = commentsDoc.findIndex(comment => comment.$id === scrollToComment);
-      if (index !== -1) {
-        flatListRef.current.scrollToIndex({ index, animated: true, viewPosition: 0 });
-        setHasScrolled(true); // 确保只执行一次滚动
-      }
+    let timeoutId;
+
+    if (
+      scrollToComment &&
+      flatListRef.current &&
+      commentsDoc &&
+      commentsDoc.length > 0 &&
+      !hasScrolled
+    ) {
+      // 延迟两秒后执行滚动
+      timeoutId = setTimeout(() => {
+        const index = commentsDoc.findIndex(comment => comment.$id === scrollToComment);
+        if (index !== -1) {
+          flatListRef.current.scrollToIndex({
+            index,
+            animated: true,
+            viewPosition: 0
+          });
+          setHasScrolled(true); // 确保只执行一次滚动
+        }
+      }, 2000); // 2000毫秒 = 2秒
     }
+
+    // 清除定时器以防止内存泄漏
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [scrollToComment, commentsDoc, hasScrolled]);
 
   const renderComment = ({ item }) => (
@@ -60,8 +73,11 @@ export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag,
       data={commentsDoc}
       renderItem={renderComment}
       keyExtractor={(item) => item.$id.toString()}
-      getItemLayout={getItemLayout}
       contentContainerStyle={{ paddingHorizontal: 15 }}
+      removeClippedSubviews={true} // 仅渲染视口中的子项
+      initialNumToRender={10} // 根据需要调整初始渲染的项数
+      maxToRenderPerBatch={10} // 根据需要调整每批渲染的最大项数
+      windowSize={21} // 根据需要调整窗口大小
     />
   );
 }
