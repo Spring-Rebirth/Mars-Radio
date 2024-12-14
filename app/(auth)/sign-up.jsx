@@ -12,12 +12,15 @@ import { databases } from '../../lib/appwrite';
 import { config } from '../../lib/appwrite';
 import { ID } from 'react-native-appwrite';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { updatePushToken } from '../../functions/notifications/index';
+import { useTranslation } from 'react-i18next';
 
 export default function SignUp() {
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
+  const { t } = useTranslation();
 
   useEffect(() => {
     const lockPortrait = async () => {
@@ -39,11 +42,11 @@ export default function SignUp() {
 
   async function submit() {
     if (form.username === '' || form.email === '' || form.password === '' || form.confirmPassword === '') {
-      Alert.alert('Error', 'Please fill in all the fields!');
+      Alert.alert('Error', t('Please fill in all the fields!'));
       return;
     }
     if (form.password !== form.confirmPassword) {
-      Alert.alert('Error', 'The password and confirm password do not match.');
+      Alert.alert(t('Error'), t('The password and confirm password do not match.'));
       return;
     }
 
@@ -73,6 +76,9 @@ export default function SignUp() {
       // 确保所有状态更新完成后再进行页面跳转
       setIsSubmitting(false);
       setIsTransitioning(true); // 标记进入跳转状态
+
+      // 更新推送令牌
+      await updatePushToken();
 
       setTimeout(() => {
         router.replace('/home');

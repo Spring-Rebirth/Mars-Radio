@@ -90,4 +90,24 @@ async function sendPushNotification(expoPushToken, title, body, data) {
   }
 }
 
-export { registerForPushNotificationsAsync, schedulePushNotification, sendPushNotification };
+async function updatePushToken() {
+  registerForPushNotificationsAsync().then(async token => {
+    if (token) {
+      if (user && expoPushToken) {
+        if (user.expo_push_token === token) return;
+        console.log('expoPushToken:', token);
+        const content = { expo_push_token: token };
+
+        try {
+          const result = await updateUserInfo(user.$id, content);
+          if (result) console.log('Update expo push token successful');
+        } catch (error) {
+          console.error('Error updating user info:', error);
+        }
+
+      }
+    }
+  });
+}
+
+export { registerForPushNotificationsAsync, schedulePushNotification, sendPushNotification, updatePushToken };

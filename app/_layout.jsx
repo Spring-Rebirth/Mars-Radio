@@ -1,6 +1,6 @@
 import 'react-native-url-polyfill/auto';
-import React, { useEffect, useState } from 'react';
-import { SplashScreen } from "expo-router";
+import React, { useEffect, useState, useRef } from 'react';
+import { router, SplashScreen } from "expo-router";
 import { useFonts } from 'expo-font';
 import { GlobalProvider } from '../context/GlobalProvider';
 import * as Updates from 'expo-updates';
@@ -8,14 +8,27 @@ import AppContent from '../context/AppContent';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text } from 'react-native';
+import { View, Text, Platform } from 'react-native';
+import * as Notifications from 'expo-notifications';
 
 // 防止自动隐藏 SplashScreen
 SplashScreen.preventAutoHideAsync();
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState(null);
+  const [channels, setChannels] = useState([]);
+  const [notification, setNotification] = useState(undefined);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   // 加载字体
   const [fontsLoaded, fontsError] = useFonts({
@@ -83,6 +96,33 @@ export default function RootLayout() {
       </View>
     );
   }
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
+    }
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+      setTimeout(() => {
+        router.push({
+          pathname: '/notifications/notice-screen',
+          params: { data: JSON.stringify(response.notification.request.content) },
+        });
+      }, 500); // 延迟 500 毫秒后跳转
+    });
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   // 如果应用未准备好，保持 SplashScreen 可见
   if (!isReady) {

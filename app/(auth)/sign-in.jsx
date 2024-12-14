@@ -9,16 +9,15 @@ import images from '../../constants/images';
 import CustomForm from '../../components/CustomForm';
 import CustomButton from '../../components/CustomButton';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { updatePushToken } from '../../functions/notifications/index';
+import { useTranslation } from 'react-i18next';
 
 export default function SignIn() {
-  const [form, setForm] = useState({
-    email: '',
-    password: ''
-  });
-
+  const [form, setForm] = useState({ email: '', password: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const lockPortrait = async () => {
@@ -40,7 +39,7 @@ export default function SignIn() {
 
   async function submit() {
     if (form.email === '' || form.password === '') {
-      Alert.alert('Error', 'Please fill in all the fields!');
+      Alert.alert('Error', t('Please fill in all the fields!'));
       return;
     }
 
@@ -59,6 +58,9 @@ export default function SignIn() {
       // 确保所有状态都已更新后再跳转页面
       setIsSubmitting(false);
       setIsTransitioning(true); // 标记进入跳转状态
+
+      // 更新推送令牌
+      await updatePushToken();
 
       setTimeout(() => {
         router.replace('/home');
