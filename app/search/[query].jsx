@@ -35,7 +35,7 @@ export default function Search() {
         data={loading ? [] : queryData}
         // item 是 data 数组中的每一项
         keyExtractor={(item) => item.$id}
-
+        contentContainerStyle={{ paddingBottom: 40 }}
         ListHeaderComponent={() => {
           return (
             <View className='my-6 px-4'>
