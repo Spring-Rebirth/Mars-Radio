@@ -61,7 +61,7 @@ export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag,
           resizeMode="contain"
         />
         <Text style={{ fontSize: 18, color: 'gray', marginTop: 16 }}>
-          Be the first to comment
+          {t("Be the first to comment")}
         </Text>
       </View>
     );
