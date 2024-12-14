@@ -117,7 +117,7 @@ export default function Create() {
     console.log('imageFile:', imageFile, '\n', 'videoFile', videoFile);
     try {
       if (form.title === '' || !isImageSelected || !isVideoSelected) {
-        Alert.alert('Please fill in all required fields');
+        Alert.alert(t('Please fill in all required fields'));
         setUploading(false);
         return;
       }
@@ -162,7 +162,7 @@ export default function Create() {
       setVideoFile(null);
     } catch (e) {
       console.error(t("Upload Failed"), e);
-      Alert.alert('File upload failed', 'Please try again.');
+      Alert.alert(t('File upload failed', 'Please try again.'));
     } finally {
       setUploading(false);
       setProgress({ type: '', percent: 0 });
