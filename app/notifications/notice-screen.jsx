@@ -63,13 +63,14 @@ function NoticeScreen() {
   return (
     <SafeAreaView>
       <NoticeItem
-        title={t(notificationsData?.title) || 'Do not have message'}
-        content={notificationsData?.body || 'No message'}
+        title={t(notificationsData?.title) || t('Do not have message')}
+        content={notificationsData?.body || t('No message')}
         onPress={notificationsData ? handlePress : null}
       />
     </SafeAreaView>
   );
 }
+
 export default NoticeScreen;
 
 // example

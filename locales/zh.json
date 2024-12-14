@@ -1,4 +1,6 @@
 {
+    "No message": "无消息",
+    "Do not have message": "没有新消息",
     "Error": "错误",
     "The password and confirm password do not match.": "密码和确认密码不匹配",
     "File upload failed', 'Please try again.": "文件上传失败，请重试",
