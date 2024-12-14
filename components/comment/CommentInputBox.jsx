@@ -31,7 +31,7 @@ export default function CommentInputBox({ videoId, userId, videoCreator, onComme
       console.log('videoCreator.expo_push_token:', videoCreator.expo_push_token);
       if (videoCreator.expo_push_token && videoCreator.$id !== user?.$id) {
         // 发送推送通知
-        sendPushNotification(videoCreator.expo_push_token, `${user?.username} sent you a comment`, comment, {
+        sendPushNotification(videoCreator.expo_push_token, `${user?.username} ${t('sent you a comment')}`, comment, {
           videoId,
           userId,
           commentId: response.$id

@@ -6,10 +6,12 @@ import { useEffect, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { config, databases } from '../../lib/appwrite';
+import { useTranslation } from 'react-i18next';
 
 function NoticeScreen() {
   const { data } = useLocalSearchParams();
   const [notificationsData, setNotificationsData] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const lockPortrait = async () => {
@@ -61,7 +63,7 @@ function NoticeScreen() {
   return (
     <SafeAreaView>
       <NoticeItem
-        title={notificationsData?.title || 'Do not have message'}
+        title={t(notificationsData?.title) || 'Do not have message'}
         content={notificationsData?.body || 'No message'}
         onPress={notificationsData ? handlePress : null}
       />
