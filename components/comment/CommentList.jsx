@@ -3,10 +3,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, View, Image, Text } from 'react-native';
 import CommentItem from './CommentItem';
 import emptyIcon from '../../assets/images/empty-msg.png';
+import { useTranslation } from 'react-i18next';
 
 export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply, scrollToComment }) {
   const flatListRef = useRef(null);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     let timeoutId;
