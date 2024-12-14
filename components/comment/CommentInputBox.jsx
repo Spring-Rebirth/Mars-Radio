@@ -10,7 +10,7 @@ export default function CommentInputBox({ videoId, userId, videoCreator, onComme
   const { t } = useTranslation()
   const [comment, setComment] = useState('');
   const { user } = useGlobalContext();
-
+  console.log('videoCreator:', JSON.stringify(videoCreator, null, 2));
   const handleCommentSubmit = async () => {
     try {
       const newComment = {
@@ -29,13 +29,15 @@ export default function CommentInputBox({ videoId, userId, videoCreator, onComme
       Alert.alert('Publish successfully');
       // 根据视频ID获取视频的发布者信息
       console.log('videoCreator.expo_push_token:', videoCreator.expo_push_token);
-      if (videoCreator.expo_push_token) {
+      if (videoCreator.expo_push_token && videoCreator.$id !== user?.$id) {
         // 发送推送通知
         sendPushNotification(videoCreator.expo_push_token, `${user?.username} sent you a comment`, comment, {
           videoId,
           userId,
           commentId: response.$id
         });
+
+        console.log('执行了发送视频主评论推送通知');
       }
 
       setComment('');
