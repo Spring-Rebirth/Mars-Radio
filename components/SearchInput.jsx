@@ -15,7 +15,10 @@ export default function SearchInput({ containerStyle }) {
     } else if (pathname.startsWith('/search')) {
       router.setParams({ query: queryText });
     } else {
-      router.push(`/search/${queryText}`);
+      router.push({
+        pathname: `/search/${queryText}`,
+        params: { originRoute: pathname }
+      });
     }
   }
 

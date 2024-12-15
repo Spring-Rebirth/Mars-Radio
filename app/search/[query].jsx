@@ -10,22 +10,34 @@ import VideoCard from '../../components/VideoCard'
 import useGetData from '../../hooks/useGetData'
 import { useLocalSearchParams, router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import { useGlobalContext } from '../../context/GlobalProvider'
 
 export default function Search() {
+  const { user } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [queryData, setQueryData] = useState([]);
-  const { fetchQueryPosts } = useGetData({ setLoading, setQueryData });
-  const { query } = useLocalSearchParams();
+  const { fetchQueryPosts, fetchQuerySavedPosts } = useGetData({ setLoading, setQueryData });
+  const { query, originRoute } = useLocalSearchParams();
+
+  console.log('originRoute:', originRoute);
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchQueryPosts(query);
+    if (originRoute === '/saved') {
+      fetchQuerySavedPosts(query, user?.favorite ?? []);
+    } else if (originRoute === '/home') {
+      fetchQueryPosts(query);
+    }
     setRefreshing(false);
   }
 
   useEffect(() => {
-    fetchQueryPosts(query);
+    if (originRoute === '/saved') {
+      fetchQuerySavedPosts(query, user?.favorite ?? []);
+    } else if (originRoute === '/home') {
+      fetchQueryPosts(query);
+    }
   }, [query])
 
   return (
