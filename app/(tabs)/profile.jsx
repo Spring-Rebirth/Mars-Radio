@@ -17,6 +17,7 @@ import settingIcon from '../../assets/menu/setting.png'
 import SettingModal from '../../components/modal/SettingModal'
 import { useTranslation } from "react-i18next";
 import notifyIcon from '../../assets/menu/notify.png'
+import editIcon from '../../assets/icons/edit.png'
 
 export default function profile() {
   const insetTop = useSafeAreaInsets().top;
@@ -70,7 +71,7 @@ export default function profile() {
     setRefreshing(false);
   }
 
-  const handleAvatarPress = async () => {
+  const handleAvatarUpload = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted) {
@@ -103,7 +104,7 @@ export default function profile() {
             console.log('updateAvatar result:', result);
             setUser(result);
             if (result) {
-              Alert.alert('Avatar uploaded successfully');
+              Alert.alert(t('Avatar uploaded successfully'));
             }
           }
         } catch (error) {
@@ -158,24 +159,30 @@ export default function profile() {
                 </TouchableOpacity>
               </View>
               <View className='justify-between items-center mt-10'>
-                <TouchableOpacity onPress={handleAvatarPress}>
-                  <View
-                    className='w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden
-                                                    justify-center'
-                  >
-                    {avatarUploading ? (
-                      <ActivityIndicator size="large" color="#000" />
-                    ) : (
-                      <Image
-                        source={{ uri: user?.avatar }}
-                        className='w-full h-full'
-                        resizeMode='cover'
-                      />
-                    )}
 
-                  </View>
+                <View
+                  className='w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center'
+                >
+                  {avatarUploading ? (
+                    <ActivityIndicator size="large" color="#000" />
+                  ) : (
+                    <Image
+                      source={{ uri: user?.avatar }}
+                      className='w-full h-full'
+                      resizeMode='cover'
+                    />
+                  )}
+                </View>
+                <TouchableOpacity onPress={handleAvatarUpload}
+                  className='w-10 h-10 justify-center items-center'
+                >
+                  <Image
+                    source={editIcon}
+                    className='w-6 h-6'
+                    resizeMode='contain'
+                  />
                 </TouchableOpacity>
-                <Text className='text-black text-xl font-psemibold mt-2.5 '>{user?.username}</Text>
+                <Text className='text-black text-xl font-psemibold mt-1'>{user?.username}</Text>
               </View>
             </View>
           );
