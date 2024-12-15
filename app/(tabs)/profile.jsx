@@ -181,7 +181,7 @@ export default function profile() {
                 >
                   <Image
                     source={editIcon}
-                    className='w-6 h-6 ml-1'
+                    className='w-6 h-6'
                     resizeMode='contain'
                   />
                 </TouchableOpacity>
