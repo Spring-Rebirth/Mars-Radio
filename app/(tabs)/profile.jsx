@@ -139,7 +139,7 @@ export default function profile() {
         contentContainerStyle={{ paddingBottom: 40 }}
         ListHeaderComponent={() => {
           return (
-            <View className='my-6 px-4 mb-8 relative'>
+            <View className='my-6 px-4 mb-2 relative'>
               <View className='flex-row items-center justify-between'>
                 <TouchableOpacity onPress={() => { setSettingModalVisible(true) }}
                   className='w-6 h-6'
@@ -173,6 +173,9 @@ export default function profile() {
                     />
                   )}
                 </View>
+
+                <Text className='text-black text-xl font-psemibold mt-2.5'>{user?.username}</Text>
+
                 <TouchableOpacity onPress={handleAvatarUpload}
                   className='w-10 h-10 justify-center items-center'
                 >
@@ -182,7 +185,6 @@ export default function profile() {
                     resizeMode='contain'
                   />
                 </TouchableOpacity>
-                <Text className='text-black text-xl font-psemibold mt-1'>{user?.username}</Text>
               </View>
             </View>
           );
