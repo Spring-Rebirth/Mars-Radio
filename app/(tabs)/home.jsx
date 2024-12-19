@@ -88,7 +88,7 @@ export default function Home() {
       <View className={`flex-1 bg-primary ${isFullscreen ? 'w-full h-full' : 'h-full'}`}>
         <StatusBar style='auto' />
         <FlatList
-          contentContainerStyle={{ paddingBottom: 43 }}
+          contentContainerStyle={{ paddingBottom: 44 }}
           data={loading ? [] : data}
           keyExtractor={(item) => item.$id}
           ListHeaderComponent={() => {
