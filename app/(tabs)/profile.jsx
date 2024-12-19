@@ -33,10 +33,16 @@ export default function profile() {
 
   useEffect(() => {
     setLoading(true);
+
     if (user?.$id) {
       fetchUserPosts(user.$id)
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
+
   }, [user?.$id, user?.avatar])
 
   const handleSignOut = async () => {

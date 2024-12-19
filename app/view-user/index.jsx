@@ -54,9 +54,12 @@ export default function UserProfile() {
 
     if (creatorId) {
       fetchUserPosts(creatorId)
+        .finally(() => {
+          setLoading(false);  // 确保只有在 fetchUserPosts 完成后才更新 loading 状态
+        });
+    } else {
+      setLoading(false); // 如果没有 creatorId，也需要设置 loading 为 false
     }
-
-    setLoading(false);
   }, [creatorId])
 
   return (
