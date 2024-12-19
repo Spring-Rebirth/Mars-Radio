@@ -1,5 +1,5 @@
 // cSpell:ignore Pressable
-import { View, Text, Image, TouchableOpacity, Pressable, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Pressable, Alert, ActivityIndicator, Dimensions } from 'react-native'
 import { useEffect, useState, useContext } from 'react'
 import { icons } from '../constants'
 import star from '../assets/menu/star-solid.png'
@@ -19,6 +19,7 @@ export default function VideoCard({
   isFullscreen,
   adminList
 }) {
+  const thumbnailHeight = Dimensions.get('screen').width * 9 / 16;
   const { t } = useTranslation();
   const { $id, $createdAt, title, thumbnail, creator: { $id: creatorId, accountId, username, avatar } } = post;
 
@@ -146,7 +147,8 @@ export default function VideoCard({
 
       {/* 视频视图 */}
       <TouchableOpacity
-        className='w-full h-56 justify-center items-center relative overflow-hidden mb-1.5' // 添加 overflow-hidden
+        className='w-full justify-center items-center relative overflow-hidden mb-1.5' // 添加 overflow-hidden
+        style={{ height: thumbnailHeight }}
         activeOpacity={0.7}
         onPress={handlePlay}
       >
