@@ -140,7 +140,7 @@ export default function VideoCard({
   };
 
   return (
-    <View className={`relative bg-primary ${isFullscreen ? 'flex-1 w-full h-full' : 'my-4 '}`}>
+    <View className={`relative bg-primary ${isFullscreen ? 'flex-1 w-full h-full' : 'my-3 '}`}>
       {/* 在全屏模式下隐藏状态栏 */}
       {isFullscreen && <StatusBar hidden />}
 
@@ -175,7 +175,7 @@ export default function VideoCard({
           {/* 菜单弹窗 */}
           {showControlMenu ? (
             <View
-              className='absolute right-2 bottom-[77px] bg-primary w-40 h-auto rounded-md z-10 px-6 py-0'
+              className='absolute right-3 bottom-[63px] bg-primary w-40 h-auto rounded-md z-10 px-6 py-0'
             >
               <Pressable
                 onPress={handleClickSave}
@@ -206,7 +206,7 @@ export default function VideoCard({
           ) : null}
 
           {/* 信息视图 */}
-          <View className='flex-row mt-1.5 mx-2 bg-primary'>
+          <View className='flex-row mt-1 mx-2 bg-primary'>
             <TouchableOpacity onPress={() => {
               router.push({ pathname: 'view-user', params: { creatorId, accountId } });
             }}>
@@ -236,7 +236,7 @@ export default function VideoCard({
             </TouchableOpacity>
           </View>
           {/* 一条适合在白色背景显示颜色很浅的的线 */}
-          <View className='w-screen h-[0.2] bg-gray-100 absolute -bottom-6' />
+          <View className='w-screen h-[0.2] bg-gray-300 absolute -bottom-3' />
         </>
       )}
 
