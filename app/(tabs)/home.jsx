@@ -112,7 +112,7 @@ export default function Home() {
                 <View className='mt-8'>
                   <Text className=' mb-8 font-psemibold text-lg text-[#FFB300] text-center'>{t('Top  Hits')}</Text>
                   {/* 头部视频 */}
-                  {popularData.length === 0 ? (
+                  {popularData.length === 0 && !loading ? (
                     <View className='items-center'>
                       <Image
                         source={images.empty}
