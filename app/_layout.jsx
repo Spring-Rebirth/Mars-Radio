@@ -58,7 +58,7 @@ export default function RootLayout() {
             await Updates.fetchUpdateAsync();
             // 显示 Toast 提示
             Toast.show(t('OTA update loaded, restarting soon.'), {
-              duration: 1500,
+              duration: 2500,
               position: Toast.positions.CENTER,
               shadow: true,
               animation: true,
@@ -66,7 +66,7 @@ export default function RootLayout() {
               delay: 0,
             });
             // 等待 1.5 秒后重启
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise(resolve => setTimeout(resolve, 2500));
             await Updates.reloadAsync();
           }
 
