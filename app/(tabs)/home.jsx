@@ -23,7 +23,7 @@ export default function Home() {
   const { t } = useTranslation();
   const { user } = useGlobalContext();
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [adminList, setAdminList] = useState([]);
   const [popularData, setPopularData] = useState([]);
