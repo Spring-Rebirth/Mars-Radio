@@ -35,7 +35,7 @@ export default function Saved() {
         data={loading ? [] : savedPostsData}
         // item 是 data 数组中的每一项
         keyExtractor={(item) => item.$id}
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 43 }}
         ListHeaderComponent={() => {
           return (
             <View className='my-6 px-4'>
