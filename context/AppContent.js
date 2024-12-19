@@ -30,6 +30,7 @@ const AppContent = () => {
             <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
             <Stack.Screen name='player/play-screen' options={{ headerShown: false }} />
             <Stack.Screen name='notifications/notice-screen' options={{ headerShown: false }} />
+            <Stack.Screen name='view-user/index' options={{ headerShown: false }} />
         </Stack>
     );
 };

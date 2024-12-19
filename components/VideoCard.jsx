@@ -20,7 +20,7 @@ export default function VideoCard({
   adminList
 }) {
   const { t } = useTranslation();
-  const { $id, $createdAt, title, thumbnail, creator: { accountId, username, avatar } } = post;
+  const { $id, $createdAt, title, thumbnail, creator: { $id: creatorId, accountId, username, avatar } } = post;
 
   const [showControlMenu, setShowControlMenu] = useState(false);
 
@@ -205,11 +205,14 @@ export default function VideoCard({
 
           {/* 信息视图 */}
           <View className='flex-row mt-1.5 mx-2 bg-primary'>
-            <Image
-              source={{ uri: avatar }}
-              className='w-[40px] h-[40px] border border-secondary rounded-full ml-2 mt-0.5'
-            />
-
+            <TouchableOpacity onPress={() => {
+              router.push({ pathname: 'view-user', params: { creatorId, accountId } });
+            }}>
+              <Image
+                source={{ uri: avatar }}
+                className='w-[40px] h-[40px] border border-secondary rounded-full ml-2 mt-0.5'
+              />
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={handlePlay}
               className='gap-y-1 justify-center flex-1 ml-5'

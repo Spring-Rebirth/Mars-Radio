@@ -22,7 +22,7 @@ import editIcon from '../../assets/icons/edit.png'
 export default function profile() {
   const insetTop = useSafeAreaInsets().top;
   const [userPostsData, setUserPostsData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
