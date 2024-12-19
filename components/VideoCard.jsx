@@ -146,14 +146,14 @@ export default function VideoCard({
 
       {/* 视频视图 */}
       <TouchableOpacity
-        className='w-full h-56 justify-center items-center relative overflow-hidden' // 添加 overflow-hidden
+        className='w-full h-56 justify-center items-center relative overflow-hidden mb-4' // 添加 overflow-hidden
         activeOpacity={0.7}
         onPress={handlePlay}
       >
 
         <Image
           source={{ uri: thumbnail }}
-          className='w-full h-56 mb-4'
+          className='w-full h-full'
           resizeMode={'cover'}
           onLoad={() => setImageLoaded(true)}
           onError={() => {
