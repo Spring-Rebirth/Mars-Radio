@@ -236,7 +236,7 @@ export default function VideoCard({
             </TouchableOpacity>
           </View>
           {/* 一条适合在白色背景显示颜色很浅的的线 */}
-          <View className='w-screen h-[0.2] bg-gray-100 absolute -bottom-5' />
+          <View className='w-screen h-[0.2] bg-gray-100 absolute -bottom-6' />
         </>
       )}
 
