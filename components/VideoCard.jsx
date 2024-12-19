@@ -150,10 +150,11 @@ export default function VideoCard({
         activeOpacity={0.7}
         onPress={handlePlay}
       >
+
         <Image
           source={{ uri: thumbnail }}
-          className='w-full h-full mb-4'
-          resizeMode='cover'
+          className='w-full h-56 mb-4'
+          resizeMode={'cover'}
           onLoad={() => setImageLoaded(true)}
           onError={() => {
             setImageLoaded(false);
@@ -166,6 +167,7 @@ export default function VideoCard({
             position: 'absolute', top: '50%', left: '50%', transform: [{ translateX: -20 }, { translateY: -20 }]
           }} />
         )}
+
       </TouchableOpacity>
 
       {!isFullscreen && (
