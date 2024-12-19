@@ -10,6 +10,9 @@ import i18n from '../i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { RootSiblingParent } from 'react-native-root-siblings';
+import Toast from 'react-native-root-toast';
+import { useTranslation } from 'react-i18next';
 
 // 防止自动隐藏 SplashScreen
 SplashScreen.preventAutoHideAsync();
@@ -29,6 +32,7 @@ export default function RootLayout() {
   const [notification, setNotification] = useState(undefined);
   const notificationListener = useRef();
   const responseListener = useRef();
+  const { t } = useTranslation();
 
   // 加载字体
   const [fontsLoaded, fontsError] = useFonts({
@@ -52,7 +56,18 @@ export default function RootLayout() {
           const update = await Updates.checkForUpdateAsync();
           if (update.isAvailable) {
             await Updates.fetchUpdateAsync();
-            await Updates.reloadAsync(); // 重新加载应用
+            // 显示 Toast 提示
+            Toast.show(t('OTA update loaded, restarting soon.'), {
+              duration: 1500,
+              position: Toast.positions.CENTER,
+              shadow: true,
+              animation: true,
+              hideOnPress: true,
+              delay: 0,
+            });
+            // 等待 1.5 秒后重启
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            await Updates.reloadAsync();
           }
 
           // 加载语言设置
@@ -131,10 +146,12 @@ export default function RootLayout() {
 
   // 应用准备好后，渲染主要内容
   return (
-    <I18nextProvider i18n={i18n}>
-      <GlobalProvider>
-        <AppContent />
-      </GlobalProvider>
-    </I18nextProvider>
+    <RootSiblingParent>
+      <I18nextProvider i18n={i18n}>
+        <GlobalProvider>
+          <AppContent />
+        </GlobalProvider>
+      </I18nextProvider>
+    </RootSiblingParent>
   );
 }
