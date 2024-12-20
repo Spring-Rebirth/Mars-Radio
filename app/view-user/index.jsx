@@ -108,8 +108,9 @@ export default function UserProfile() {
           );
         }}
       />
-      <StatusBar style='auto' />
-    </View>
 
+      <StatusBar style='inverted' />
+
+    </View>
   )
 }

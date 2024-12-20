@@ -99,7 +99,7 @@ export default function Search() {
         }
       />
 
-      <StatusBar style='auto' />
+      <StatusBar style='inverted' />
 
     </SafeAreaView>
   )

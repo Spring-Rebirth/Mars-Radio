@@ -156,7 +156,9 @@ export default function SignUp() {
             </View>
           </View>
         </ScrollView>
-        <StatusBar style='auto' />
+
+        <StatusBar style='inverted' />
+
       </SafeAreaView>
     </>
   );

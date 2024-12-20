@@ -304,7 +304,9 @@ export default function Create() {
           textStyle={'text-white'}
           isLoading={uploading}
         />
-        <StatusBar style='auto' />
+
+        <StatusBar style='inverted' />
+
       </ScrollView>
     </View>
   )

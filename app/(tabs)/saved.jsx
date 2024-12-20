@@ -84,7 +84,8 @@ export default function Saved() {
         }
       />
 
-      <StatusBar style='auto' />
+      <StatusBar style='inverted' />
+
     </View>
   )
 }

@@ -225,7 +225,9 @@ export default function profile() {
         }
 
       />
-      <StatusBar style='auto' />
+
+      <StatusBar style='inverted' />
+
     </View>
   )
 }
