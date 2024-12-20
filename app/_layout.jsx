@@ -52,6 +52,12 @@ export default function RootLayout() {
       try {
         // 确保字体已加载
         if (fontsLoaded && !fontsError) {
+          // 加载语言设置
+          const lang = await AsyncStorage.getItem('language');
+          if (lang) {
+            await i18n.changeLanguage(lang);
+          }
+
           // 检查更新
           const update = await Updates.checkForUpdateAsync();
           if (update.isAvailable) {
@@ -65,15 +71,9 @@ export default function RootLayout() {
               hideOnPress: true,
               delay: 0,
             });
-            // 等待 1.5 秒后重启
+            // 等待N秒后重启
             await new Promise(resolve => setTimeout(resolve, 2500));
             await Updates.reloadAsync();
-          }
-
-          // 加载语言设置
-          const lang = await AsyncStorage.getItem('language');
-          if (lang) {
-            await i18n.changeLanguage(lang);
           }
         }
 
@@ -87,9 +87,11 @@ export default function RootLayout() {
       } finally {
         setIsReady(true);
       }
+
     }
 
     prepare();
+
   }, [fontsLoaded, fontsError]);
 
   useEffect(() => {
