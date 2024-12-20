@@ -128,7 +128,7 @@ export default function SignIn() {
           </View>
         </ScrollView>
 
-        <StatusBar style='inverted' />
+        <StatusBar style='dark' />
 
       </SafeAreaView>
     </>

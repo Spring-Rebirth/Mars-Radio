@@ -109,7 +109,7 @@ export default function UserProfile() {
         }}
       />
 
-      <StatusBar style='inverted' />
+      <StatusBar style='dark' />
 
     </View>
   )

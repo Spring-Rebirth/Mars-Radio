@@ -87,7 +87,7 @@ export default function Home() {
     <View className="bg-primary h-full" style={{ marginTop: insetTop }}>
       <View className={`flex-1 bg-primary ${isFullscreen ? 'w-full h-full' : 'h-full'}`}>
 
-        <StatusBar style='inverted' />
+        <StatusBar style='dark' />
 
         <FlatList
           contentContainerStyle={{ paddingBottom: 44 }}

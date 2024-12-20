@@ -305,7 +305,7 @@ export default function Create() {
           isLoading={uploading}
         />
 
-        <StatusBar style='inverted' />
+        <StatusBar style='dark' />
 
       </ScrollView>
     </View>
