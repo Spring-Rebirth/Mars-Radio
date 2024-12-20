@@ -130,7 +130,7 @@ export default function Home() {
                   )}
 
                 </View>
-                <View className='flex-row items-center justify-center mt-10'>
+                <View className='flex-row items-center justify-center mt-10 mb-4'>
                   <Image
                     source={downIcon}
                     resizeMode='contain'

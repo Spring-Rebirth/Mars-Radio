@@ -141,13 +141,13 @@ export default function VideoCard({
   };
 
   return (
-    <View className={`relative bg-primary ${isFullscreen ? 'flex-1 w-full h-full' : 'my-3 '}`}>
+    <View className={`relative bg-primary ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-5 '}`}>
       {/* 在全屏模式下隐藏状态栏 */}
       {isFullscreen && <StatusBar hidden />}
 
       {/* 视频视图 */}
       <TouchableOpacity
-        className='w-full justify-center items-center relative overflow-hidden mb-1.5' // 添加 overflow-hidden
+        className='w-full justify-center items-center relative overflow-hidden mb-2' // 添加 overflow-hidden
         style={{ height: thumbnailHeight }}
         activeOpacity={0.7}
         onPress={handlePlay}
@@ -210,7 +210,7 @@ export default function VideoCard({
           ) : null}
 
           {/* 信息视图 */}
-          <View className='flex-row mt-1 mx-2 bg-primary'>
+          <View className='flex-row mx-2 bg-primary'>
             <TouchableOpacity onPress={() => {
               router.push({ pathname: 'view-user', params: { creatorId, accountId } });
             }}>
