@@ -141,7 +141,7 @@ export default function VideoCard({
   };
 
   return (
-    <View className={`relative bg-primary ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-7 '}`}>
+    <View className={`relative bg-primary ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-8 '}`}>
       {/* 在全屏模式下隐藏状态栏 */}
       {isFullscreen && <StatusBar hidden />}
 
