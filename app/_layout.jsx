@@ -13,6 +13,7 @@ import * as Notifications from 'expo-notifications';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import Toast from 'react-native-root-toast';
 import { useTranslation } from 'react-i18next';
+import useNotificationStore from '../store/notificationStore';
 
 // 防止自动隐藏 SplashScreen
 SplashScreen.preventAutoHideAsync();
@@ -28,8 +29,12 @@ Notifications.setNotificationHandler({
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState(null);
-  const [channels, setChannels] = useState([]);
-  const [notification, setNotification] = useState(undefined);
+  // 删除本地状态声明
+  // const [channels, setChannels] = useState([]);
+  // const [notification, setNotification] = useState(undefined);
+
+  // 使用 Zustand store
+  const { setChannels, setNotification } = useNotificationStore();
   const notificationListener = useRef();
   const responseListener = useRef();
   const { t } = useTranslation();
@@ -116,11 +121,12 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (Platform.OS === 'android') {
-      Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
+      Notifications.getNotificationChannelsAsync()
+        .then(value => setChannels(value ?? [])); // 使用 Zustand 的 setChannels
     }
 
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
+      setNotification(notification); // 使用 Zustand 的 setNotification
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
