@@ -29,11 +29,6 @@ Notifications.setNotificationHandler({
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState(null);
-  // 删除本地状态声明
-  // const [channels, setChannels] = useState([]);
-  // const [notification, setNotification] = useState(undefined);
-
-  // 使用 Zustand store
   const { setChannels, setNotification } = useNotificationStore();
   const notificationListener = useRef();
   const responseListener = useRef();
