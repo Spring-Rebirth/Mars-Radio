@@ -4,9 +4,14 @@ import { FlatList, View, Image, Text } from 'react-native';
 import CommentItem from './CommentItem';
 import emptyIcon from '../../assets/images/empty-msg.png';
 import { useTranslation } from 'react-i18next';
+import { useGlobalContext } from '../../context/GlobalProvider';
 
-export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply, scrollToComment }) {
+export default function CommentList({
+  commentsDoc, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser,
+  submitReply, scrollToComment, videoCreator
+}) {
   const flatListRef = useRef(null);
+  const { user } = useGlobalContext();
   const [hasScrolled, setHasScrolled] = useState(false);
   const { t } = useTranslation();
 
@@ -51,6 +56,8 @@ export default function CommentList({ commentsDoc, fetchReplies, setRefreshFlag,
       fetchUsername={fetchUsername}
       fetchCommentUser={fetchCommentUser}
       submitReply={submitReply}
+      videoCreator={videoCreator}
+      user={user}
     />
   );
 

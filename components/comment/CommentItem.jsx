@@ -14,7 +14,10 @@ import downIcon from '../../assets/icons/arrow-down.png';
 import { sendLikedStatus } from '../../services/commentService';
 import { formatCommentsCounts } from '../../utils/numberFormatter';
 
-const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser, submitReply, onReplyDeleted }) => {
+const CommentItem = ({
+  comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser,
+  submitReply, onReplyDeleted, videoCreator, user, rootCommentId = comment.$id
+}) => {
   const [replies, setReplies] = useState([]);
   const [commentId, setCommentId] = useState(comment.$id);
   const [repliesCount, setRepliesCount] = useState(0);
@@ -134,6 +137,30 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
     await submitReply(`@${parentUsername}\n${replyMsg}`, parentCommentId, userId, comment.video_ID);
     setRepliesCount((prevCount) => prevCount + 1);
     console.log('Submit reply:', replyMsg);
+
+    // 根据视频ID获取视频的发布者信息
+    console.log('videoCreator.expo_push_token:', videoCreator.expo_push_token);
+    // 获取上一级评论，里面包含了user_ID
+    const parentComment = await databases.getDocument(
+      config.databaseId, // 替换为你的数据库 ID
+      config.commentsCollectionId, // 替换为你的评论集合 ID
+      parentCommentId
+    );
+
+    // 通过 parentComment的user_ID获取用户信息
+    const parentCommentUser = await fetchCommentUser(parentComment.user_ID);
+
+    if (parentCommentUser.expo_push_token && parentCommentUser.$id !== user?.$id) {
+      // 发送推送通知
+      sendPushNotification(parentCommentUser.expo_push_token, `${user?.username} ${t('replied to your comment')}`, replyMsg, {
+        videoId: comment.video_ID,
+        userId,
+        commentId: rootCommentId,
+      });
+    }
+
+    console.log('执行了发送视频子评论推送通知');
+
     setReplyMsg('');
     setParentCommentUserId(null);
     setParentCommentId(null);
@@ -248,6 +275,9 @@ const CommentItem = ({ comment, level = 1, fetchReplies, setRefreshFlag, fetchUs
                 fetchCommentUser={fetchCommentUser}
                 submitReply={submitReply}
                 onReplyDeleted={handleReplyDeleted}
+                videoCreator={videoCreator}
+                user={user}
+                rootCommentId={rootCommentId}
               />
             ))
           )}

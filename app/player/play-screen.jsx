@@ -153,12 +153,13 @@ export default function PlayScreen() {
       <CommentList
         userId={userId}
         videoId={videoId}
-        commentsDoc={commentsDoc}
-        fetchUsername={fetchCommentUsername}
-        fetchReplies={fetchReplies}
         submitReply={submitReply}
+        commentsDoc={commentsDoc}
+        videoCreator={videoCreator}
+        fetchReplies={fetchReplies}
         setRefreshFlag={setRefreshFlag}
         fetchCommentUser={fetchCommentUser}
+        fetchUsername={fetchCommentUsername}
         scrollToComment={targetCommentId} // 传递用于滚动的评论ID
       />
     );
