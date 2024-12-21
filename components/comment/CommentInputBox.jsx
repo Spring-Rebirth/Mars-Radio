@@ -10,7 +10,9 @@ export default function CommentInputBox({ videoId, userId, videoCreator, onComme
   const { t } = useTranslation()
   const [comment, setComment] = useState('');
   const { user } = useGlobalContext();
-  console.log('videoCreator:', JSON.stringify(videoCreator, null, 2));
+
+  // console.log('videoCreator:', JSON.stringify(videoCreator, null, 2));
+
   const handleCommentSubmit = async () => {
     try {
       const newComment = {

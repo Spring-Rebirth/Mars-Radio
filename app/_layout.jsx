@@ -82,7 +82,7 @@ export default function RootLayout() {
           throw fontsError;
         }
       } catch (e) {
-        console.error('Initialization error:', e);
+        console.warn('Initialization error:', e);
         setError(e);
       } finally {
         setIsReady(true);
@@ -102,7 +102,10 @@ export default function RootLayout() {
 
   // 如果发生初始化错误，显示错误信息
   if (error) {
-    alert(`初始化错误: ${error.message || '未知错误'}`)
+    Toast.show(`初始化错误: ${error.message || '未知错误'}`, {
+      duration: 2500,
+      position: Toast.positions.CENTER
+    })
   }
 
   // 如果字体加载出错，显示字体加载错误信息
