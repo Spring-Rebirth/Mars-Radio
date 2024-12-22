@@ -105,17 +105,13 @@ export default function SignUp() {
 
         if (completeSignUp.status === 'complete') {
           // 设置会话
-          await setSession(completeSignUp.createdSessionId);
+          await setActive({ session: completeSignUp.createdSessionId });
 
           if (user) {
             const avatarUrl = user.imageUrl; // Clerk 默认头像 URL
             console.log('User Avatar URL:', avatarUrl);
             // 你可以将 avatarUrl 存储到用户数据中，或在界面中展示
           }
-
-          setVerifySuccess(true);
-
-          await setActive({ session: completeSignUp.createdSessionId });
 
           const userDocument = await databases.createDocument(
             config.databaseId,
@@ -131,6 +127,7 @@ export default function SignUp() {
 
           setUser(userDocument);
           setIsLoggedIn(true);
+          setVerifySuccess(true);
 
         } else {
           console.error(JSON.stringify(completeSignUp, null, 2));
@@ -138,8 +135,7 @@ export default function SignUp() {
       } catch (err) {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
-        console.error(JSON.stringify(err, null, 2));
-        Alert.alert(err);
+        console.error(err);
       }
 
       // 确保所有状态更新完成后再进行页面跳转
