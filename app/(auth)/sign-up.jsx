@@ -25,7 +25,7 @@ export default function SignUp() {
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
+  const [createdSessionId, setCreatedSessionId] = useState(null);
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [verifySuccess, setVerifySuccess] = React.useState(false);
   const [code, setCode] = React.useState('');
@@ -107,29 +107,8 @@ export default function SignUp() {
           // 设置会话
           await setActive({ session: completeSignUp.createdSessionId });
 
-          let avatarUrl = '';
+          setCreatedSessionId(completeSignUp.createdSessionId);
 
-          if (user) {
-            avatarUrl = user.imageUrl; // Clerk 默认头像 URL
-            console.log('User Avatar URL:', avatarUrl);
-            // 你可以将 avatarUrl 存储到用户数据中，或在界面中展示
-          }
-
-          const userDocument = await databases.createDocument(
-            config.databaseId,
-            config.usersCollectionId,
-            ID.unique(),
-            {
-              accountId: completeSignUp.createdUserId,
-              email: form.email,
-              username: form.username.trim(),
-              avatar: avatarUrl, // 或使用 avatarURL
-            }
-          );
-
-          setUser(userDocument);
-          setIsLoggedIn(true);
-          setVerifySuccess(true);
 
         } else {
           console.error(JSON.stringify(completeSignUp, null, 2));
@@ -156,6 +135,41 @@ export default function SignUp() {
       setIsSubmitting(false);
     }
   }
+
+  useEffect(() => {
+    const handleUserUpdate = async () => {
+      if (createdSessionId && user) {
+        console.log('用户已加载:', user);
+
+        let avatarUrl = '';
+
+        if (user) {
+          avatarUrl = user.imageUrl; // Clerk 默认头像 URL
+          console.log('User Avatar URL:', avatarUrl);
+          // 你可以将 avatarUrl 存储到用户数据中，或在界面中展示
+        }
+
+        const userDocument = await databases.createDocument(
+          config.databaseId,
+          config.usersCollectionId,
+          ID.unique(),
+          {
+            accountId: completeSignUp.createdUserId,
+            email: form.email,
+            username: form.username.trim(),
+            avatar: avatarUrl, // 或使用 avatarURL
+          }
+        );
+
+        setUser(userDocument);
+        setIsLoggedIn(true);
+        setVerifySuccess(true);
+
+      }
+    };
+
+    handleUserUpdate();
+  }, [user, createdSessionId])
 
   if (isSubmitting) {
     return (
