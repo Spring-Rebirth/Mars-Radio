@@ -14,13 +14,14 @@ import { ID } from 'react-native-appwrite';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { updatePushToken } from '../../functions/notifications/index';
 import { useTranslation } from 'react-i18next';
-import { useSignUp } from '@clerk/clerk-expo'
+import { useSignUp, useUser } from '@clerk/clerk-expo'
 import CustomModal from '../../components/modal/CustomModal';
 import CustomButtonTwo from '../../components/CustomButtonTwo';
 import check from '../../assets/images/check.png'
 
 export default function SignUp() {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { user } = useUser();
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,7 +69,7 @@ export default function SignUp() {
       await signUp.create({
         emailAddress: form.email,
         password: form.password,
-        username: form.username
+        username: form.username.trim(),
       })
 
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
@@ -103,22 +104,33 @@ export default function SignUp() {
         })
 
         if (completeSignUp.status === 'complete') {
-          //  添加用户信息到本地存储
-          try {
-            await api.createUser({
-              name: username,
-              email: emailAddress,
-              clerkId: completeSignUp.createdUserId
-            });
+          // 设置会话
+          await setSession(completeSignUp.createdSessionId);
 
-          } catch (error) {
-            console.error('Error creating user:', error);
-            // 根据需要处理错误，例如显示错误消息或提示用户重试
+          if (user) {
+            const avatarUrl = user.imageUrl; // Clerk 默认头像 URL
+            console.log('User Avatar URL:', avatarUrl);
+            // 你可以将 avatarUrl 存储到用户数据中，或在界面中展示
           }
 
           setVerifySuccess(true);
 
           await setActive({ session: completeSignUp.createdSessionId });
+
+          const userDocument = await databases.createDocument(
+            config.databaseId,
+            config.usersCollectionId,
+            ID.unique(),
+            {
+              accountId: completeSignUp.createdUserId,
+              email: form.email,
+              username: form.username.trim(),
+              avatar: avatarUrl, // 或使用 avatarURL
+            }
+          );
+
+          setUser(userDocument);
+          setIsLoggedIn(true);
 
         } else {
           console.error(JSON.stringify(completeSignUp, null, 2));
@@ -129,23 +141,6 @@ export default function SignUp() {
         console.error(JSON.stringify(err, null, 2));
         Alert.alert(err);
       }
-
-      // 创建用户文档
-      const userDocument = await databases.createDocument(
-        config.databaseId,
-        config.usersCollectionId,
-        ID.unique(),
-        {
-          accountId: newAccount.$id,
-          email: newAccount.email,
-          username: newAccount.name,
-          avatar: avatarURL,
-        }
-      );
-
-      // 更新全局用户状态
-      setUser(userDocument);
-      setIsLoggedIn(true);
 
       // 确保所有状态更新完成后再进行页面跳转
       setIsSubmitting(false);
