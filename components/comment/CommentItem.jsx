@@ -35,7 +35,7 @@ const CommentItem = ({
   const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
   const inputRef = useRef(null);
 
-  const MAX_LEVEL = 2;
+  const MAX_LEVEL = 1;
   let paddingLeft = level <= MAX_LEVEL ? 40 : 0;
 
   // 加载用户信息
