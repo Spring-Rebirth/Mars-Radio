@@ -95,7 +95,7 @@ export default function SignUp() {
     try {
       // 注册用户
       if (!isLoaded) {
-        return
+        return;
       }
 
       try {
@@ -107,8 +107,10 @@ export default function SignUp() {
           // 设置会话
           await setActive({ session: completeSignUp.createdSessionId });
 
+          let avatarUrl = '';
+
           if (user) {
-            const avatarUrl = user.imageUrl; // Clerk 默认头像 URL
+            avatarUrl = user.imageUrl; // Clerk 默认头像 URL
             console.log('User Avatar URL:', avatarUrl);
             // 你可以将 avatarUrl 存储到用户数据中，或在界面中展示
           }
