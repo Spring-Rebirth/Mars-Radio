@@ -13,6 +13,7 @@ import upIcon from '../../assets/icons/arrow-up.png';
 import downIcon from '../../assets/icons/arrow-down.png';
 import { sendLikedStatus } from '../../services/commentService';
 import { formatCommentsCounts } from '../../utils/numberFormatter';
+import { sendPushNotification } from '../../functions/notifications';
 
 const CommentItem = ({
   comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser,
