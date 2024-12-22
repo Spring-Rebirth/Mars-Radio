@@ -167,6 +167,7 @@ const CommentItem = ({
     setParentCommentId(null);
     setShowReplyModal(false);
     setRefreshFlag(prev => !prev);
+
   }, [replyMsg, parentCommentId]);
 
   const handleClickLike = async () => {
