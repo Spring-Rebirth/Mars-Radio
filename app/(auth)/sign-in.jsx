@@ -11,8 +11,10 @@ import CustomButton from '../../components/CustomButton';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { updatePushToken } from '../../functions/notifications/index';
 import { useTranslation } from 'react-i18next';
+import { useSignIn } from '@clerk/clerk-expo'
 
 export default function SignIn() {
+  const { signIn, setActive, isLoaded } = useSignIn();
   const [form, setForm] = useState({ email: '', password: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
@@ -46,7 +48,26 @@ export default function SignIn() {
     setIsSubmitting(true);
 
     try {
-      await signIn(form.email, form.password);
+      if (!isLoaded) {
+        return
+      }
+
+      try {
+        const signInAttempt = await signIn.create({
+          identifier: form.email,
+          password: form.password,
+        })
+
+        if (signInAttempt.status === 'complete') {
+          await setActive({ session: signInAttempt.createdSessionId });
+        } else {
+          // See https://clerk.com/docs/custom-flows/error-handling
+          // for more info on error handling
+          console.error(JSON.stringify(signInAttempt, null, 2))
+        }
+      } catch (err) {
+        console.error(JSON.stringify(err, null, 2))
+      }
 
       // 获取当前用户信息并更新状态
       const result = await getCurrentUser();

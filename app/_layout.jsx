@@ -14,6 +14,23 @@ import { RootSiblingParent } from 'react-native-root-siblings';
 import Toast from 'react-native-root-toast';
 import { useTranslation } from 'react-i18next';
 import useNotificationStore from '../store/notificationStore';
+import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
+
+const originalWarn = console.warn;
+console.warn = (message) => {
+  if (message.includes('Clerk')) {
+    return;
+  }
+  originalWarn(message);
+};
+
+const clerkPublishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+if (!clerkPublishableKey) {
+  throw new Error(
+    'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
+  );
+}
 
 // 防止自动隐藏 SplashScreen
 SplashScreen.preventAutoHideAsync();
@@ -152,12 +169,16 @@ export default function RootLayout() {
 
   // 应用准备好后，渲染主要内容
   return (
-    <RootSiblingParent>
-      <I18nextProvider i18n={i18n}>
-        <GlobalProvider>
-          <AppContent />
-        </GlobalProvider>
-      </I18nextProvider>
-    </RootSiblingParent>
+    <ClerkProvider publishableKey={clerkPublishableKey}>
+      <ClerkLoaded>
+        <RootSiblingParent>
+          <I18nextProvider i18n={i18n}>
+            <GlobalProvider>
+              <AppContent />
+            </GlobalProvider>
+          </I18nextProvider>
+        </RootSiblingParent>
+      </ClerkLoaded>
+    </ClerkProvider>
   );
 }

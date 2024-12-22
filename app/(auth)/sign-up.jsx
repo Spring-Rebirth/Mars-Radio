@@ -14,12 +14,20 @@ import { ID } from 'react-native-appwrite';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { updatePushToken } from '../../functions/notifications/index';
 import { useTranslation } from 'react-i18next';
+import { useSignUp } from '@clerk/clerk-expo'
+import CustomModal from '../../components/modal/CustomModal';
+import CustomButtonTwo from '../../components/CustomButtonTwo';
+import check from '../../assets/images/check.png'
 
 export default function SignUp() {
+  const { isLoaded, signUp, setActive } = useSignUp();
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
+  const [pendingVerification, setPendingVerification] = React.useState(false);
+  const [verifySuccess, setVerifySuccess] = React.useState(false);
+  const [code, setCode] = React.useState('');
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -52,9 +60,74 @@ export default function SignUp() {
 
     setIsSubmitting(true);
 
+    if (!isLoaded) {
+      return
+    }
+
+    try {
+      await signUp.create({
+        emailAddress: form.email,
+        password: form.password,
+        username: form.username
+      })
+
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
+
+      setPendingVerification(true)
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
+
+      if (err && err.errors && err.errors.length > 0) {
+        // 提取第一个错误的 message
+        const errorMessage = err.errors[0].message;
+        Alert.alert('Registration Error', errorMessage);
+      } else {
+        // 如果错误格式未知，显示通用错误信息
+        Alert.alert('Registration Error', 'An unknown error occurred, please try again.');
+      }
+    }
+
+  }
+
+  const onPressVerify = async () => {
     try {
       // 注册用户
-      const { newAccount, avatarURL } = await registerUser(form.email, form.password, form.username);
+      if (!isLoaded) {
+        return
+      }
+
+      try {
+        const completeSignUp = await signUp.attemptEmailAddressVerification({
+          code,
+        })
+
+        if (completeSignUp.status === 'complete') {
+          //  添加用户信息到本地存储
+          try {
+            await api.createUser({
+              name: username,
+              email: emailAddress,
+              clerkId: completeSignUp.createdUserId
+            });
+
+          } catch (error) {
+            console.error('Error creating user:', error);
+            // 根据需要处理错误，例如显示错误消息或提示用户重试
+          }
+
+          setVerifySuccess(true);
+
+          await setActive({ session: completeSignUp.createdSessionId });
+
+        } else {
+          console.error(JSON.stringify(completeSignUp, null, 2));
+        }
+      } catch (err) {
+        // See https://clerk.com/docs/custom-flows/error-handling
+        // for more info on error handling
+        console.error(JSON.stringify(err, null, 2));
+        Alert.alert(err);
+      }
 
       // 创建用户文档
       const userDocument = await databases.createDocument(
@@ -82,7 +155,7 @@ export default function SignUp() {
 
       setTimeout(() => {
         router.replace('/home');
-      }, 100); // 延迟 100 毫秒以确保状态同步完成
+      }, 2000); // 延迟 100 毫秒以确保状态同步完成
 
     } catch (error) {
       Alert.alert('Error', error.message);
@@ -100,7 +173,7 @@ export default function SignUp() {
 
   return (
     <>
-      <SafeAreaView className='bg-primary'>
+      <SafeAreaView className='flex-1 bg-primary'>
         <ScrollView contentContainerStyle={{ height: '100%' }}>
           <View className='h-full justify-center px-6'>
             <View className='h-[85vh] justify-center'>
@@ -156,6 +229,54 @@ export default function SignUp() {
             </View>
           </View>
         </ScrollView>
+
+        <CustomModal isVisible={pendingVerification}>
+          <View className='w-full h-full px-8 justify-center'>
+
+            <View className='mb-3 -mt-4'>
+              <Text className='text-2xl font-bold'>
+                Verification
+              </Text>
+              <Text>We sent a verification code to</Text>
+              <Text>{form.email}</Text>
+            </View>
+
+            <Text className='text-xl font-semibold'>
+              Code
+            </Text>
+
+            <TextInput
+              className='bg-[#F6F8FA] my-3 h-12 rounded-full border border-sky-400
+                                    py-1.5 text-center'
+              keyboardType={'numeric'}
+              placeholder='Enter Code'
+              onChangeText={text => setCode(text)}
+            />
+
+            <CustomButtonTwo
+              onPress={onPressVerify}
+              containerStyle={'w-full mt-6 bg-green-500'}
+              title={'Verify Email'}
+            />
+          </View>
+
+        </CustomModal>
+
+        <CustomModal isVisible={verifySuccess}>
+          <View className='w-full h-full px-8 items-center justify-center'>
+            <Image
+              className='w-[100] h-[100] mb-10'
+              source={check}
+            />
+            <Text className='text-xl font-bold mb-2 text-center'>
+              Verification Successful
+            </Text>
+
+            <Text className='text-center text-gray-500 mb-10'>
+              Auto-redirect to homepage after{'\n'} 2 seconds.
+            </Text>
+          </View>
+        </CustomModal>
 
         <StatusBar style='dark' />
 
