@@ -18,34 +18,40 @@ function GlobalProvider({ children }) {
   const playDataRef = useRef({});
 
   useEffect(() => {
-    if (isLoaded) {
-      if (clerkUser) {
-        getCurrentUser(clerkUser?.id)
-          .then((res) => {
+    const fetchUser = async () => {
+      if (isLoaded) {
+        if (clerkUser) {
+          try {
+            const res = await getCurrentUser(clerkUser.id); // 确保 getCurrentUser 接受 userId
             if (res) {
               setIsLoggedIn(true);
               setUser(res);
               console.log('User is logged in');
             } else {
-              setIsLoading(false);
+              setIsLoggedIn(false);
               setUser(null);
               console.log('User is not logged in');
             }
-          })
-          .catch((error) => {
+          } catch (error) {
             console.log("Error in fetching user:", error);
             setIsLoggedIn(false);
             setUser(null);
-          })
-          .finally(() => {
+            Alert.alert('错误', '无法获取用户信息，请稍后再试。');
+          } finally {
             setIsLoading(false);
-          })
-
+          }
+        } else {
+          // clerkUser 为 null，用户未登录
+          setIsLoggedIn(false);
+          setUser(null);
+          setIsLoading(false);
+          console.log('User is not logged in');
+        }
       }
+    };
 
-    }
-
-  }, []);
+    fetchUser();
+  }, [isLoaded, clerkUser]);
 
   const updatePlayData = async (video_ID, count) => {
     playDataRef.current[video_ID] = {
