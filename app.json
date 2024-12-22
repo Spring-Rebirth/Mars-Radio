@@ -34,7 +34,8 @@
     "plugins": [
       "expo-router",
       "react-native-edge-to-edge",
-      "expo-font"
+      "expo-font",
+      "expo-secure-store"
     ],
     "runtimeVersion": "1.0",
     "extra": {
