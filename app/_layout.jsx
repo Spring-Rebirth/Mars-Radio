@@ -15,6 +15,7 @@ import Toast from 'react-native-root-toast';
 import { useTranslation } from 'react-i18next';
 import useNotificationStore from '../store/notificationStore';
 import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
+import { tokenCache } from '../lib/clerk/auth'
 
 const originalWarn = console.warn;
 console.warn = (message) => {
@@ -169,7 +170,7 @@ export default function RootLayout() {
 
   // 应用准备好后，渲染主要内容
   return (
-    <ClerkProvider publishableKey={clerkPublishableKey}>
+    <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
       <ClerkLoaded>
         <RootSiblingParent>
           <I18nextProvider i18n={i18n}>
