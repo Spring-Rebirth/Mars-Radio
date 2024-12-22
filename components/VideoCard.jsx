@@ -109,10 +109,10 @@ export default function VideoCard({
   }
 
   useEffect(() => {
-    if (accountId === user.accountId) {
+    if (accountId === user?.accountId) {
       setIsVideoCreator(true);
     }
-  }, [user.accountId, $id]);
+  }, [user?.accountId, $id]);
 
   // cSpell:words cooldown
   const handlePlay = async () => {
