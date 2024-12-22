@@ -11,14 +11,15 @@ import CustomButton from '../../components/CustomButton';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { updatePushToken } from '../../functions/notifications/index';
 import { useTranslation } from 'react-i18next';
-import { useSignIn } from '@clerk/clerk-expo'
+import { useSignIn, useUser } from '@clerk/clerk-expo'
 
 export default function SignIn() {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const { user } = useUser();
   const [form, setForm] = useState({ email: '', password: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
-  const { user, setUser, setIsLoggedIn } = useGlobalContext();
+  const { setUser, setIsLoggedIn } = useGlobalContext();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -69,29 +70,39 @@ export default function SignIn() {
         console.error(JSON.stringify(err, null, 2))
       }
 
-      // 获取当前用户信息并更新状态
-      const result = await getCurrentUser();
-      if (result && user !== result) {
-        setUser(result);
-      }
-      setIsLoggedIn(true);
 
-      // 确保所有状态都已更新后再跳转页面
-      setIsSubmitting(false);
-      setIsTransitioning(true); // 标记进入跳转状态
-
-      // 更新推送令牌
-      await updatePushToken();
-
-      setTimeout(() => {
-        router.replace('/home');
-      }, 100); // 延迟 100 毫秒以确保状态同步完成
 
     } catch (error) {
       Alert.alert('Error in submit', error.message);
       setIsSubmitting(false);
     }
   }
+
+  useEffect(() => {
+    const handleUserUpdate = async () => {
+      if (user) {
+        // 获取当前用户信息并更新状态
+        const result = await getCurrentUser(user.id);
+        if (result) setUser(result);
+
+        setIsLoggedIn(true);
+
+        // 确保所有状态都已更新后再跳转页面
+        setIsSubmitting(false);
+        setIsTransitioning(true); // 标记进入跳转状态
+
+        // 更新推送令牌
+        await updatePushToken();
+
+        setTimeout(() => {
+          router.replace('/home');
+        }, 100); // 延迟 100 毫秒以确保状态同步完成
+      }
+
+    };
+    handleUserUpdate();
+  }, [user]);
+
 
   if (isSubmitting || isTransitioning) {
     return (

@@ -100,7 +100,6 @@ export default function RootLayout() {
           throw fontsError;
         }
       } catch (e) {
-        console.warn('Initialization error:', e);
         setError(e);
       } finally {
         setIsReady(true);
