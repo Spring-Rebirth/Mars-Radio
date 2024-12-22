@@ -1,5 +1,4 @@
 {
-    "replied to your comment": "回复了你的评论",
     "Sign Out": "退出登录",
     "OTA update loaded, restarting soon.": "OTA更新已加载, 即将重启。",
     "Avatar uploaded successfully": "头像更换成功",
@@ -72,5 +71,8 @@
     "A new update has been downloaded. Would you like to restart the app now?": "已下载新的更新。是否立即重启应用？",
     "LATER": "稍后",
     "RESTART NOW": "立即重启",
-    "Login to continue": "登录以继续"
+    "Login to continue": "登录以继续",
+    "notifications": {
+        "userRepliedComment": "{username} 回复了你的评论"
+    }
 }

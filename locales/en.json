@@ -1,5 +1,4 @@
 {
-    "replied to your comment": "replied to your comment",
     "Sign Out": "Sign Out",
     "OTA update loaded, restarting soon.": "OTA update loaded, restarting soon.",
     "Avatar uploaded successfully": "Avatar uploaded successfully",
@@ -63,5 +62,8 @@
     "Search by the beginning of the title": "Search by the beginning of the title",
     "Latest": "Latest",
     "views": "views",
-    "ago": "ago"
+    "ago": "ago",
+    "notifications": {
+        "userRepliedComment": "{username} replied to your comment"
+    }
 }

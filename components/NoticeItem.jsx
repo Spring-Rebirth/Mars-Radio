@@ -8,7 +8,7 @@ export default function NoticeItem({ title, content, onPress }) {
       onPress={onPress}
     >
       <View className="pl-2">
-        <Text className="text-xl font-bold text-gray-800">{title}</Text>
+        <Text className="text-sm font-bold text-gray-800">{title}</Text>
         <Text className="text-sm text-gray-600 mt-1">{content}</Text>
       </View>
     </TouchableOpacity>

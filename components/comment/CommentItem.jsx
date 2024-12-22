@@ -160,11 +160,16 @@ const CommentItem = ({
 
     if (parentCommentUser.expo_push_token && parentCommentUser.$id !== user?.$id) {
       // 发送推送通知
-      sendPushNotification(parentCommentUser.expo_push_token, `${user?.username} ${t('replied to your comment')}`, replyMsg, {
-        videoId: comment.video_ID,
-        userId,
-        commentId: rootCommentId,
-      });
+      sendPushNotification(
+        parentCommentUser.expo_push_token,
+        t('notifications.userRepliedComment', { username: user?.username }),
+        replyMsg,
+        {
+          videoId: comment.video_ID,
+          userId,
+          commentId: rootCommentId,
+        }
+      );
     }
 
     console.log('执行了发送视频子评论推送通知');
