@@ -1,5 +1,5 @@
-import { View, Image, Text, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { useEffect, useState } from 'react';
+import { View, Image, Text, ScrollView, Alert, ActivityIndicator, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import images from '../../constants/images';
 import CustomForm from '../../components/CustomForm';
@@ -24,7 +24,7 @@ export default function SignUp() {
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
+  // const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [verifySuccess, setVerifySuccess] = React.useState(false);
   const [code, setCode] = React.useState('');
@@ -61,7 +61,7 @@ export default function SignUp() {
     setIsSubmitting(true);
 
     if (!isLoaded) {
-      return
+      return;
     }
 
     try {
@@ -73,7 +73,8 @@ export default function SignUp() {
 
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
 
-      setPendingVerification(true)
+      setPendingVerification(true);
+      setIsSubmitting(false);
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
 
@@ -148,7 +149,7 @@ export default function SignUp() {
 
       // 确保所有状态更新完成后再进行页面跳转
       setIsSubmitting(false);
-      setIsTransitioning(true); // 标记进入跳转状态
+      // setIsTransitioning(true); // 标记进入跳转状态
 
       // 更新推送令牌
       await updatePushToken();
@@ -163,7 +164,7 @@ export default function SignUp() {
     }
   }
 
-  if (isSubmitting || isTransitioning) {
+  if (isSubmitting) {
     return (
       <View className="flex-1 justify-center items-center bg-primary">
         <ActivityIndicator size="large" color="#000" />
