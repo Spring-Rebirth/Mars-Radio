@@ -135,7 +135,14 @@ const CommentItem = ({
     if (!replyMsg.trim()) return;
 
     const parentUsername = await fetchUsername(parentCommentUserId);
-    await submitReply(`@${parentUsername}\n${replyMsg}`, parentCommentId, userId, comment.video_ID);
+
+    // 如果评论层级大于MAX_LEVEL, 在回复内容前加上"@父评论用户名"
+    if (level > MAX_LEVEL) {
+      await submitReply(`@${parentUsername}  ${replyMsg}`, parentCommentId, userId, comment.video_ID);
+    } else {
+      await submitReply(replyMsg, parentCommentId, userId, comment.video_ID);
+    }
+
     setRepliesCount((prevCount) => prevCount + 1);
     console.log('Submit reply:', replyMsg);
 
