@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { getCurrentUser } from '../lib/appwrite';
 import { syncDataToBackend } from '../lib/appwrite'; // 导入同步函数
 import { useUser, useClerk } from '@clerk/clerk-expo';
+import { router } from 'expo-router';
 
 export const GlobalContext = createContext();
 
@@ -68,6 +69,19 @@ function GlobalProvider({ children }) {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await updateUser({ session: null }); // 根据 Clerk 的 API 进行注销
+      setIsLoggedIn(false);
+      setUser(null);
+      // 根据您的路由方案，导航到登录页面
+      router.replace('/sign-in');
+    } catch (error) {
+      console.log('Error logging out:', error);
+      Alert.alert('注销错误', '无法注销，请稍后再试。');
+    }
+  };
+
   return (
     <GlobalContext.Provider value={{
       user,
@@ -76,7 +90,8 @@ function GlobalProvider({ children }) {
       setIsLoggedIn,
       isLoading,
       playDataRef,
-      updatePlayData
+      updatePlayData,
+      handleLogout
     }}>
       {children}
     </GlobalContext.Provider>
