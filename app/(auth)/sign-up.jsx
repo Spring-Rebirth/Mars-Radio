@@ -1,4 +1,4 @@
-import { View, Image, Text, ScrollView, Alert, ActivityIndicator, TextInput } from 'react-native';
+import { View, Image, Text, ScrollView, Alert, ActivityIndicator, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import images from '../../constants/images';
@@ -185,61 +185,63 @@ export default function SignUp() {
   return (
     <>
       <SafeAreaView className='flex-1 bg-primary'>
-        <ScrollView contentContainerStyle={{ height: '100%' }}>
-          <View className='h-full justify-center px-6'>
-            <View className='h-[85vh] justify-center'>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <View className='h-full justify-center px-6'>
+              <View className='justify-center mt-8'>
 
-              <View className='flex-row items-center space-x-2'>
-                <Image
-                  source={images.logoSmall}
-                  resizeMode='contain'
-                  className='w-9 h-10'
+                <View className='flex-row items-center space-x-2'>
+                  <Image
+                    source={images.logoSmall}
+                    resizeMode='contain'
+                    className='w-9 h-10'
+                  />
+                  <Text className='text-black text-4xl font-semibold'>MarsX</Text>
+                </View>
+
+                <Text className='text-black text-2xl font-psemibold mt-6'>Sign up</Text>
+
+                <CustomForm title='User Name'
+                  handleChangeText={(text) => setForm({ ...form, username: text })}
+                  value={form.username}
+                  placeholder={'Give your account a catchy name'}
                 />
-                <Text className='text-black text-4xl font-semibold'>MarsX</Text>
-              </View>
+                <CustomForm title='Email'
+                  handleChangeText={(text) => setForm({ ...form, email: text })}
+                  value={form.email}
+                  placeholder={'Enter your email address'}
+                />
+                <CustomForm title='Password'
+                  handleChangeText={(text) => setForm({ ...form, password: text })}
+                  value={form.password}
+                  placeholder={'Enter your new password'}
+                />
+                <CustomForm title='Confirm Password'
+                  handleChangeText={(text) => setForm({ ...form, confirmPassword: text })}
+                  value={form.confirmPassword}
+                  placeholder={'Enter your password to confirm'}
+                />
 
-              <Text className='text-black text-2xl font-psemibold mt-6'>Sign up</Text>
-
-              <CustomForm title='User Name'
-                handleChangeText={(text) => setForm({ ...form, username: text })}
-                value={form.username}
-                placeholder={'Give your account a catchy name'}
-              />
-              <CustomForm title='Email'
-                handleChangeText={(text) => setForm({ ...form, email: text })}
-                value={form.email}
-                placeholder={'Enter your email address'}
-              />
-              <CustomForm title='Password'
-                handleChangeText={(text) => setForm({ ...form, password: text })}
-                value={form.password}
-                placeholder={'Enter your new password'}
-              />
-              <CustomForm title='Confirm Password'
-                handleChangeText={(text) => setForm({ ...form, confirmPassword: text })}
-                value={form.confirmPassword}
-                placeholder={'Enter your password to confirm'}
-              />
-
-              <CustomButton
-                title='Sign Up'
-                style='h-16 mt-6 py-3'
-                textStyle={'text-lg text-[#F5F5F5]'}
-                onPress={submit}
-                isLoading={isSubmitting}
-              />
-              <View className='items-center mt-6'>
-                <Text className='text-[#808080]'>
-                  Already have an account ?&nbsp;&nbsp;
-                  <Link
-                    href='/sign-in'
-                    className='text-secondary'>Sign in
-                  </Link>
-                </Text>
+                <CustomButton
+                  title='Sign Up'
+                  style='h-16 mt-6 py-3'
+                  textStyle={'text-lg text-[#F5F5F5]'}
+                  onPress={submit}
+                  isLoading={isSubmitting}
+                />
+                <View className='items-center mt-6'>
+                  <Text className='text-[#808080]'>
+                    Already have an account ?&nbsp;&nbsp;
+                    <Link
+                      href='/sign-in'
+                      className='text-secondary'>Sign in
+                    </Link>
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
 
         <CustomModal isVisible={pendingVerification}>
           <View className='w-full h-full px-8 justify-center'>
