@@ -4,6 +4,7 @@ import { getCurrentUser } from '../lib/appwrite';
 import { syncDataToBackend } from '../lib/appwrite'; // 导入同步函数
 import { useUser, useClerk } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
+import { Alert } from 'react-native';
 
 export const GlobalContext = createContext();
 
@@ -13,7 +14,7 @@ const useGlobalContext = () => {
 
 function GlobalProvider({ children }) {
   const { user: clerkUser, isLoaded } = useUser();
-  const { updateUser } = useClerk();
+  const { signOut } = useClerk();
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +73,7 @@ function GlobalProvider({ children }) {
 
   const handleLogout = async () => {
     try {
-      await updateUser({ session: null }); // 根据 Clerk 的 API 进行注销
+      await signOut(); // 根据 Clerk 的 API 进行注销
       setIsLoggedIn(false);
       setUser(null);
       // 根据您的路由方案，导航到登录页面

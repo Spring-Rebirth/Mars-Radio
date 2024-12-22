@@ -7,7 +7,6 @@ import EmptyState from '../../components/EmptyState'
 import CustomButton from '../../components/CustomButton'
 import VideoCard from '../../components/VideoCard'
 import { icons } from '../../constants'
-import { signOut } from '../../lib/appwrite'
 import { router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as ImagePicker from 'expo-image-picker';
@@ -24,7 +23,7 @@ export default function profile() {
   const [userPostsData, setUserPostsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
-  const { user, setUser, setIsLoggedIn } = useGlobalContext();
+  const { user, setUser, setIsLoggedIn, handleLogout } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -49,11 +48,7 @@ export default function profile() {
     try {
       setIsTransitioning(true); // 设置跳转状态，防止渲染未准备好的页面
 
-      // 异步调用 signOut 并等待完成
-      await signOut();
-
-      // 页面跳转到登录页面
-      router.replace('/sign-in');
+      await handleLogout();
 
       // 更新状态
       setUser(null);
