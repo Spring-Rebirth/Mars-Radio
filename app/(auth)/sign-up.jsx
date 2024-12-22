@@ -28,6 +28,7 @@ export default function SignUp() {
   const [createdSessionId, setCreatedSessionId] = useState(null);
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [verifySuccess, setVerifySuccess] = React.useState(false);
+  const [completeSignUp, setCompleteSignUp] = React.useState(null);
   const [code, setCode] = React.useState('');
   const { t } = useTranslation();
 
@@ -101,7 +102,9 @@ export default function SignUp() {
       try {
         const completeSignUp = await signUp.attemptEmailAddressVerification({
           code,
-        })
+        });
+
+        setCompleteSignUp(completeSignUp);
 
         if (completeSignUp.status === 'complete') {
           // 设置会话
