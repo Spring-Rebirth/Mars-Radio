@@ -79,17 +79,8 @@ export default function SignUp() {
       setIsSubmitting(false);
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
-
-      if (err && err.errors && err.errors.length > 0) {
-        // 提取第一个错误的 message
-        const errorMessage = err.errors[0].message;
-        Alert.alert('Registration Error', errorMessage);
-      } else {
-        // 如果错误格式未知，显示通用错误信息
-        Alert.alert('Registration Error', 'An unknown error occurred, please try again.');
-      }
+      Alert.alert('Error', err.message);
     }
-
   }
 
   const onPressVerify = async () => {
