@@ -152,10 +152,25 @@ export default function SignIn() {
                   Don't have an account ?&nbsp;&nbsp;
                   <Link
                     href='/sign-up'
-                    className='text-secondary'>Sign up
+                    className='text-secondary'
+                  >
+                    Sign up
                   </Link>
                 </Text>
               </View>
+
+              <View className='items-center mt-4'>
+                <Text className='text-[#808080]'>
+                  Forgot your password? ?&nbsp;&nbsp;
+                  <Link
+                    href='/pw-reset'
+                    className='text-secondary'
+                  >
+                    Reset
+                  </Link>
+                </Text>
+              </View>
+
             </View>
           </View>
         </ScrollView>
