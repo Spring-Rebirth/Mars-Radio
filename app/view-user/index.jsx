@@ -13,7 +13,7 @@ import VideoCard from '../../components/VideoCard';
 export default function UserProfile() {
   const insetTop = useSafeAreaInsets().top;
   const { creatorId, accountId } = useLocalSearchParams();
-  // console.log('creatorId:', creatorId);
+
   const [loading, setLoading] = useState(true);
   const [userPostsData, setUserPostsData] = useState([]);
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });

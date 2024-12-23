@@ -17,9 +17,11 @@ import SettingModal from '../../components/modal/SettingModal'
 import { useTranslation } from "react-i18next";
 import notifyIcon from '../../assets/menu/notify.png'
 import editIcon from '../../assets/icons/edit.png'
+import { useAuth } from '@clerk/clerk-expo'
 
 export default function profile() {
   const insetTop = useSafeAreaInsets().top;
+  const { userId } = useAuth();
   const [userPostsData, setUserPostsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
@@ -64,11 +66,15 @@ export default function profile() {
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchUserPosts(user?.$id);
-    await getCurrentUser()
-      .then(res => setUser(res))
-      .catch(error => {
-        console.error('getCurrentUser() failed:', error);
-      })
+
+    if (userId) {
+      await getCurrentUser(userId)
+        .then(res => setUser(res))
+        .catch(error => {
+          console.error('getCurrentUser() failed:', error);
+        });
+    }
+
     setRefreshing(false);
   }
 
