@@ -41,7 +41,6 @@ export default function UserProfile() {
     getCurrentUser()
       .then((res) => {
         if (res) {
-          // console.log('Current user data:', res);
           setUser(res);
         } else {
           setUser(null);
