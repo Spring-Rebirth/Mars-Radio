@@ -9,9 +9,7 @@ import VideoCard from '../../components/VideoCard'
 import { icons } from '../../constants'
 import { router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import * as ImagePicker from 'expo-image-picker';
-import { fetchFileUrl, updateAvatar, getCurrentUser } from '../../lib/appwrite'
-import { createFile } from '../../lib/appwrite';
+import { getCurrentUser } from '../../lib/appwrite'
 import settingIcon from '../../assets/menu/setting.png'
 import SettingModal from '../../components/modal/SettingModal'
 import { useTranslation } from "react-i18next";
@@ -27,7 +25,6 @@ export default function profile() {
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
   const { user, setUser, setIsLoggedIn, handleLogout } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
-  const [avatarUploading, setAvatarUploading] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [settingModalVisible, setSettingModalVisible] = useState(false);
   const { t } = useTranslation();
@@ -78,52 +75,6 @@ export default function profile() {
     setRefreshing(false);
   }
 
-  const handleAvatarUpload = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted) {
-      const pickerResult = await ImagePicker.launchImageLibraryAsync();
-      console.log("pickerResult:", pickerResult);
-      if (!pickerResult.canceled) {
-        setAvatarUploading(true);
-        // 数据参数模型转换           
-        const { fileName, mimeType, fileSize, uri } = pickerResult.assets[0];
-        const fileModel = { name: fileName, type: mimeType, size: fileSize, uri: uri }
-        console.log('fileModel:', fileModel);
-        try {
-          let file;
-          await createFile(fileModel)
-            .then(res => { file = res; })
-            .catch(err => {
-              console.warn('还没读取到创建的文件:', err);
-              Alert.alert('Network error, please try again.');
-            })
-
-          if (file) {
-            const { response, fileId } = file;
-
-            console.log('createFile response:', response, fileId);
-
-            const StorageAvatarUrl = await fetchFileUrl(fileId);
-
-            console.log(`StorageAvatarUrl: ${StorageAvatarUrl}`);
-            const result = await updateAvatar(StorageAvatarUrl, user?.$id);
-            console.log('updateAvatar result:', result);
-            setUser(result);
-            if (result) {
-              Alert.alert(t('Avatar uploaded successfully'));
-            }
-          }
-        } catch (error) {
-          console.error(error);
-        } finally {
-          setAvatarUploading(false);
-        }
-
-      }
-    }
-  };
-
   if (isTransitioning) {
     return (
       <View className="flex-1 justify-center items-center bg-primary">
@@ -170,20 +121,16 @@ export default function profile() {
                 <View
                   className='w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center'
                 >
-                  {avatarUploading ? (
-                    <ActivityIndicator size="large" color="#000" />
-                  ) : (
-                    <Image
-                      source={{ uri: user?.avatar }}
-                      className='w-full h-full'
-                      resizeMode='cover'
-                    />
-                  )}
+                  <Image
+                    source={{ uri: user?.avatar }}
+                    className='w-full h-full'
+                    resizeMode='cover'
+                  />
                 </View>
 
                 <Text className='text-black text-xl font-psemibold mt-2.5'>{user?.username}</Text>
 
-                <TouchableOpacity onPress={handleAvatarUpload}
+                <TouchableOpacity onPress={() => { router.navigate('/user-info') }}
                   className='w-10 h-10 justify-center items-center'
                 >
                   <Image

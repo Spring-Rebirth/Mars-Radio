@@ -28,6 +28,7 @@ const AppContent = () => {
             <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)/pw-reset" options={{ headerShown: false }} />
+            <Stack.Screen name='(auth)/user-info' options={{ headerShown: false }} />
             <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
             <Stack.Screen name='player/play-screen' options={{ headerShown: false }} />
             <Stack.Screen name='notifications/notice-screen' options={{ headerShown: false }} />
