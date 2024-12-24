@@ -1,6 +1,7 @@
+// cSpell:words appwrite psemibold
 import { useState } from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import CustomForm from '../../components/CustomForm'
 import CustomButton from '../../components/CustomButton'
 import { icons } from '../../constants'
@@ -8,7 +9,6 @@ import { usePickFile } from '../../hooks/usePickFile'
 import { ResizeMode, Video } from 'expo-av'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { useUploadFile } from '../../hooks/useUploadFile'
-// cSpell:words appwrite psemibold
 import { fetchFileUrl, uploadData } from '../../lib/appwrite'
 import { StatusBar } from 'expo-status-bar'
 import { images } from '../../constants'
@@ -18,6 +18,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Progress from 'react-native-progress';
 import mime from 'mime';
 import { useTranslation } from "react-i18next";
+import Toast from 'react-native-root-toast';
 
 export default function Create() {
   const insetTop = useSafeAreaInsets().top;
@@ -154,7 +155,11 @@ export default function Create() {
       // 修改这里URI为从数据库获取
       const videoResult = await uploadData(formData);
 
-      Alert.alert(t('Upload Success !'))
+      Toast.show(t('Upload Success !'), {
+        duration: 1500,
+        position: Toast.positions.CENTER
+      });
+
       console.log('Upload Success  videoResult:', JSON.stringify(videoResult, null, 2));
 
       setForm({ title: '' });
