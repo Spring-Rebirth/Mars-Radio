@@ -234,7 +234,10 @@ export default function SignUp() {
           </ScrollView>
         </KeyboardAvoidingView>
 
-        <CustomModal isVisible={pendingVerification}>
+        <CustomModal
+          isVisible={pendingVerification}
+          onClose={() => setPendingVerification(false)}
+        >
           <View className='w-full h-full px-8 justify-center'>
 
             <View className='mb-3 -mt-4'>
@@ -266,7 +269,10 @@ export default function SignUp() {
 
         </CustomModal>
 
-        <CustomModal isVisible={verifySuccess}>
+        <CustomModal
+          isVisible={verifySuccess}
+          onClose={() => setVerifySuccess(false)}
+        >
           <View className='w-full h-full px-8 items-center justify-center'>
             <Image
               className='w-[100] h-[100] mb-10'

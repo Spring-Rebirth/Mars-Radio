@@ -1,4 +1,6 @@
 {
+    "Failed to update username.\n Please try again.": "用户名修改失败，请重试",
+    "Username updated successfully": "用户名修改成功",
     "Sign Out": "退出登录",
     "OTA update loaded, restarting soon.": "OTA更新已加载, 即将重启。",
     "Avatar uploaded successfully": "头像更换成功",

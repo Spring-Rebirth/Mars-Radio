@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import CustomModal from "../../components/modal/CustomModal";
 import CustomButton from "../../components/CustomButton";
+import { updateUserInfo } from "../../services/userService";
+import Toast from 'react-native-root-toast';
 
 const UserInfo = () => {
   const { t } = useTranslation();
@@ -16,6 +18,7 @@ const UserInfo = () => {
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [showEditNameModal, setShowEditNameModal] = useState(false);
   const [PressedUpload, setPressedUpload] = useState(false);
+  const [newName, setNewName] = useState('');
 
   console.log('user:', user);
 
@@ -67,6 +70,27 @@ const UserInfo = () => {
 
   const changeUsername = async () => {
     setPressedUpload(true);
+
+    const newUserInfo = await updateUserInfo(user.$id, { username: newName });
+
+    if (newUserInfo) {
+      setUser(newUserInfo);
+      setShowEditNameModal(false);
+      setPressedUpload(false);
+
+      Toast.show(t('Username updated successfully'), {
+        duration: 2500,
+        position: Toast.positions.CENTER
+      });
+    } else {
+      setPressedUpload(false);
+
+      Toast.show(t('Failed to update username.\n Please try again.'), {
+        duration: 2500,
+        position: Toast.positions.CENTER
+      });
+    }
+
   };
 
   return (
@@ -109,7 +133,7 @@ const UserInfo = () => {
                 titleStyle=' mb-2'
                 editable={false}
               />
-              <TouchableOpacity onPress={setShowEditNameModal}>
+              <TouchableOpacity onPress={() => setShowEditNameModal(true)}>
                 <Image
                   source={require('../../assets/icons/pen.png')}
                   style={{ width: 25, height: 25 }}
@@ -151,7 +175,13 @@ const UserInfo = () => {
 
       <CustomModal
         isVisible={showEditNameModal}
-        contentStyle={{ height: 200 }}
+        contentStyle={{
+          height: 200,
+          position: 'absolute', // 让 Modal 固定位置
+          bottom: 0, // 距离底部的距离
+          left: 0,
+          right: 0
+        }}
         onClose={() => setShowEditNameModal(false)}
       >
         <View className="w-full h-full py-4 items-center justify-start">
@@ -163,6 +193,7 @@ const UserInfo = () => {
             titleStyle=' mb-2'
             editable={true}
             focus={true}
+            onChangeText={text => setNewName(text)}
           />
 
           <CustomButton

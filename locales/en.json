@@ -1,4 +1,6 @@
 {
+    "Failed to update username.\n Please try again.": "Failed to update username.\n Please try again.",
+    "Username updated successfully": "Username updated successfully",
     "Sign Out": "Sign Out",
     "OTA update loaded, restarting soon.": "OTA update loaded, restarting soon.",
     "Avatar uploaded successfully": "Avatar uploaded successfully",
