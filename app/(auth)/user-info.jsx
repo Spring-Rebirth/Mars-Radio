@@ -20,8 +20,6 @@ const UserInfo = () => {
   const [PressedUpload, setPressedUpload] = useState(false);
   const [newName, setNewName] = useState('');
 
-  console.log('user:', user);
-
   const handleAvatarUpload = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -133,11 +131,13 @@ const UserInfo = () => {
                 titleStyle=' mb-2'
                 editable={false}
               />
-              <TouchableOpacity onPress={() => setShowEditNameModal(true)}>
+              <TouchableOpacity
+                onPress={() => setShowEditNameModal(true)}
+                className="absolute right-7 bottom-[20] w-10 h-10 justify-center items-center"
+              >
                 <Image
                   source={require('../../assets/icons/pen.png')}
                   style={{ width: 25, height: 25 }}
-                  className="absolute right-7 bottom-[26]"
                 />
               </TouchableOpacity>
             </View>
@@ -146,7 +146,7 @@ const UserInfo = () => {
               placeholder={"Regular"}
               containerStyle="w-full"
               inputStyle="p-3.5"
-              titleStyle=' mb-2'
+              titleStyle='mb-2'
               editable={false}
             />
 
