@@ -75,19 +75,23 @@ export default function UserProfile() {
                 <View
                   className='w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center'
                 >
-                  <Image
-                    source={{ uri: user?.avatar }}
-                    className='w-full h-full'
-                    resizeMode='cover'
-                  />
+                  {user?.avatar && (
+                    <Image
+                      source={{ uri: user?.avatar }}
+                      className='w-full h-full'
+                      resizeMode='cover'
+                    />
+                  )}
                 </View>
 
                 <Text className='text-black text-xl font-psemibold mt-2.5'>{user?.username}</Text>
-
+                <Text className='text-[#808080] text-sm mt-1'>{user?.email}</Text>
               </View>
             </View>
           );
         }}
+
+        ListHeaderComponentStyle={{ marginBottom: 20 }}
         // renderItem 接受一个对象参数，通常解构为 { item, index, separators }
         renderItem={({ item }) => {
           return (
