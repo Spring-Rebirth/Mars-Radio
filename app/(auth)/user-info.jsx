@@ -97,7 +97,7 @@ const UserInfo = () => {
         className="px-5"
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        <Text className="text-2xl font-JakartaBold my-5">My profile</Text>
+        <Text className="text-2xl font-JakartaBold my-5">Edit profile</Text>
 
         <View className="flex relative items-center justify-center my-5">
           {avatarUploading ? (
@@ -141,14 +141,6 @@ const UserInfo = () => {
                 />
               </TouchableOpacity>
             </View>
-            <CustomInputBox
-              title="User Type"
-              placeholder={"Regular"}
-              containerStyle="w-full"
-              inputStyle="p-3.5"
-              titleStyle='mb-2'
-              editable={false}
-            />
 
             <CustomInputBox
               title="Email"
@@ -157,7 +149,7 @@ const UserInfo = () => {
               }
               containerStyle="w-full"
               inputStyle="p-3.5"
-              titleStyle=' mb-2'
+              titleStyle='mb-2'
               editable={false}
             />
 
@@ -166,7 +158,16 @@ const UserInfo = () => {
               placeholder={"Not Found"}
               containerStyle="w-full"
               inputStyle="p-3.5"
-              titleStyle=' mb-2'
+              titleStyle='mb-2'
+              editable={false}
+            />
+
+            <CustomInputBox
+              title="User Type"
+              placeholder={"Regular"}
+              containerStyle="w-full"
+              inputStyle="p-3.5"
+              titleStyle='mb-2'
               editable={false}
             />
           </View>

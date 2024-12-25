@@ -227,7 +227,7 @@ export default function VideoCard({
               <Text className='text-black font-psemibold text-sm' numberOfLines={2}>
                 {title}
               </Text>
-              <Text className='text-[#808080] font-pregular text-xs' numberOfLines={1}>
+              <Text className='text-[#808080] font-pregular text-xs' numberOfLines={2}>
                 {username}  ·  {formatNumberWithUnits(playCount, t)} {t("views")}  ·  {getRelativeTime($createdAt, t)}
               </Text>
             </TouchableOpacity>
