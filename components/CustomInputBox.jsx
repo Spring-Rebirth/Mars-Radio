@@ -14,11 +14,13 @@ export default function CustomInputBox({
     placeholder = '',
     editable,
     titleStyle,
-    focus
+    focus,
+    initialText = '',
 }) {
     const [isFocused, setIsFocused] = useState(false);
     const [textVisible, setTextVisible] = useState(false);
     const textInputRef = useRef(null);
+    const [text, setText] = useState(initialText);
 
     // 打开模态框时，自动聚焦输入框
     useEffect(() => {
@@ -40,6 +42,11 @@ export default function CustomInputBox({
         onVisibilityToggle(); // 触发外部传入的回调
     };
 
+    const handleTextChange = (text) => {
+        setText(text);
+        onChangeText(text);
+    }
+
     return (
         <View className={`w-full items-center mb-4 ${className}`}>
             <Text className={`self-start ml-5 mb-1 font-semibold ${titleStyle}`}>
@@ -58,11 +65,12 @@ export default function CustomInputBox({
                 )}
                 <TextInput
                     ref={textInputRef}
+                    value={text}
                     className="flex-1 ml-2"
                     secureTextEntry={isSecure && !isTextVisible} // 如果是安全输入且 textVisible 为 false，则隐藏文本
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    onChangeText={onChangeText}
+                    onChangeText={handleTextChange}
                     placeholder={placeholder}
                     editable={editable}
                 />

@@ -195,6 +195,7 @@ const UserInfo = () => {
             editable={true}
             focus={true}
             onChangeText={text => setNewName(text)}
+            initialText={user?.username}
           />
 
           <CustomButton
