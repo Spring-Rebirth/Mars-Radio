@@ -1,5 +1,5 @@
-import { View, Text, FlatList, Image, ActivityIndicator, TouchableOpacity, RefreshControl, Alert } from 'react-native'
-import { useEffect, useState } from 'react'
+import { View, Text, FlatList, Image, ActivityIndicator, TouchableOpacity, RefreshControl, Alert, Pressable } from 'react-native'
+import { useEffect, useState, useRef } from 'react'
 import useGetData from '../../hooks/useGetData'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useGlobalContext } from '../../context/GlobalProvider'
@@ -16,6 +16,14 @@ import { useTranslation } from "react-i18next";
 import notifyIcon from '../../assets/menu/notify.png'
 import editIcon from '../../assets/icons/edit.png'
 import { useAuth } from '@clerk/clerk-expo'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
+import Toast from 'react-native-root-toast'
+import { updateSavedCounts, getVideoDetails } from '../../lib/appwrite'
+import star from '../../assets/menu/star-solid.png'
+import starThree from '../../assets/menu/star3.png'
+import trash from '../../assets/menu/trash-solid.png'
+import { deleteVideoDoc, deleteVideoFiles } from '../../lib/appwrite'
 
 export default function profile() {
   const insetTop = useSafeAreaInsets().top;
@@ -27,8 +35,10 @@ export default function profile() {
   const [refreshing, setRefreshing] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [settingModalVisible, setSettingModalVisible] = useState(false);
-  const [isVideoCreator, setIsVideoCreator] = useState(false);
   const { t } = useTranslation();
+  const bottomSheetRef = useRef(null)
+  const [showControlMenu, setShowControlMenu] = useState(false)
+  const [selectedVideoId, setSelectedVideoId] = useState(null)
 
   useEffect(() => {
     setLoading(true);
@@ -43,6 +53,14 @@ export default function profile() {
     }
 
   }, [user?.$id, user?.avatar])
+
+  useEffect(() => {
+    if (showControlMenu) {
+      bottomSheetRef.current?.expand()
+    } else {
+      bottomSheetRef.current?.close()
+    }
+  }, [showControlMenu])
 
   const handleSignOut = async () => {
     try {
@@ -60,6 +78,29 @@ export default function profile() {
     }
   };
 
+  const handleDelete = async () => {
+    setShowControlMenu(false)
+    try {
+      const videoDetails = await getVideoDetails(selectedVideoId)
+      const { image_ID, video_ID } = videoDetails
+      if (image_ID && video_ID) {
+        await Promise.all([
+          deleteVideoDoc(selectedVideoId),
+          deleteVideoFiles(image_ID),
+          deleteVideoFiles(video_ID)
+        ])
+        Toast.show('Delete Success', {
+          duration: Toast.durations.SHORT,
+          position: Toast.positions.CENTER
+        });
+        handleRefresh && handleRefresh()
+      } else {
+        Alert.alert('Delete Failed, File ID not found')
+      }
+    } catch (error) {
+      console.error('删除出错:', error)
+    }
+  }
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -85,7 +126,7 @@ export default function profile() {
   }
 
   return (
-    <View className='bg-primary h-full' style={{ marginTop: insetTop }}>
+    <GestureHandlerRootView className='bg-primary h-full' style={{ marginTop: insetTop }}>
       <SettingModal
         showModal={settingModalVisible}
         setModalVisible={setSettingModalVisible}
@@ -149,8 +190,12 @@ export default function profile() {
           return (
             <VideoCard
               post={item}
+              onMenuPress={(videoId) => {
+                setSelectedVideoId(videoId)
+                setShowControlMenu((prev) => !prev)
+              }}
               handleRefresh={handleRefresh}
-              setIsVideoCreator={setIsVideoCreator}
+              setIsVideoCreator={() => true}
             />
           )
         }}
@@ -179,8 +224,25 @@ export default function profile() {
 
       />
 
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={['50%']}
+        enablePanDownToClose={true}
+        onClose={() => setShowControlMenu(false)}
+      >
+        <BottomSheetView>
+          <View className='bg-white w-full rounded-md px-6 py-0'>
+            <Pressable onPress={handleDelete} className='w-full h-12 flex-row items-center'>
+              <Image source={trash} className='w-6 h-6 mr-8' />
+              <Text className='text-black text-lg'>Delete</Text>
+            </Pressable>
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
+
       <StatusBar style='dark' />
 
-    </View>
+    </GestureHandlerRootView>
   )
 }

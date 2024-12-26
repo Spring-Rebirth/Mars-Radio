@@ -1,6 +1,6 @@
 //cSpell:words psemibold appwrite
-import { View, Text, FlatList, Image, ActivityIndicator, RefreshControl } from 'react-native'
-import { useEffect, useState } from 'react'
+import { View, Text, FlatList, Image, ActivityIndicator, RefreshControl, Pressable } from 'react-native'
+import { useEffect, useState, useRef } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { images } from '../../constants'
 import SearchInput from '../../components/SearchInput'
@@ -9,6 +9,13 @@ import useGetData from '../../hooks/useGetData'
 import { StatusBar } from 'expo-status-bar'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { useTranslation } from "react-i18next";
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
+import Toast from 'react-native-root-toast'
+import { updateSavedCounts, getVideoDetails } from '../../lib/appwrite'
+import star from '../../assets/menu/star-solid.png'
+import starThree from '../../assets/menu/star3.png'
+import trash from '../../assets/menu/trash-solid.png'
 
 export default function Saved() {
   const insetTop = useSafeAreaInsets().top;
@@ -16,8 +23,57 @@ export default function Saved() {
   const [loading, setLoading] = useState(false);
   const [savedPostsData, setSavedPostsData] = useState([]);
   const { fetchSavedPosts } = useGetData({ setLoading, setSavedPostsData });
-  const { user } = useGlobalContext();
+  const { user, setUser } = useGlobalContext();
   const { t } = useTranslation();
+  const bottomSheetRef = useRef(null);
+  const [showControlMenu, setShowControlMenu] = useState(false);
+  const [isVideoCreator, setIsVideoCreator] = useState(false);
+  const [selectedVideoId, setSelectedVideoId] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    if (showControlMenu) {
+      bottomSheetRef.current?.expand()
+    } else {
+      bottomSheetRef.current?.close()
+    }
+  }, [showControlMenu])
+
+  const handleAddSaved = async () => {
+    try {
+      let isIncrement
+      if (!user?.favorite.includes(selectedVideoId)) {
+        const newUser = JSON.parse(JSON.stringify(user))
+        newUser.favorite.push(selectedVideoId)
+        setUser((prev) => ({ ...prev, favorite: newUser.favorite }))
+        setIsSaved(true)
+        isIncrement = true
+        Toast.show('Save successful', {
+          duration: Toast.durations.SHORT,
+          position: Toast.positions.CENTER
+        });
+
+      } else {
+        const updatedItems = user?.favorite.filter((item) => item !== selectedVideoId)
+        setUser((prev) => ({ ...prev, favorite: updatedItems }))
+        setIsSaved(false)
+        isIncrement = false
+        Toast.show('Cancel save successfully', {
+          duration: Toast.durations.SHORT,
+          position: Toast.positions.CENTER
+        });
+      }
+      await updateSavedCounts(selectedVideoId, isIncrement)
+    } catch (error) {
+      console.error('Error handling favorite:', error)
+      Alert.alert('An error occurred while updating favorite count')
+    }
+  }
+
+  const handleClickSave = () => {
+    setShowControlMenu(false)
+    handleAddSaved()
+  }
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -30,7 +86,7 @@ export default function Saved() {
   }, [user])
 
   return (
-    <View className='bg-primary h-full' style={{ marginTop: insetTop }}>
+    <GestureHandlerRootView className='bg-primary h-full' style={{ marginTop: insetTop }}>
       <FlatList
         data={loading ? [] : savedPostsData}
         // item 是 data 数组中的每一项
@@ -59,7 +115,15 @@ export default function Saved() {
         // renderItem 接受一个对象参数，通常解构为 { item, index, separators }
         renderItem={({ item }) => {
           return (
-            <VideoCard post={item} />
+            <VideoCard
+              post={item}
+              setIsVideoCreator={setIsVideoCreator}
+              onMenuPress={(videoId) => {
+                setSelectedVideoId(videoId)
+                setIsSaved(user?.favorite.includes(videoId))
+                setShowControlMenu((prev) => !prev)
+              }}
+            />
           )
         }}
         ListEmptyComponent={() => {
@@ -84,9 +148,29 @@ export default function Saved() {
         }
       />
 
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={['50%']}
+        enablePanDownToClose={true}
+        onClose={() => setShowControlMenu(false)}
+      >
+        <BottomSheetView>
+          <View className='bg-white w-full rounded-md px-6 py-0'>
+            <Pressable onPress={handleClickSave} className='w-full h-12 flex-row items-center'>
+              <Image
+                source={isSaved ? star : starThree}
+                className='w-6 h-6 mr-8'
+              />
+              <Text className='text-[#333333] text-lg'>{isSaved ? 'Saved' : 'Save'}</Text>
+            </Pressable>
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
+
       <StatusBar style='dark' />
 
-    </View>
+    </GestureHandlerRootView>
   )
 }
 

@@ -43,7 +43,7 @@ export default function Home() {
   let admin = adminList?.includes(user?.email);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState(null);
-  const [isSaved, setIsSaved] = useState(user?.favorite.includes(selectedVideoId));
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const addAdminData = async () => {
@@ -270,8 +270,9 @@ export default function Home() {
                 setShowControlMenu={setShowControlMenu}
                 setIsVideoCreator={setIsVideoCreator}
                 onMenuPress={(videoId) => {
-                  setSelectedVideoId(videoId);
-                  setShowControlMenu(prev => !prev);
+                  setSelectedVideoId(videoId)
+                  setIsSaved(user?.favorite.includes(videoId))
+                  setShowControlMenu((prev) => !prev)
                 }}
               />
             )
