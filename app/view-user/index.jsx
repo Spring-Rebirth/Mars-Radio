@@ -113,7 +113,6 @@ export default function UserProfile() {
       />
 
       <StatusBar style='dark' />
-
     </View>
   )
 }

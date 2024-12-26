@@ -289,7 +289,6 @@ export default function SignUp() {
         </CustomModal>
 
         <StatusBar style='dark' />
-
       </SafeAreaView>
     </>
   );

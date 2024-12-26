@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Link, router } from 'expo-router';
-import { getCurrentUser, signIn } from '../../lib/appwrite';
+import { getCurrentUser } from '../../lib/appwrite';
 import { useGlobalContext } from '../../context/GlobalProvider';
 import images from '../../constants/images';
 import CustomForm from '../../components/CustomForm';
@@ -50,7 +50,7 @@ export default function SignIn() {
 
     try {
       if (!isLoaded) {
-        return
+        return;
       }
 
       try {
@@ -69,8 +69,6 @@ export default function SignIn() {
       } catch (err) {
         console.error(JSON.stringify(err, null, 2))
       }
-
-
 
     } catch (error) {
       Alert.alert('Error in submit', error.message);
@@ -102,7 +100,6 @@ export default function SignIn() {
     };
     handleUserUpdate();
   }, [user]);
-
 
   if (isSubmitting || isTransitioning) {
     return (
@@ -176,7 +173,6 @@ export default function SignIn() {
         </ScrollView>
 
         <StatusBar style='dark' />
-
       </SafeAreaView>
     </>
   )
