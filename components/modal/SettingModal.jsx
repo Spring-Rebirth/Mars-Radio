@@ -33,6 +33,14 @@ export default function SettingModal({ showModal = false, setModalVisible, signO
     <Modal
       isVisible={showModal}
       onBackdropPress={() => setModalVisible(false)} // 使用箭头函数延迟执行
+      useNativeDriver={true} // 使用原生驱动提高性能
+      hideModalContentWhileAnimating={true} // 动画期间隐藏内容
+      backdropTransitionOutTiming={0} // 立即移除背景，防止闪烁
+      animationIn={'zoomInLeft'}
+      animationOut={'zoomOutLeft'}
+      avoidKeyboard={true}
+      style={styles.modal} // 确保模态框正确覆盖
+      propagateSwipe={true} // 允许手势传播到子组件
     >
       <View style={styles.modalContent}>
         {viewLevel === 1 ? (
@@ -97,10 +105,9 @@ export default function SettingModal({ showModal = false, setModalVisible, signO
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  modal: {
+    justifyContent: 'center', // 垂直居中
+    margin: 0, // 确保模态框覆盖全屏
   },
   modalContent: {
     position: 'relative',

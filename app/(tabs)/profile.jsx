@@ -22,7 +22,7 @@ import { getVideoDetails } from '../../lib/appwrite'
 import trash from '../../assets/menu/trash-solid.png'
 import { deleteVideoDoc, deleteVideoFiles } from '../../lib/appwrite'
 
-export default function profile() {
+export default function Profile() {
   const insetTop = useSafeAreaInsets().top;
   const { userId } = useAuth();
   const [userPostsData, setUserPostsData] = useState([]);
