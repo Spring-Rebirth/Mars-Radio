@@ -308,7 +308,6 @@ export default function Profile() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
-
         />
 
         <BottomSheet
