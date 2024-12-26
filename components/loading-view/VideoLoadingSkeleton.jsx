@@ -25,17 +25,25 @@ export default function VideoLoadingSkeleton() {
         }} />
 
         <View style={{ flex: 1 }}>
-          {/* 标题骨架 */}
+          {/* 骨架1 */}
           <View style={{
-            width: '70%',
+            width: '90%',
             height: 16,
             borderRadius: 4,
             backgroundColor: '#E1E9EE',
             marginBottom: 6
           }} />
-          {/* 描述骨架 */}
+          {/* 骨架2 */}
           <View style={{
-            width: '70%',
+            width: '90%',
+            height: 14,
+            borderRadius: 4,
+            backgroundColor: '#E1E9EE',
+            marginBottom: 6
+          }} />
+          {/* 骨架3 */}
+          <View style={{
+            width: '40%',
             height: 14,
             borderRadius: 4,
             backgroundColor: '#E1E9EE'
