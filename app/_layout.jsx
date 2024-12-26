@@ -46,7 +46,6 @@ Notifications.setNotificationHandler({
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
-  const [error, setError] = useState(null);
   const { setChannels, setNotification } = useNotificationStore();
   const notificationListener = useRef();
   const responseListener = useRef();
@@ -100,7 +99,7 @@ export default function RootLayout() {
           throw fontsError;
         }
       } catch (e) {
-        setError(e);
+        console.log(e);
       } finally {
         setIsReady(true);
       }
@@ -112,18 +111,10 @@ export default function RootLayout() {
   }, [fontsLoaded, fontsError]);
 
   useEffect(() => {
-    if (isReady && !fontsError && !error) {
+    if (isReady && !fontsError) {
       SplashScreen.hideAsync();
     }
-  }, [isReady, fontsError, error]);
-
-  // 如果发生初始化错误，显示错误信息
-  if (error) {
-    Toast.show(`初始化错误: ${error.message || '未知错误'}`, {
-      duration: 2500,
-      position: Toast.positions.CENTER
-    })
-  }
+  }, [isReady, fontsError]);
 
   // 如果字体加载出错，显示字体加载错误信息
   if (fontsError) {

@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, ActivityIndicator, TouchableOpacity, RefreshControl, Alert, Pressable } from 'react-native'
+import { View, Text, FlatList, Image, ActivityIndicator, TouchableOpacity, RefreshControl, Alert, Pressable, StyleSheet } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import useGetData from '../../hooks/useGetData'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -22,6 +22,8 @@ import { getVideoDetails } from '../../lib/appwrite'
 import trash from '../../assets/menu/trash-solid.png'
 import closeIcon from '../../assets/icons/close.png'
 import { deleteVideoDoc, deleteVideoFiles } from '../../lib/appwrite'
+import Drawer from '../(drawer)/Drawer';
+import backIcon from '../../assets/icons/left-arrow.png'
 
 export default function Profile() {
   const insetTop = useSafeAreaInsets().top;
@@ -33,10 +35,14 @@ export default function Profile() {
   const [refreshing, setRefreshing] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [settingModalVisible, setSettingModalVisible] = useState(false);
-  const { t } = useTranslation();
-  const bottomSheetRef = useRef(null)
-  const [showControlMenu, setShowControlMenu] = useState(false)
-  const [selectedVideoId, setSelectedVideoId] = useState(null)
+  const { t, i18n } = useTranslation();
+  const bottomSheetRef = useRef(null);
+  const [showControlMenu, setShowControlMenu] = useState(false);
+  const [selectedVideoId, setSelectedVideoId] = useState(null);
+
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const [viewLevel, setViewLevel] = useState(1); // 控制当前视图层级
+
 
   useEffect(() => {
     setLoading(true);
@@ -66,7 +72,27 @@ export default function Profile() {
         bottomSheetRef.current?.close()
       }
     }, [])
-  )
+  );
+
+  // 使用 useEffect 监听 showModal 的变化
+  useEffect(() => {
+    if (settingModalVisible) setViewLevel(1); // 每次打开 Modal 时重置为一级视图
+  }, [settingModalVisible]);
+
+  const changeLanguage = async (lang) => {
+    await i18n.changeLanguage(lang);
+    await AsyncStorage.setItem('language', lang);
+    setSettingModalVisible(false);
+  };
+
+  const goToNextLevel = () => {
+    setViewLevel(2); // 切换到二级视图
+  };
+
+  const goToPreviousLevel = () => {
+    setViewLevel(1); // 切换回一级视图
+  };
+
 
   const handleSignOut = async () => {
     try {
@@ -133,11 +159,67 @@ export default function Profile() {
 
   return (
     <GestureHandlerRootView className='bg-primary h-full' style={{ marginTop: insetTop }}>
-      <SettingModal
-        showModal={settingModalVisible}
-        setModalVisible={setSettingModalVisible}
-        signOut={handleSignOut}
-      />
+      <Drawer
+        isVisible={isDrawerVisible}
+        onClose={() => setIsDrawerVisible(false)}
+      >
+        {/* 这里可以添加 Drawer 的内容 */}
+        <View>
+          <Text style={{ fontSize: 18, marginBottom: 20 }}>{t("Setting")}</Text>
+
+          <View style={styles.modalContent}>
+            {viewLevel === 1 ? (
+              // 一级视图
+              <View className='items-center'>
+
+                <TouchableOpacity onPress={goToNextLevel}>
+                  <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
+                    <Text>{t("Language")}</Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={handleSignOut}>
+                  <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center mt-2">
+                    <Text>{t("Sign Out")}</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              // 二级视图
+              <View className='items-center'>
+                <TouchableOpacity onPress={goToPreviousLevel}
+                  className="absolute -top-7 -left-[40] w-8 h-8 justify-center items-center"
+                >
+                  <Image source={backIcon} resizeMode={'contain'}
+                    className={'w-5 h-5'}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.title}>Switch Language</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    changeLanguage('en');
+                  }}
+                >
+                  <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
+                    <Text>English</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    changeLanguage('zh');
+                  }}
+                >
+                  <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center mt-2">
+                    <Text>中文</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+
+        </View>
+      </Drawer>
+
       <FlatList
         data={loading ? [] : userPostsData}
         // item 是 data 数组中的每一项
@@ -147,7 +229,7 @@ export default function Profile() {
           return (
             <View className='my-6 px-4 mb-2 relative'>
               <View className='flex-row items-center justify-between'>
-                <TouchableOpacity onPress={() => { setSettingModalVisible(true) }}
+                <TouchableOpacity onPress={() => setIsDrawerVisible(true)}
                   className='w-6 h-6'
                 >
                   <Image
@@ -267,3 +349,24 @@ export default function Profile() {
     </GestureHandlerRootView>
   )
 }
+
+const styles = StyleSheet.create({
+  modal: {
+    justifyContent: 'center', // 垂直居中
+    margin: 0, // 确保模态框覆盖全屏
+  },
+  modalContent: {
+    position: 'relative',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+});
