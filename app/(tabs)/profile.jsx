@@ -1,12 +1,11 @@
 import { View, Text, FlatList, Image, ActivityIndicator, TouchableOpacity, RefreshControl, Alert, Pressable } from 'react-native'
 import { useEffect, useState, useRef } from 'react'
 import useGetData from '../../hooks/useGetData'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import EmptyState from '../../components/EmptyState'
 import CustomButton from '../../components/CustomButton'
 import VideoCard from '../../components/VideoCard'
-import { icons } from '../../constants'
 import { router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { getCurrentUser } from '../../lib/appwrite'
@@ -19,9 +18,7 @@ import { useAuth } from '@clerk/clerk-expo'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import Toast from 'react-native-root-toast'
-import { updateSavedCounts, getVideoDetails } from '../../lib/appwrite'
-import star from '../../assets/menu/star-solid.png'
-import starThree from '../../assets/menu/star3.png'
+import { getVideoDetails } from '../../lib/appwrite'
 import trash from '../../assets/menu/trash-solid.png'
 import { deleteVideoDoc, deleteVideoFiles } from '../../lib/appwrite'
 
@@ -195,7 +192,6 @@ export default function profile() {
                 setShowControlMenu((prev) => !prev)
               }}
               handleRefresh={handleRefresh}
-              setIsVideoCreator={() => true}
             />
           )
         }}

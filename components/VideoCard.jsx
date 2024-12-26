@@ -24,8 +24,10 @@ export default function VideoCard({
   const [playCount, setPlayCount] = useState(post.played_counts || 0);
 
   useEffect(() => {
-    if (accountId === user?.accountId) {
-      setIsVideoCreator(true);
+    if (setIsVideoCreator) {
+      if (accountId === user?.accountId) {
+        setIsVideoCreator(true);
+      }
     }
   }, [user?.accountId, $id]);
 

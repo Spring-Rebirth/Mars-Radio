@@ -12,10 +12,9 @@ import { useTranslation } from "react-i18next";
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import Toast from 'react-native-root-toast'
-import { updateSavedCounts, getVideoDetails } from '../../lib/appwrite'
+import { updateSavedCounts } from '../../lib/appwrite'
 import star from '../../assets/menu/star-solid.png'
 import starThree from '../../assets/menu/star3.png'
-import trash from '../../assets/menu/trash-solid.png'
 
 export default function Saved() {
   const insetTop = useSafeAreaInsets().top;
@@ -27,7 +26,6 @@ export default function Saved() {
   const { t } = useTranslation();
   const bottomSheetRef = useRef(null);
   const [showControlMenu, setShowControlMenu] = useState(false);
-  const [isVideoCreator, setIsVideoCreator] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -117,7 +115,6 @@ export default function Saved() {
           return (
             <VideoCard
               post={item}
-              setIsVideoCreator={setIsVideoCreator}
               onMenuPress={(videoId) => {
                 setSelectedVideoId(videoId)
                 setIsSaved(user?.favorite.includes(videoId))
