@@ -190,7 +190,7 @@ export default function Profile() {
               // 二级视图
               <View className='items-center'>
                 <TouchableOpacity onPress={goToPreviousLevel}
-                  className="absolute -top-7 -left-[36] w-8 h-8 justify-center items-center"
+                  className="absolute top-0 -left-[32] w-8 h-8 justify-center items-center"
                 >
                   <Image source={backIcon} resizeMode={'contain'}
                     className={'w-5 h-5'}
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   drawerContent: {
     position: 'relative',
     backgroundColor: 'white',
-    padding: 20,
+    paddingVertical: 15,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -365,6 +365,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
+    marginTop: 50,
     textAlign: 'center',
   },
 });
