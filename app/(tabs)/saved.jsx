@@ -1,6 +1,6 @@
 //cSpell:words psemibold appwrite
 import { View, Text, FlatList, Image, ActivityIndicator, RefreshControl, Pressable } from 'react-native'
-import { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { images } from '../../constants'
 import SearchInput from '../../components/SearchInput'
@@ -15,6 +15,8 @@ import Toast from 'react-native-root-toast'
 import { updateSavedCounts } from '../../lib/appwrite'
 import star from '../../assets/menu/star-solid.png'
 import starThree from '../../assets/menu/star3.png'
+import closeIcon from '../../assets/icons/close.png'
+import { useFocusEffect } from 'expo-router'
 
 export default function Saved() {
   const insetTop = useSafeAreaInsets().top;
@@ -36,6 +38,14 @@ export default function Saved() {
       bottomSheetRef.current?.close()
     }
   }, [showControlMenu])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        bottomSheetRef.current?.close()
+      }
+    }, [])
+  )
 
   const handleAddSaved = async () => {
     try {
@@ -153,20 +163,34 @@ export default function Saved() {
         onClose={() => setShowControlMenu(false)}
       >
         <BottomSheetView>
-          <View className='bg-white w-full rounded-md px-6 py-0'>
+          <View className='relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'>
+
+            <Pressable
+              onPress={() => setShowControlMenu(false)}
+              className='z-20 items-end'
+            >
+              <Image
+                source={closeIcon}
+                className='w-6 h-6'
+                resizeMode='contain'
+              />
+            </Pressable>
+
             <Pressable onPress={handleClickSave} className='w-full h-12 flex-row items-center'>
               <Image
                 source={isSaved ? star : starThree}
                 className='w-6 h-6 mr-8'
               />
-              <Text className='text-[#333333] text-lg'>{isSaved ? 'Saved' : 'Save'}</Text>
+              <Text className='text-[#333333] text-lg'>
+                {isSaved ? 'Cancel save video' : 'Save video'}
+              </Text>
             </Pressable>
+
           </View>
         </BottomSheetView>
       </BottomSheet>
 
       <StatusBar style='dark' />
-
     </GestureHandlerRootView>
   )
 }

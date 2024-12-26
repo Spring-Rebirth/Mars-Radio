@@ -1,12 +1,12 @@
 import { View, Text, FlatList, Image, ActivityIndicator, TouchableOpacity, RefreshControl, Alert, Pressable } from 'react-native'
-import { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import useGetData from '../../hooks/useGetData'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import EmptyState from '../../components/EmptyState'
 import CustomButton from '../../components/CustomButton'
 import VideoCard from '../../components/VideoCard'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { getCurrentUser } from '../../lib/appwrite'
 import settingIcon from '../../assets/menu/setting.png'
@@ -20,6 +20,7 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import Toast from 'react-native-root-toast'
 import { getVideoDetails } from '../../lib/appwrite'
 import trash from '../../assets/menu/trash-solid.png'
+import closeIcon from '../../assets/icons/close.png'
 import { deleteVideoDoc, deleteVideoFiles } from '../../lib/appwrite'
 
 export default function Profile() {
@@ -58,6 +59,14 @@ export default function Profile() {
       bottomSheetRef.current?.close()
     }
   }, [showControlMenu])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        bottomSheetRef.current?.close()
+      }
+    }, [])
+  )
 
   const handleSignOut = async () => {
     try {
@@ -228,17 +237,33 @@ export default function Profile() {
         onClose={() => setShowControlMenu(false)}
       >
         <BottomSheetView>
-          <View className='bg-white w-full rounded-md px-6 py-0'>
-            <Pressable onPress={handleDelete} className='w-full h-12 flex-row items-center'>
-              <Image source={trash} className='w-6 h-6 mr-8' />
-              <Text className='text-black text-lg'>Delete</Text>
+          <View className='relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'>
+            <Pressable
+              onPress={() => setShowControlMenu(false)}
+              className='z-20 items-end'
+            >
+              <Image
+                source={closeIcon}
+                className='w-6 h-6'
+                resizeMode='contain'
+              />
             </Pressable>
+
+            <Pressable
+              onPress={handleDelete}
+              className='w-full h-12 flex-row items-center'
+            >
+              <Image source={trash} className='w-6 h-6 mr-8' />
+              <Text className='text-black text-lg'>
+                Delete video
+              </Text>
+            </Pressable>
+
           </View>
         </BottomSheetView>
       </BottomSheet>
 
       <StatusBar style='dark' />
-
     </GestureHandlerRootView>
   )
 }

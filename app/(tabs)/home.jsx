@@ -26,6 +26,7 @@ import star from '../../assets/menu/star-solid.png'
 import starThree from '../../assets/menu/star3.png'
 import trash from '../../assets/menu/trash-solid.png'
 import Toast from 'react-native-root-toast'
+import closeIcon from '../../assets/icons/close.png'
 
 export default function Home() {
   const { t } = useTranslation();
@@ -196,9 +197,6 @@ export default function Home() {
   return (
     <GestureHandlerRootView className="bg-primary h-full" style={{ marginTop: insetTop }}>
       <View className={`flex-1 bg-primary ${isFullscreen ? 'w-full h-full' : 'h-full'}`}>
-
-        <StatusBar style='dark' />
-
         <FlatList
           contentContainerStyle={{ paddingBottom: 44 }}
           data={loading ? [] : data}
@@ -311,9 +309,18 @@ export default function Home() {
         onClose={() => setShowControlMenu(false)}
       >
         <BottomSheetView>
-          <View
-            className='bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'
-          >
+          <View className='relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'>
+            <Pressable
+              onPress={() => setShowControlMenu(false)}
+              className='z-20 items-end'
+            >
+              <Image
+                source={closeIcon}
+                className='w-6 h-6'
+                resizeMode='contain'
+              />
+            </Pressable>
+
             <Pressable
               onPress={handleClickSave}
               className='w-full h-12 flex-row items-center'
@@ -324,7 +331,7 @@ export default function Home() {
                 resizeMode='contain'
               />
               <Text className='text-[#333333] text-lg'>
-                {isSaved ? 'Saved' : 'Save'}
+                {isSaved ? 'Cancel save video' : 'Save video'}
               </Text>
             </Pressable>
 
@@ -338,14 +345,14 @@ export default function Home() {
                   className='w-6 h-6 mr-8'
                   resizeMode='contain'
                 />
-                <Text className='text-black text-lg'>Delete</Text>
+                <Text className='text-black text-lg'>Delete video</Text>
               </Pressable>
             ) : null}
           </View>
-
         </BottomSheetView>
       </BottomSheet>
 
+      <StatusBar style='dark' />
     </GestureHandlerRootView>
   )
 }

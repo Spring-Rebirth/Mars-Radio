@@ -297,8 +297,8 @@ export default function Create() {
                 </Text>
               </>
             )}
-
           </View>
+
         ) : false}
 
         {/* submit button */}
@@ -309,10 +309,9 @@ export default function Create() {
           textStyle={'text-white'}
           isLoading={uploading}
         />
-
-        <StatusBar style='dark' />
-
       </ScrollView>
+
+      <StatusBar style='dark' />
     </View>
   )
 }
