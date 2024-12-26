@@ -27,6 +27,7 @@ export default function profile() {
   const [refreshing, setRefreshing] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [settingModalVisible, setSettingModalVisible] = useState(false);
+  const [isVideoCreator, setIsVideoCreator] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -146,7 +147,11 @@ export default function profile() {
         // renderItem 接受一个对象参数，通常解构为 { item, index, separators }
         renderItem={({ item }) => {
           return (
-            <VideoCard post={item} handleRefresh={handleRefresh} />
+            <VideoCard
+              post={item}
+              handleRefresh={handleRefresh}
+              setIsVideoCreator={setIsVideoCreator}
+            />
           )
         }}
         ListEmptyComponent={() => {

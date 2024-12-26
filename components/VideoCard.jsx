@@ -20,11 +20,8 @@ export default function VideoCard({
 
   const { user } = useGlobalContext();
   const [imageLoaded, setImageLoaded] = useState(false);
-
   const { updatePlayData, playDataRef } = useContext(GlobalContext);
   const [playCount, setPlayCount] = useState(post.played_counts || 0);
-
-
 
   useEffect(() => {
     if (accountId === user?.accountId) {
