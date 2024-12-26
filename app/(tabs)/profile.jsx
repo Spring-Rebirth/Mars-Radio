@@ -158,16 +158,16 @@ export default function Profile() {
   }
 
   return (
-    <GestureHandlerRootView className='bg-primary h-full' style={{ marginTop: insetTop }}>
+    <GestureHandlerRootView className='bg-primary h-full' >
       <Drawer
         isVisible={isDrawerVisible}
         onClose={() => setIsDrawerVisible(false)}
       >
         {/* 这里可以添加 Drawer 的内容 */}
-        <View>
+        <View style={{ marginTop: insetTop }}>
           <Text style={{ fontSize: 18, marginBottom: 20 }}>{t("Setting")}</Text>
 
-          <View style={styles.modalContent}>
+          <View style={styles.drawerContent}>
             {viewLevel === 1 ? (
               // 一级视图
               <View className='items-center'>
@@ -219,131 +219,132 @@ export default function Profile() {
 
         </View>
       </Drawer>
-
-      <FlatList
-        data={loading ? [] : userPostsData}
-        // item 是 data 数组中的每一项
-        keyExtractor={(item) => item?.$id}
-        contentContainerStyle={{ paddingBottom: 44 }}
-        ListHeaderComponent={() => {
-          return (
-            <View className='my-6 px-4 mb-2 relative'>
-              <View className='flex-row items-center justify-between'>
-                <TouchableOpacity onPress={() => setIsDrawerVisible(true)}
-                  className='w-6 h-6'
-                >
-                  <Image
-                    source={settingIcon}
+      <View style={{ marginTop: insetTop }}>
+        <FlatList
+          data={loading ? [] : userPostsData}
+          // item 是 data 数组中的每一项
+          keyExtractor={(item) => item?.$id}
+          contentContainerStyle={{ paddingBottom: 44 }}
+          ListHeaderComponent={() => {
+            return (
+              <View className='my-6 px-4 mb-2 relative'>
+                <View className='flex-row items-center justify-between'>
+                  <TouchableOpacity onPress={() => setIsDrawerVisible(true)}
                     className='w-6 h-6'
-                    resizeMode='contain'
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => { router.navigate('/notifications/notice-screen') }}>
-                  <Image
-                    source={notifyIcon}
-                    className='w-6 h-6'
-                    resizeMode='contain'
-                  />
-                </TouchableOpacity>
-              </View>
-              <View className='justify-between items-center mt-10'>
-
-                <View
-                  className='w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center'
-                >
-                  <Image
-                    source={{ uri: user?.avatar }}
-                    className='w-full h-full'
-                    resizeMode='cover'
-                  />
+                  >
+                    <Image
+                      source={settingIcon}
+                      className='w-6 h-6'
+                      resizeMode='contain'
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => { router.navigate('/notifications/notice-screen') }}>
+                    <Image
+                      source={notifyIcon}
+                      className='w-6 h-6'
+                      resizeMode='contain'
+                    />
+                  </TouchableOpacity>
                 </View>
+                <View className='justify-between items-center mt-10'>
 
-                <Text className='text-black text-xl font-psemibold mt-2.5'>{user?.username}</Text>
+                  <View
+                    className='w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center'
+                  >
+                    <Image
+                      source={{ uri: user?.avatar }}
+                      className='w-full h-full'
+                      resizeMode='cover'
+                    />
+                  </View>
 
-                <TouchableOpacity onPress={() => { router.navigate('/user-info') }}
-                  className='w-10 h-10 justify-center items-center'
-                >
-                  <Image
-                    source={editIcon}
-                    className='w-6 h-6'
-                    resizeMode='contain'
-                  />
-                </TouchableOpacity>
+                  <Text className='text-black text-xl font-psemibold mt-2.5'>{user?.username}</Text>
+
+                  <TouchableOpacity onPress={() => { router.navigate('/user-info') }}
+                    className='w-10 h-10 justify-center items-center'
+                  >
+                    <Image
+                      source={editIcon}
+                      className='w-6 h-6'
+                      resizeMode='contain'
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          );
-        }}
-        // renderItem 接受一个对象参数，通常解构为 { item, index, separators }
-        renderItem={({ item }) => {
-          return (
-            <VideoCard
-              post={item}
-              onMenuPress={(videoId) => {
-                setSelectedVideoId(videoId)
-                setShowControlMenu((prev) => !prev)
-              }}
-              handleRefresh={handleRefresh}
-            />
-          )
-        }}
-        ListEmptyComponent={() => {
-          return loading ? (
-            <View className="flex-1 justify-center items-center bg-primary">
-              <ActivityIndicator size="large" color="#000" />
-              <Text className='mt-[10] text-black text-xl'>{t("Loading, please wait...")}</Text>
-            </View>
-          ) : (
-            <View>
-              <EmptyState />
-              <CustomButton
-                title={t('Create Video')}
-                textStyle={'text-black'}
-                style={'h-16 my-5 mx-4'}
-                onPress={() => router.push('/create')}
+            );
+          }}
+          // renderItem 接受一个对象参数，通常解构为 { item, index, separators }
+          renderItem={({ item }) => {
+            return (
+              <VideoCard
+                post={item}
+                onMenuPress={(videoId) => {
+                  setSelectedVideoId(videoId)
+                  setShowControlMenu((prev) => !prev)
+                }}
+                handleRefresh={handleRefresh}
               />
+            )
+          }}
+          ListEmptyComponent={() => {
+            return loading ? (
+              <View className="flex-1 justify-center items-center bg-primary">
+                <ActivityIndicator size="large" color="#000" />
+                <Text className='mt-[10] text-black text-xl'>{t("Loading, please wait...")}</Text>
+              </View>
+            ) : (
+              <View>
+                <EmptyState />
+                <CustomButton
+                  title={t('Create Video')}
+                  textStyle={'text-black'}
+                  style={'h-16 my-5 mx-4'}
+                  onPress={() => router.push('/create')}
+                />
+              </View>
+            );
+          }}
+
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+
+        />
+
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1}
+          snapPoints={['50%']}
+          enablePanDownToClose={true}
+          onClose={() => setShowControlMenu(false)}
+        >
+          <BottomSheetView>
+            <View className='relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'>
+              <Pressable
+                onPress={() => setShowControlMenu(false)}
+                className='z-20 items-end'
+              >
+                <Image
+                  source={closeIcon}
+                  className='w-6 h-6'
+                  resizeMode='contain'
+                />
+              </Pressable>
+
+              <Pressable
+                onPress={handleDelete}
+                className='w-full h-12 flex-row items-center'
+              >
+                <Image source={trash} className='w-6 h-6 mr-8' />
+                <Text className='text-black text-lg'>
+                  Delete video
+                </Text>
+              </Pressable>
+
             </View>
-          );
-        }}
-
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-
-      />
-
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={['50%']}
-        enablePanDownToClose={true}
-        onClose={() => setShowControlMenu(false)}
-      >
-        <BottomSheetView>
-          <View className='relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'>
-            <Pressable
-              onPress={() => setShowControlMenu(false)}
-              className='z-20 items-end'
-            >
-              <Image
-                source={closeIcon}
-                className='w-6 h-6'
-                resizeMode='contain'
-              />
-            </Pressable>
-
-            <Pressable
-              onPress={handleDelete}
-              className='w-full h-12 flex-row items-center'
-            >
-              <Image source={trash} className='w-6 h-6 mr-8' />
-              <Text className='text-black text-lg'>
-                Delete video
-              </Text>
-            </Pressable>
-
-          </View>
-        </BottomSheetView>
-      </BottomSheet>
+          </BottomSheetView>
+        </BottomSheet>
+      </View>
 
       <StatusBar style='dark' />
     </GestureHandlerRootView>
@@ -351,11 +352,7 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  modal: {
-    justifyContent: 'center', // 垂直居中
-    margin: 0, // 确保模态框覆盖全屏
-  },
-  modalContent: {
+  drawerContent: {
     position: 'relative',
     backgroundColor: 'white',
     padding: 20,
