@@ -4,7 +4,7 @@ import { Animated, Dimensions, StyleSheet, TouchableWithoutFeedback, View } from
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const { width } = Dimensions.get('window');
-const DRAWER_WIDTH = width * 0.75;
+const DRAWER_WIDTH = width * 0.70;
 
 const Drawer = ({ isVisible, onClose, children }) => {
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   drawer: {
     position: 'absolute',

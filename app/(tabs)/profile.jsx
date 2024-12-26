@@ -165,30 +165,32 @@ export default function Profile() {
       >
         {/* 这里可以添加 Drawer 的内容 */}
         <View style={{ marginTop: insetTop }}>
-          <Text style={{ fontSize: 18, marginBottom: 20 }}>{t("Setting")}</Text>
+          <Text style={{ fontSize: 18, marginBottom: 10 }}>{t("Setting")}</Text>
 
           <View style={styles.drawerContent}>
             {viewLevel === 1 ? (
               // 一级视图
-              <View className='items-center'>
+              <View className='w-full items-center space-y-3'>
 
-                <TouchableOpacity onPress={goToNextLevel}>
-                  <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
-                    <Text>{t("Language")}</Text>
-                  </View>
+                <TouchableOpacity
+                  onPress={goToNextLevel}
+                  className="w-full h-8 items-start justify-center"
+                >
+                  <Text>{t("Language")}</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={handleSignOut}>
-                  <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center mt-2">
-                    <Text>{t("Sign Out")}</Text>
-                  </View>
+                <TouchableOpacity
+                  onPress={handleSignOut}
+                  className="w-full h-8 items-start justify-center"
+                >
+                  <Text>{t("Sign Out")}</Text>
                 </TouchableOpacity>
               </View>
             ) : (
               // 二级视图
               <View className='items-center'>
                 <TouchableOpacity onPress={goToPreviousLevel}
-                  className="absolute -top-7 -left-[40] w-8 h-8 justify-center items-center"
+                  className="absolute -top-7 -left-[36] w-8 h-8 justify-center items-center"
                 >
                   <Image source={backIcon} resizeMode={'contain'}
                     className={'w-5 h-5'}
