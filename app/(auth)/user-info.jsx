@@ -102,7 +102,7 @@ const UserInfo = () => {
         <View className='flex-row items-center space-x-1'>
           <TouchableOpacity
             onPress={() => router.back()}
-            className="w-12 h-12 justify-center items-center"
+            className="w-12 h-12 justify-center items-center -ml-2"
           >
             <Image
               source={backArrowIcon}
