@@ -7,11 +7,12 @@ import * as Animatable from 'react-native-animatable'
 import star from '../assets/menu/star-solid.png'
 import starTwo from '../assets/menu/star2.png'
 import { GlobalContext, useGlobalContext } from '../context/GlobalProvider'
-import { updateSavedCounts } from '../lib/appwrite';
-import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import { updateSavedCounts } from '../lib/appwrite'
+import { router } from 'expo-router'
+import { LinearGradient } from 'expo-linear-gradient'
 import { useTranslation } from 'react-i18next'
 import TrendingItemSkeleton from './loading-view/TredingItenSkeleton'
+import Toast from 'react-native-root-toast'
 
 function TrendingItem({ activeItem, item }) {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -44,17 +45,25 @@ function TrendingItem({ activeItem, item }) {
         }))
         setIsSaved(true);
         isIncrement = true;
-        Alert.alert('Save successful');
+        Toast.show('Save successful', {
+          duration: Toast.durations.SHORT,
+          position: Toast.positions.CENTER,
+        });
       } else {
         // 剔除已保存项的新数组
         const updatedItems = user?.favorite.filter(item => item !== $id);
         setUser(prev => ({
           ...prev,
           favorite: updatedItems
-        }))
+        }));
+
         setIsSaved(false);
         isIncrement = false;
-        Alert.alert('Cancel save successfully');
+
+        Toast.show('Cancel save successfully', {
+          duration: Toast.durations.SHORT,
+          position: Toast.positions.CENTER,
+        });
       }
       await updateSavedCounts($id, isIncrement);
     } catch (error) {
