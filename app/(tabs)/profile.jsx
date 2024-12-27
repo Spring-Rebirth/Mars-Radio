@@ -24,6 +24,7 @@ import closeIcon from '../../assets/icons/close.png'
 import { deleteVideoDoc, deleteVideoFiles } from '../../lib/appwrite'
 import Drawer from '../(drawer)/Drawer';
 import backIcon from '../../assets/icons/left-arrow.png'
+import arrowRightIcon from '../../assets/icons/arrow-one.png'
 
 export default function Profile() {
   const insetTop = useSafeAreaInsets().top;
@@ -174,16 +175,26 @@ export default function Profile() {
 
                 <TouchableOpacity
                   onPress={goToNextLevel}
-                  className="w-full h-8 items-start justify-center"
+                  className="w-full h-10 flex-row items-center justify-between pr-2"
                 >
                   <Text>{t("Language")}</Text>
+                  <Image
+                    source={arrowRightIcon}
+                    className='w-4 h-4'
+                    resizeMode={'contain'}
+                  />
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={handleSignOut}
-                  className="w-full h-8 items-start justify-center"
+                  className="w-full h-10 flex-row items-center justify-between pr-2"
                 >
                   <Text>{t("Sign Out")}</Text>
+                  <Image
+                    source={arrowRightIcon}
+                    className='w-4 h-4'
+                    resizeMode={'contain'}
+                  />
                 </TouchableOpacity>
               </View>
             ) : (
