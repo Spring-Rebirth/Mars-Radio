@@ -35,7 +35,6 @@ export default function Profile() {
   const { user, setUser, setIsLoggedIn, handleLogout } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [settingModalVisible, setSettingModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
   const bottomSheetRef = useRef(null);
   const flatListRef = useRef(null);
@@ -90,15 +89,9 @@ export default function Profile() {
     }, [])
   );
 
-  // 使用 useEffect 监听 showModal 的变化
-  useEffect(() => {
-    if (settingModalVisible) setViewLevel(1); // 每次打开 Modal 时重置为一级视图
-  }, [settingModalVisible]);
-
   const changeLanguage = async (lang) => {
     await i18n.changeLanguage(lang);
     await AsyncStorage.setItem('language', lang);
-    setSettingModalVisible(false);
   };
 
   const goToNextLevel = () => {
@@ -222,7 +215,7 @@ export default function Profile() {
                   // 二级视图
                   <View className='items-center'>
                     <TouchableOpacity onPress={goToPreviousLevel}
-                      className="absolute top-0 -left-[32] w-full h-8 justify-center items-start"
+                      className="absolute top-0 -left-[28] w-full h-8 justify-center items-start"
                     >
                       <Image source={backIcon} resizeMode={'contain'}
                         className={'w-5 h-5'}
