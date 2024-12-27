@@ -215,7 +215,7 @@ export default function Profile() {
                   // 二级视图
                   <View className='items-center'>
                     <TouchableOpacity onPress={goToPreviousLevel}
-                      className="absolute top-0 -left-[28] w-full h-8 justify-center items-start"
+                      className="absolute top-0 left-0.5 w-full h-8 justify-center items-start"
                     >
                       <Image source={backIcon} resizeMode={'contain'}
                         className={'w-5 h-5'}
