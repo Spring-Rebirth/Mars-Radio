@@ -67,7 +67,12 @@ export default function SignIn() {
           console.error(JSON.stringify(signInAttempt, null, 2))
         }
       } catch (err) {
-        console.error(JSON.stringify(err, null, 2))
+        console.error(JSON.stringify(err, null, 2));
+        setIsSubmitting(false);
+        Alert.alert(
+          t('Error'),
+          t('The account does not exist or the password is incorrect. Please check and try again.')
+        );
       }
 
     } catch (error) {
