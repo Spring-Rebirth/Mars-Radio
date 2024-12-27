@@ -287,6 +287,7 @@ export default function Profile() {
                       </View>
 
                       <Text className='text-black text-xl font-psemibold mt-2.5'>{user?.username}</Text>
+                      <Text className='text-[#999999] text-base font-psemibold'>{'#' + user?.email.split("@")[0]}</Text>
 
                       <TouchableOpacity onPress={() => { router.navigate('/user-info') }}
                         className='w-10 h-10 justify-center items-center'

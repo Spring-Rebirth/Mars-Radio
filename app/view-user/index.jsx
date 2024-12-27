@@ -85,7 +85,7 @@ export default function UserProfile() {
                 </View>
 
                 <Text className='text-black text-xl font-psemibold mt-2.5'>{user?.username}</Text>
-                <Text className='text-[#808080] text-sm mt-1'>{user?.email}</Text>
+                <Text className='text-[#999999] text-sm mt-1'>{'#' + user?.email.split("@")[0]}</Text>
               </View>
             </View>
           );
