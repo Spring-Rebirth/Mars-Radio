@@ -1,5 +1,5 @@
 // app/(drawer)/Drawer.jsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -7,10 +7,12 @@ const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.65;
 
 const Drawer = ({ isVisible, onClose, children }) => {
+  const [internalVisible, setInternalVisible] = useState(isVisible);
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
 
   useEffect(() => {
     if (isVisible) {
+      setInternalVisible(true);
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 300,
@@ -21,12 +23,13 @@ const Drawer = ({ isVisible, onClose, children }) => {
         toValue: -DRAWER_WIDTH,
         duration: 300,
         useNativeDriver: true,
-      }).start();
+      }).start(() => {
+        setInternalVisible(false);
+      });
     }
   }, [isVisible, slideAnim]);
 
-  // 当抽屉不可见时，不渲染任何内容
-  if (!isVisible) {
+  if (!internalVisible) {
     return null;
   }
 

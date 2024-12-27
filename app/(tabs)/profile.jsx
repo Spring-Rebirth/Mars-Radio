@@ -10,7 +10,6 @@ import { router, useFocusEffect } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { getCurrentUser } from '../../lib/appwrite'
 import settingIcon from '../../assets/menu/setting.png'
-import SettingModal from '../../components/modal/SettingModal'
 import { useTranslation } from "react-i18next";
 import notifyIcon from '../../assets/menu/notify.png'
 import editIcon from '../../assets/icons/edit.png'
@@ -39,6 +38,7 @@ export default function Profile() {
   const [settingModalVisible, setSettingModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
   const bottomSheetRef = useRef(null);
+  const flatListRef = useRef(null);
   const [showControlMenu, setShowControlMenu] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState(null);
 
@@ -53,8 +53,10 @@ export default function Profile() {
   );
 
   const onHandlerStateChange = (event) => {
-    if (event.nativeEvent.translationX > 100) {
+    if (event.nativeEvent.translationX > 50) {
       setIsDrawerVisible(true);
+    } else if (event.nativeEvent.translationX < -50 && isDrawerVisible) {
+      setIsDrawerVisible(false);
     }
   };
 
@@ -106,7 +108,6 @@ export default function Profile() {
   const goToPreviousLevel = () => {
     setViewLevel(1); // 切换回一级视图
   };
-
 
   const handleSignOut = async () => {
     try {
@@ -176,6 +177,8 @@ export default function Profile() {
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
+        activeOffsetX={[-10, 10]} // 仅响应水平滑动
+        simultaneousHandlers={flatListRef}
       >
         <Animated.View style={{ flex: 1 }}>
           <Drawer
@@ -252,6 +255,7 @@ export default function Profile() {
           </Drawer>
           <View style={{ marginTop: insetTop }}>
             <FlatList
+              ref={flatListRef}
               data={loading ? [] : userPostsData}
               // item 是 data 数组中的每一项
               keyExtractor={(item) => item?.$id}
