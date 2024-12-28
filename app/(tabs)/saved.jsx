@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import Toast from 'react-native-root-toast'
-import { updateSavedCounts } from '../../lib/appwrite'
+import { updateSavedCounts, updateSavedVideo } from '../../lib/appwrite'
 import star from '../../assets/menu/star-solid.png'
 import starThree from '../../assets/menu/star3.png'
 import closeIcon from '../../assets/icons/close.png'
@@ -37,7 +37,15 @@ export default function Saved() {
     } else {
       bottomSheetRef.current?.close()
     }
-  }, [showControlMenu])
+  }, [showControlMenu]);
+
+  useEffect(() => {
+    updateSavedVideo(user?.$id, { favorite: user?.favorite });
+  }, [user?.favorite]);
+
+  useEffect(() => {
+    fetchSavedPosts(user?.favorite);
+  }, [user]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -88,10 +96,6 @@ export default function Saved() {
     await fetchSavedPosts(user?.favorite);
     setRefreshing(false);
   }
-
-  useEffect(() => {
-    fetchSavedPosts(user?.favorite);
-  }, [user])
 
   return (
     <GestureHandlerRootView className='bg-primary h-full' style={{ marginTop: insetTop }}>
