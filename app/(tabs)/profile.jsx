@@ -179,7 +179,7 @@ export default function Profile() {
             onClose={() => setIsDrawerVisible(false)}
           >
             {/* 这里可以添加 Drawer 的内容 */}
-            <View style={{ marginTop: insetTop }}>
+            <View>
               <Text style={{ fontSize: 18, marginBottom: 10 }}>{t("Setting")}</Text>
 
               <View style={styles.drawerContent}>
