@@ -245,11 +245,6 @@ export default function PlayScreen() {
               <Slider
                 style={fullscreen ? styles.sliderFS : styles.slider}
                 value={currentProgress}
-                onValueChange={async value => {
-                  if (videoRef.current != null && playbackStatus.isLoaded) {
-                    await videoRef.current.setPositionAsync(value);
-                  }
-                }}
                 minimumValue={0}
                 maximumValue={totalDuration}
                 minimumTrackTintColor="#87CEEB"
@@ -263,6 +258,11 @@ export default function PlayScreen() {
                     hideControlsTimer.current = null;
                   }
                   setShowControls(true);
+                }}
+                onValueChange={async value => {
+                  if (videoRef.current != null && playbackStatus.isLoaded) {
+                    await videoRef.current.setPositionAsync(value);
+                  }
                 }}
                 onSlidingComplete={async value => {
                   if (videoRef.current != null && playbackStatus.isLoaded) {
