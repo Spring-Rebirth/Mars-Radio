@@ -1,4 +1,4 @@
-import { View, Dimensions, ActivityIndicator, StyleSheet, Image, TouchableOpacity, StatusBar, TouchableWithoutFeedback } from 'react-native'
+import { View, Dimensions, ActivityIndicator, StyleSheet, Image, TouchableOpacity, StatusBar, TouchableWithoutFeedback, Text } from 'react-native'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from 'expo-av';
@@ -14,6 +14,7 @@ import Slider from '@react-native-community/slider';
 import { fetchReplies, fetchCommentUser, fetchCommentUsername, submitReply } from '../../services/commentService';
 import useVideoControls from '../../hooks/useVideoControls';
 import useComments from '../../hooks/useComments';
+import { formatTime } from '../../functions/format';
 import fullscreenIcon from '../../assets/icons/fullscreen.png';
 import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.png';
 // cSpell: ignore Millis
@@ -169,7 +170,6 @@ export default function PlayScreen() {
     <View style={[styles.container, {
       backgroundColor: fullscreen ? 'black' : '#F5F5F5'
     }]}>
-
       <View className='relative' style={{ marginTop: fullscreen ? 0 : safeAreaInset }}>
         <TouchableWithoutFeedback onPress={handleClickedVideo}>
           <Video
@@ -236,6 +236,12 @@ export default function PlayScreen() {
                 !fullscreen && { bottom: '5%', left: 0 },
               ]}
             >
+              <Text style={fullscreen ? styles.timeTextFS : styles.timeText}>
+                {formatTime(currentProgress)}
+                <Text style={fullscreen ? styles.totalTimeTextFS : styles.totalTimeText}>
+                  {' '}/ {formatTime(totalDuration)}
+                </Text>
+              </Text>
               <Slider
                 style={fullscreen ? styles.sliderFS : styles.slider}
                 value={currentProgress}
@@ -348,7 +354,6 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     justifyContent: 'center',
     alignItems: 'center',
-
   },
   bottomBar: {
     backgroundColor: 'rgba(50, 50, 50, 0.7)',
@@ -391,5 +396,21 @@ const styles = StyleSheet.create({
   trackStyle: {
     height: 4, // 设置进度条的高度
     borderRadius: 2, // 圆角效果
+  },
+  timeText: {
+    color: '#fff',
+    marginLeft: 14,
+    fontSize: 12,
+  },
+  timeTextFS: {
+    color: '#fff',
+    marginLeft: 12,
+  },
+  totalTimeText: {
+    color: '#ccc',
+    fontSize: 12,
+  },
+  totalTimeTextFS: {
+    color: '#ccc',
   },
 });
