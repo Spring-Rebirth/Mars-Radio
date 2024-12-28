@@ -166,7 +166,7 @@ export default function Profile() {
   }
 
   return (
-    <GestureHandlerRootView className='bg-primary h-full' >
+    <GestureHandlerRootView className='bg-primary h-full' style={{ marginTop: insetTop }}>
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
@@ -255,7 +255,7 @@ export default function Profile() {
               contentContainerStyle={{ paddingBottom: 44 }}
               ListHeaderComponent={() => {
                 return (
-                  <View className='my-6 px-4 mb-2 relative'>
+                  <View className='mb-2 px-4 relative'>
                     <View className='flex-row items-center justify-between'>
                       <TouchableOpacity onPress={() => setIsDrawerVisible(true)}
                         className='w-6 h-6'
@@ -274,7 +274,7 @@ export default function Profile() {
                         />
                       </TouchableOpacity>
                     </View>
-                    <View className='justify-between items-center mt-10'>
+                    <View className='justify-between items-center mt-3'>
 
                       <View
                         className='w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center'
@@ -338,45 +338,45 @@ export default function Profile() {
                 <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
               }
             />
-
-            <BottomSheet
-              ref={bottomSheetRef}
-              index={-1}
-              snapPoints={['50%']}
-              enablePanDownToClose={true}
-              onClose={() => setShowControlMenu(false)}
-            >
-              <BottomSheetView>
-                <View className='relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'>
-                  <Pressable
-                    onPress={() => setShowControlMenu(false)}
-                    className='z-20 items-end'
-                  >
-                    <Image
-                      source={closeIcon}
-                      className='w-6 h-6'
-                      resizeMode='contain'
-                    />
-                  </Pressable>
-
-                  <Pressable
-                    onPress={handleDelete}
-                    className='w-full h-12 flex-row items-center'
-                  >
-                    <Image source={trash} className='w-6 h-6 mr-8' />
-                    <Text className='text-black text-lg'>
-                      Delete video
-                    </Text>
-                  </Pressable>
-
-                </View>
-              </BottomSheetView>
-            </BottomSheet>
           </View>
-
-          <StatusBar style='dark' />
         </Animated.View>
+
       </PanGestureHandler>
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={[275]}
+        enablePanDownToClose={true}
+        onClose={() => setShowControlMenu(false)}
+      >
+        <BottomSheetView>
+          <View className='relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'>
+            <Pressable
+              onPress={() => setShowControlMenu(false)}
+              className='z-20 items-end'
+            >
+              <Image
+                source={closeIcon}
+                className='w-6 h-6'
+                resizeMode='contain'
+              />
+            </Pressable>
+
+            <Pressable
+              onPress={handleDelete}
+              className='w-full h-12 flex-row items-center'
+            >
+              <Image source={trash} className='w-6 h-6 mr-8' />
+              <Text className='text-black text-lg'>
+                Delete video
+              </Text>
+            </Pressable>
+
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
+
+      <StatusBar style='dark' />
     </GestureHandlerRootView>
   )
 }

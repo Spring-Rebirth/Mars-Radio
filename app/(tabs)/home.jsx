@@ -304,7 +304,7 @@ export default function Home() {
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
-        snapPoints={['55%']}
+        snapPoints={[275]}
         enablePanDownToClose={true}
         onClose={() => setShowControlMenu(false)}
       >

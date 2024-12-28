@@ -158,7 +158,7 @@ export default function Saved() {
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
-        snapPoints={['50%']}
+        snapPoints={[275]}
         enablePanDownToClose={true}
         onClose={() => setShowControlMenu(false)}
       >
