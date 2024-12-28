@@ -246,7 +246,7 @@ export default function Profile() {
 
             </View>
           </Drawer>
-          <View style={{ marginTop: insetTop }}>
+          <View style={{ marginTop: 28 }}>
             <FlatList
               ref={flatListRef}
               data={loading ? [] : userPostsData}
