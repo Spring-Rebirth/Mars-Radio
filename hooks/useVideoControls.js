@@ -20,7 +20,7 @@ export default function useVideoControls(videoRef) {
     hideControlsTimer.current = setTimeout(() => {
       setShowControls(false);
       hideControlsTimer.current = null; // 清除引用
-    }, 3000);
+    }, 5000);
   };
 
   const replayVideo = async (videoRef) => {

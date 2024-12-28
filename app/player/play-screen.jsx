@@ -245,7 +245,11 @@ export default function PlayScreen() {
               <Slider
                 style={fullscreen ? styles.sliderFS : styles.slider}
                 value={currentProgress}
-                onValueChange={() => { }} // value => 控制视频进度(value)
+                onValueChange={async value => {
+                  if (videoRef.current != null && playbackStatus.isLoaded) {
+                    await videoRef.current.setPositionAsync(value);
+                  }
+                }}
                 minimumValue={0}
                 maximumValue={totalDuration}
                 minimumTrackTintColor="#87CEEB"
