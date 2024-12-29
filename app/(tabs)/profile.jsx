@@ -25,6 +25,7 @@ import Drawer from '../(drawer)/Drawer';
 import backIcon from '../../assets/icons/left-arrow.png'
 import arrowRightIcon from '../../assets/icons/arrow-one.png'
 import { Animated } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Profile() {
   const insetTop = useSafeAreaInsets().top;
@@ -50,6 +51,8 @@ export default function Profile() {
     [{ nativeEvent: { translationX: translateX } }],
     { useNativeDriver: false }
   );
+
+  const [switchLangResult, setSwitchLangResult] = useState('');
 
   const onHandlerStateChange = (event) => {
     if (event.nativeEvent.translationX > 50) {
@@ -90,8 +93,16 @@ export default function Profile() {
   );
 
   const changeLanguage = async (lang) => {
-    await i18n.changeLanguage(lang);
-    await AsyncStorage.setItem('language', lang);
+    try {
+      await i18n.changeLanguage(lang);
+      await AsyncStorage.setItem('language', lang);
+      setSwitchLangResult(t('Selected language') + lang);
+    } catch (error) {
+      setSwitchLangResult(t('Failed to switch language'));
+      console.error('Failed to switch language:', error);
+    } finally {
+      setSwitchLangResult('');
+    }
   };
 
   const goToNextLevel = () => {
@@ -177,6 +188,7 @@ export default function Profile() {
           <Drawer
             isVisible={isDrawerVisible}
             onClose={() => setIsDrawerVisible(false)}
+            switchLangResult={switchLangResult}
           >
             {/* 这里可以添加 Drawer 的内容 */}
             <View>

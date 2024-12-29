@@ -2,11 +2,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Toast from 'react-native-root-toast';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.65;
 
-const Drawer = ({ isVisible, onClose, children }) => {
+const Drawer = ({ isVisible, onClose, switchLangResult, children }) => {
   const [internalVisible, setInternalVisible] = useState(isVisible);
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(isVisible ? 1 : 0)).current;
@@ -43,6 +44,15 @@ const Drawer = ({ isVisible, onClose, children }) => {
       });
     }
   }, [isVisible, slideAnim, overlayOpacity]);
+
+  useEffect(() => {
+    if (switchLangResult !== '') {
+      Toast.show(switchLangResult, {
+        position: 40,
+        duration: Toast.durations.SHORT,
+      });
+    }
+  }, [switchLangResult]);
 
   if (!internalVisible) {
     return null;
