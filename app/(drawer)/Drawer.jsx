@@ -9,25 +9,40 @@ const DRAWER_WIDTH = width * 0.65;
 const Drawer = ({ isVisible, onClose, children }) => {
   const [internalVisible, setInternalVisible] = useState(isVisible);
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
+  const overlayOpacity = useRef(new Animated.Value(isVisible ? 1 : 0)).current;
 
   useEffect(() => {
     if (isVisible) {
       setInternalVisible(true);
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
     } else {
-      Animated.timing(slideAnim, {
-        toValue: -DRAWER_WIDTH,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: -DRAWER_WIDTH,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
         setInternalVisible(false);
       });
     }
-  }, [isVisible, slideAnim]);
+  }, [isVisible, slideAnim, overlayOpacity]);
 
   if (!internalVisible) {
     return null;
@@ -37,7 +52,7 @@ const Drawer = ({ isVisible, onClose, children }) => {
     <GestureHandlerRootView style={styles.container}>
       {/* 点击遮罩层关闭抽屉 */}
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay} />
+        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
       </TouchableWithoutFeedback>
       {/* 抽屉内容 */}
       <Animated.View style={[styles.drawer, { transform: [{ translateX: slideAnim }] }]}>
