@@ -1,6 +1,6 @@
 // app/(drawer)/Drawer.jsx
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Animated, Dimensions, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const { width } = Dimensions.get('window');
