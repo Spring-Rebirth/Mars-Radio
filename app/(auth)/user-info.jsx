@@ -113,6 +113,10 @@ const UserInfo = () => {
         </View>
 
         <View className="flex relative items-center justify-center my-5">
+          <Image
+            source={require('../../assets/icons/change-avatar.png')}
+            className="w-10 h-10 absolute top-1/2 -mt-5 z-20"
+          />
           {avatarUploading ? (
             <View
               className="rounded-full h-[110px] w-[110px] border-[3px] border-white shadow-sm shadow-neutral-300
@@ -122,13 +126,15 @@ const UserInfo = () => {
             </View>
           ) : (
             <TouchableOpacity onPress={handleAvatarUpload}>
-              <Image
-                source={{
-                  uri: user?.avatar
-                }}
-                style={{ width: 110, height: 110, borderRadius: 110 / 2 }}
-                className="rounded-full h-[110px] w-[110px] border-[3px] border-white shadow-sm shadow-neutral-300"
-              />
+              <View className="border-4 border-gray-400 rounded-full p-1">
+                <Image
+                  source={{
+                    uri: user?.avatar
+                  }}
+                  style={{ width: 110, height: 110, borderRadius: 110 / 2 }}
+                  className="rounded-full h-[110px] w-[110px] border-[3px] border-white shadow-sm shadow-neutral-300 opacity-60"
+                />
+              </View>
             </TouchableOpacity>
           )}
         </View>
