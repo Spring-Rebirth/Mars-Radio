@@ -146,7 +146,7 @@ function TrendingItem({ activeItem, item }) {
         {/* 图片容器，增加内边距和圆角 */}
         <View style={{
           width: '100%',
-          height: '56%',
+          height: '50%',
           backgroundColor: '#2C3E5C',
           paddingVertical: 0, // 内边距
         }}>
