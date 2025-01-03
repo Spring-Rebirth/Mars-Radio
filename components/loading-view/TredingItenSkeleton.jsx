@@ -30,7 +30,7 @@ function TrendingItemSkeleton() {
 
       {/* 骨架视图容器 */}
       <View
-        className="relative justify-center items-center w-[208px] h-[332px] rounded-[24px] overflow-hidden shadow-lg"
+        className="relative justify-center items-center w-[290px] h-[332px] rounded-[24px] overflow-hidden shadow-lg"
         style={{
           backgroundColor: '#E0E0E0', // 骨架背景色
           shadowColor: '#000',
@@ -42,7 +42,7 @@ function TrendingItemSkeleton() {
         {/* 顶部图片占位 */}
         <View style={{
           width: '100%',
-          height: '45%',
+          height: '50%',
           backgroundColor: '#B0B0B0',
         }} />
 
