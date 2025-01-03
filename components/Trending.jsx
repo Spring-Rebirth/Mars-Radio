@@ -23,12 +23,12 @@ function TrendingItem({ activeItem, item }) {
   const { updatePlayData, playDataRef } = useContext(GlobalContext);
 
   const zoomIn = {
-    0: { scale: 0.9 },
+    0: { scale: 1 },
     1: { scale: 1 }
   }
   const zoomOut = {
     0: { scale: 1 },
-    1: { scale: 0.9 }
+    1: { scale: 1 }
   }
 
   const handleAddSaved = async () => {
@@ -102,7 +102,7 @@ function TrendingItem({ activeItem, item }) {
       animation={activeItem.$id === item.$id ? zoomIn : zoomOut}
       duration={500}
       style={{ borderRadius: 16, overflow: 'hidden' }} // 使用样式直接设置圆角
-      className='mr-2 relative'
+      className='mr-4 relative'
     >
       <TouchableOpacity onPress={handleAddSaved} className='absolute z-10 top-3 right-3'>
         {/* 星标图标（右上角） */}
@@ -123,7 +123,7 @@ function TrendingItem({ activeItem, item }) {
 
       <TouchableOpacity
         onPress={handlePlay}
-        className="relative justify-center items-center w-[326px] h-[332px] rounded-[24px] overflow-hidden shadow-lg"
+        className="relative justify-center items-center w-[290px] h-[332px] rounded-[24px] overflow-hidden shadow-lg"
         style={{
           backgroundColor: '#33466C', // 背景色设置为深蓝
           shadowColor: '#000',
