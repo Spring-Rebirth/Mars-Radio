@@ -10,7 +10,7 @@ function TrendingItemSkeleton() {
       animation="fadeIn"
       duration={500}
       style={{ borderRadius: 16, overflow: 'hidden' }}
-      className='mr-2 relative'
+      className='mr-4 relative'
     >
       <TouchableOpacity className='absolute z-10 top-3 right-3'>
         <View style={{
