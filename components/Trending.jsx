@@ -123,7 +123,7 @@ function TrendingItem({ activeItem, item }) {
 
       <TouchableOpacity
         onPress={handlePlay}
-        className="relative justify-center items-center w-[208px] h-[332px] rounded-[24px] overflow-hidden shadow-lg"
+        className="relative justify-center items-center w-[326px] h-[332px] rounded-[24px] overflow-hidden shadow-lg"
         style={{
           backgroundColor: '#33466C', // 背景色设置为深蓝
           shadowColor: '#000',
@@ -146,7 +146,7 @@ function TrendingItem({ activeItem, item }) {
         {/* 图片容器，增加内边距和圆角 */}
         <View style={{
           width: '100%',
-          height: '45%',
+          height: '56%',
           backgroundColor: '#2C3E5C',
           paddingVertical: 0, // 内边距
         }}>
@@ -201,8 +201,6 @@ export default function Trending({ video, loading }) {
   const viewabilityConfig = { itemVisiblePercentThreshold: 70 }; // 配置可见性百分比
   const [activeItem, setActiveItem] = useState(video && video.length > 0 ? video[0] : null); // 设置默认 activeItem
 
-  const { t } = useTranslation();
-
   const handleViewableItemsChanged = ({ viewableItems }) => {
     if (viewableItems && viewableItems.length > 0) {
       setActiveItem(viewableItems[0].item); // 访问每个可见项的实际 item
@@ -218,7 +216,6 @@ export default function Trending({ video, loading }) {
   ) : (
     <FlatList
       horizontal
-      className=''
       data={loading || video.length === 0 ? [] : video}
       keyExtractor={(item) => item.$id}
       renderItem={({ item }) => (
