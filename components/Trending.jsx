@@ -21,6 +21,7 @@ function TrendingItem({ activeItem, item }) {
   const [isSaved, setIsSaved] = useState(user?.favorite.includes($id));
   const [playCount, setPlayCount] = useState(played_counts || 0);
   const { updatePlayData, playDataRef } = useContext(GlobalContext);
+  const { t } = useTranslation();
 
   const zoomIn = {
     0: { scale: 1 },
@@ -45,7 +46,7 @@ function TrendingItem({ activeItem, item }) {
         }))
         setIsSaved(true);
         isIncrement = true;
-        Toast.show('Save successful', {
+        Toast.show(t('Save successful'), {
           duration: Toast.durations.SHORT,
           position: Toast.positions.CENTER,
         });
@@ -60,7 +61,7 @@ function TrendingItem({ activeItem, item }) {
         setIsSaved(false);
         isIncrement = false;
 
-        Toast.show('Cancel save successfully', {
+        Toast.show(t('Cancel save successfully'), {
           duration: Toast.durations.SHORT,
           position: Toast.positions.CENTER,
         });
