@@ -27,7 +27,6 @@ import starThree from '../../assets/menu/star3.png'
 import trash from '../../assets/menu/trash-solid.png'
 import Toast from 'react-native-root-toast'
 import closeIcon from '../../assets/icons/close.png'
-import { use } from 'react'
 
 export default function Home() {
   const { t } = useTranslation();
