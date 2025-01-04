@@ -213,7 +213,7 @@ export default function PlayScreen() {
           </TouchableOpacity>
         )}
 
-        {showControls && (
+        {showControls && !isEnded && (
           <>
             {/* 播放/暂停按钮 */}
             <TouchableOpacity
