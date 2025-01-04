@@ -64,7 +64,7 @@ export default function Saved() {
         setUser((prev) => ({ ...prev, favorite: newUser.favorite }))
         setIsSaved(true)
         isIncrement = true
-        Toast.show('Save successful', {
+        Toast.show(t('Save successful'), {
           duration: Toast.durations.SHORT,
           position: Toast.positions.CENTER
         });
@@ -74,7 +74,7 @@ export default function Saved() {
         setUser((prev) => ({ ...prev, favorite: updatedItems }))
         setIsSaved(false)
         isIncrement = false
-        Toast.show('Cancel save successfully', {
+        Toast.show(t('Cancel save successfully'), {
           duration: Toast.durations.SHORT,
           position: Toast.positions.CENTER
         });
