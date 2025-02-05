@@ -1,22 +1,37 @@
-import { View, Dimensions, ActivityIndicator, StyleSheet, Image, TouchableOpacity, StatusBar, TouchableWithoutFeedback, Text } from 'react-native'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  View,
+  Dimensions,
+  ActivityIndicator,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  StatusBar,
+  TouchableWithoutFeedback,
+  Text,
+} from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
-import { Video, ResizeMode } from 'expo-av';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Video, ResizeMode } from "expo-av";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CommentInputBox from "../../components/comment/CommentInputBox";
 import CommentList from "../../components/comment/CommentList";
-import { useGlobalContext } from '../../context/GlobalProvider';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import replayIcon from '../../assets/icons/replay.png';
-import playbackIcon from '../../assets/icons/playback.png';
-import pauseIcon from '../../assets/icons/pause.png';
-import Slider from '@react-native-community/slider';
-import { fetchReplies, fetchCommentUser, fetchCommentUsername, submitReply } from '../../services/commentService';
-import useVideoControls from '../../hooks/useVideoControls';
-import useComments from '../../hooks/useComments';
-import { formatTime } from '../../functions/format';
-import fullscreenIcon from '../../assets/icons/fullscreen.png';
-import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.png';
+import { useGlobalContext } from "../../context/GlobalProvider";
+import * as ScreenOrientation from "expo-screen-orientation";
+import replayIcon from "../../assets/icons/replay.png";
+import playbackIcon from "../../assets/icons/playback.png";
+import pauseIcon from "../../assets/icons/pause.png";
+import Slider from "@react-native-community/slider";
+import {
+  fetchReplies,
+  fetchCommentUser,
+  fetchCommentUsername,
+  submitReply,
+} from "../../services/commentService";
+import useVideoControls from "../../hooks/useVideoControls";
+import useComments from "../../hooks/useComments";
+import { formatTime } from "../../functions/format";
+import fullscreenIcon from "../../assets/icons/fullscreen.png";
+import exitFullscreenIcon from "../../assets/icons/exit-fullscreen.png";
 // cSpell: ignore Millis
 
 export default function PlayScreen() {
@@ -27,20 +42,36 @@ export default function PlayScreen() {
   const { $id: videoId, creator: videoCreator } = JSON.parse(post);
   const { $id: userId, avatar, username } = user;
 
-  const { playing, setPlaying, loading, setLoading, isEnded, setIsEnded, showControls,
-    setShowControls, replayVideo, handleClickedVideo, showControlsWithTimer, hideControlsTimer
+  const {
+    playing,
+    setPlaying,
+    loading,
+    setLoading,
+    isEnded,
+    setIsEnded,
+    showControls,
+    setShowControls,
+    replayVideo,
+    handleClickedVideo,
+    showControlsWithTimer,
+    hideControlsTimer,
   } = useVideoControls(videoRef);
 
   const videoRef = useRef(null);
-  const screenHeight = Dimensions.get('window').width * 9 / 16;
+  const screenHeight = (Dimensions.get("window").width * 9) / 16;
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [commentsDoc, setCommentsDoc] = useComments(videoId, refreshFlag);
   const [fullscreen, setFullscreen] = useState(false);
   const [playbackStatus, setPlaybackStatus] = useState({});
   const currentProgress = playbackStatus.positionMillis || 0; // 当前播放位置（毫秒）
-  const totalDuration = playbackStatus.durationMillis || 1;    // 视频总时长（毫秒）
+  const totalDuration = playbackStatus.durationMillis || 1; // 视频总时长（毫秒）
 
-  const [safeAreaInsets, setSafeAreaInsets] = useState({ top: 0, bottom: 0, left: 0, right: 0 });
+  const [safeAreaInsets, setSafeAreaInsets] = useState({
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  });
   const insets = useSafeAreaInsets();
   const safeAreaInset = safeAreaInsets.top;
 
@@ -63,14 +94,29 @@ export default function PlayScreen() {
   };
 
   const toggleFullscreen = async () => {
-    if (fullscreen) {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-      setFullscreen(false);
-    } else {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-      setFullscreen(true);
+    try {
+      if (fullscreen) {
+        // 退出全屏
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT_UP
+        );
+        // 强制更新界面状态
+        setFullscreen(false);
+        // iOS特定：确保视频容器样式更新
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      } else {
+        // 进入全屏
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT
+        );
+        setFullscreen(true);
+      }
+    } catch (error) {
+      console.error("切换全屏失败:", error);
+      // 回滚状态
+      setFullscreen((prevState) => !prevState);
     }
-  }
+  };
 
   useEffect(() => {
     return () => {
@@ -80,7 +126,7 @@ export default function PlayScreen() {
             ScreenOrientation.OrientationLock.PORTRAIT_UP
           );
         } catch (error) {
-          console.error('Failed to lock orientation to portrait:', error);
+          console.error("Failed to lock orientation to portrait:", error);
         }
       };
 
@@ -100,40 +146,50 @@ export default function PlayScreen() {
       top: insets.top,
       bottom: insets.bottom,
       left: insets.left,
-      right: insets.right
+      right: insets.right,
     });
   }, []);
 
   useEffect(() => {
     const subscribe = async () => {
-      await ScreenOrientation.unlockAsync(); // 解锁屏幕方向限制
-      const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
-        const orientation = event.orientationInfo.orientation;
+      try {
+        await ScreenOrientation.unlockAsync();
+        const subscription = ScreenOrientation.addOrientationChangeListener(
+          (event) => {
+            const orientation = event.orientationInfo.orientation;
 
-        if (
-          orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
-          orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
-        ) {
-          setFullscreen(true);
-        } else if (
-          orientation === ScreenOrientation.Orientation.PORTRAIT_UP ||
-          orientation === ScreenOrientation.Orientation.PORTRAIT_DOWN
-        ) {
-          setFullscreen(false);
-        }
-      });
+            if (
+              orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+              orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
+            ) {
+              setFullscreen(true);
+            } else if (
+              orientation === ScreenOrientation.Orientation.PORTRAIT_UP
+            ) {
+              setFullscreen(false);
+            }
+          }
+        );
 
-      // 清理监听器
-      return () => {
-        if (subscription && subscription.remove) {
-          subscription.remove(); // 新版本推荐的移除方式
-        } else {
-          ScreenOrientation.removeOrientationChangeListeners(); // 旧版本移除方式
-        }
-      };
+        return () => {
+          try {
+            if (subscription?.remove) {
+              subscription.remove();
+            }
+            // 确保退出时锁定为竖屏
+            ScreenOrientation.lockAsync(
+              ScreenOrientation.OrientationLock.PORTRAIT_UP
+            );
+          } catch (error) {
+            console.error("清理屏幕方向监听器失败:", error);
+          }
+        };
+      } catch (error) {
+        console.error("初始化屏幕方向监听器失败:", error);
+      }
     };
 
-    subscribe(); // 注册订阅
+    subscribe();
   }, []);
 
   useEffect(() => {
@@ -164,26 +220,43 @@ export default function PlayScreen() {
         scrollToComment={targetCommentId} // 传递用于滚动的评论ID
       />
     );
-  }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply, targetCommentId]);
+  }, [
+    userId,
+    videoId,
+    avatar,
+    username,
+    commentsDoc,
+    fetchReplies,
+    submitReply,
+    targetCommentId,
+  ]);
 
   return (
-    <View style={[styles.container, {
-      backgroundColor: fullscreen ? 'black' : '#F5F5F5'
-    }]}>
-      <View className='relative' style={{ marginTop: fullscreen ? 0 : safeAreaInset }}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: fullscreen ? "black" : "#F5F5F5",
+        },
+      ]}
+    >
+      <View
+        className="relative"
+        style={[!fullscreen && { marginTop: safeAreaInset }]}
+      >
         <TouchableWithoutFeedback onPress={handleClickedVideo}>
           <Video
             ref={videoRef}
             source={{ uri: parsedVideoUrl }}
             style={[
               styles.video,
-              { height: fullscreen ? '100%' : screenHeight },
+              { height: fullscreen ? "100%" : screenHeight },
             ]}
             resizeMode={ResizeMode.CONTAIN}
             useNativeControls={false}
             shouldPlay={playing}
             isLooping={false}
-            onPlaybackStatusUpdate={status => setPlaybackStatus(() => status)}
+            onPlaybackStatusUpdate={(status) => setPlaybackStatus(() => status)}
           />
         </TouchableWithoutFeedback>
 
@@ -194,16 +267,21 @@ export default function PlayScreen() {
             style={[
               styles.activityIndicator,
               {
-                top: '50%',
-                transform: [{ translateX: -20 }, { translateY: -20 }]
-              }
+                top: "50%",
+                transform: [{ translateX: -20 }, { translateY: -20 }],
+              },
             ]}
           />
         )}
 
         {isEnded && (
-          <TouchableOpacity onPress={() => replayVideo(videoRef)}
-            style={fullscreen ? styles.replayIconContainerFS : styles.replayIconContainer}
+          <TouchableOpacity
+            onPress={() => replayVideo(videoRef)}
+            style={
+              fullscreen
+                ? styles.replayIconContainerFS
+                : styles.replayIconContainer
+            }
           >
             <Image
               source={replayIcon}
@@ -219,13 +297,13 @@ export default function PlayScreen() {
             <TouchableOpacity
               style={[styles.controlButton]} // 根据 fullscreen 状态调整样式
               onPress={() => {
-                setPlaying(prev => !prev);
+                setPlaying((prev) => !prev);
                 showControlsWithTimer();
               }} // 添加点击事件来控制播放暂停
             >
               <Image
                 source={playing ? pauseIcon : playbackIcon}
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: "100%", height: "100%" }}
                 resizeMode="contain"
               />
             </TouchableOpacity>
@@ -233,13 +311,18 @@ export default function PlayScreen() {
             <View
               style={[
                 fullscreen ? styles.bottomBarFS : styles.bottomBar,
-                !fullscreen && { bottom: '5%', left: 0 },
+                !fullscreen && { bottom: "5%", left: 0 },
               ]}
             >
               <Text style={fullscreen ? styles.timeTextFS : styles.timeText}>
                 {formatTime(currentProgress)}
-                <Text style={fullscreen ? styles.totalTimeTextFS : styles.totalTimeText}>
-                  {' '}/ {formatTime(totalDuration)}
+                <Text
+                  style={
+                    fullscreen ? styles.totalTimeTextFS : styles.totalTimeText
+                  }
+                >
+                  {" "}
+                  / {formatTime(totalDuration)}
                 </Text>
               </Text>
               <Slider
@@ -259,12 +342,12 @@ export default function PlayScreen() {
                   }
                   setShowControls(true);
                 }}
-                onValueChange={async value => {
+                onValueChange={async (value) => {
                   if (videoRef.current != null && playbackStatus.isLoaded) {
                     await videoRef.current.setPositionAsync(value);
                   }
                 }}
-                onSlidingComplete={async value => {
+                onSlidingComplete={async (value) => {
                   if (videoRef.current != null && playbackStatus.isLoaded) {
                     await videoRef.current.setPositionAsync(value);
                   }
@@ -274,10 +357,7 @@ export default function PlayScreen() {
               <TouchableOpacity onPress={toggleFullscreen}>
                 <Image
                   source={fullscreen ? exitFullscreenIcon : fullscreenIcon}
-                  className={`${fullscreen
-                    ? 'w-6 h-6 mr-3'
-                    : 'w-4 h-4 mr-4'
-                    }`}
+                  className={`${fullscreen ? "w-6 h-6 mr-3" : "w-4 h-4 mr-4"}`}
                   resizeMode="contain"
                 />
               </TouchableOpacity>
@@ -286,8 +366,8 @@ export default function PlayScreen() {
         )}
       </View>
 
-      <View className={'flex-1 mt-4'}>
-        <View className='px-6'>
+      <View className={"flex-1 mt-4"}>
+        <View className="px-6">
           <CommentInputBox
             userId={userId}
             videoId={videoId}
@@ -295,35 +375,33 @@ export default function PlayScreen() {
             onCommentSubmitted={onCommentSubmitted}
           />
         </View>
-        <View className='flex-1'>
-          {memoizedCommentView}
-        </View>
+        <View className="flex-1">{memoizedCommentView}</View>
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   activityIndicator: {
     zIndex: 10,
-    position: 'absolute',
-    left: '50%',
+    position: "absolute",
+    left: "50%",
   },
   replayIconContainer: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
     zIndex: 1, // 确保图标在最前面
     transform: [{ translateX: -15 }, { translateY: -15 }],
   },
   replayIconContainerFS: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
     zIndex: 1, // 确保图标在最前面
     transform: [{ translateX: -15 }, { translateY: -15 }],
   },
@@ -341,60 +419,60 @@ const styles = StyleSheet.create({
     height: 20,
   },
   video: {
-    width: '100%',
+    width: "100%",
   },
   // 增加一半的偏移量
   controlButton: {
-    position: 'absolute', // 让按钮浮动在视频上
-    top: '50%',
-    left: '50%',
+    position: "absolute", // 让按钮浮动在视频上
+    top: "50%",
+    left: "50%",
     zIndex: 10, // 确保按钮在视频之上
     transform: [{ translateX: -20 }, { translateY: -20 }],
-    backgroundColor: 'white',
+    backgroundColor: "white",
     width: 40,
     height: 40,
     borderRadius: 20,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderWidth: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   bottomBar: {
-    backgroundColor: 'rgba(50, 50, 50, 0.7)',
-    width: '95%',
-    position: 'absolute',
+    backgroundColor: "rgba(50, 50, 50, 0.7)",
+    width: "95%",
+    position: "absolute",
     zIndex: 20,
-    flexDirection: 'row',
-    alignItems: 'center', // 垂直居中
-    justifyContent: 'center', // 水平居中
+    flexDirection: "row",
+    alignItems: "center", // 垂直居中
+    justifyContent: "center", // 水平居中
     paddingHorizontal: 5, // 左右内边距
     gap: 5,
     borderRadius: 20,
-    marginHorizontal: '2.5%',
+    marginHorizontal: "2.5%",
   },
   bottomBarFS: {
-    backgroundColor: 'rgba(50, 50, 50, 0.7)',
-    width: '78%',
-    position: 'absolute',
-    marginHorizontal: '11%',
+    backgroundColor: "rgba(50, 50, 50, 0.7)",
+    width: "78%",
+    position: "absolute",
+    marginHorizontal: "11%",
     bottom: 10, // 距底部的距离
     height: 40, // 固定高度
     paddingHorizontal: 15, // 左右内边距
     zIndex: 10, // 确保在视频上方
-    flexDirection: 'row', // 水平布局
+    flexDirection: "row", // 水平布局
     gap: 5, // 间距
     borderRadius: 20,
-    alignItems: 'center', // 垂直居中
-    justifyContent: 'center', // 水平居中
+    alignItems: "center", // 垂直居中
+    justifyContent: "center", // 水平居中
   },
   sliderFS: {
-    flex: 1,  // 设置Slider的宽度
-    height: 40,  // 设置Slider的高度
+    flex: 1, // 设置Slider的宽度
+    height: 40, // 设置Slider的高度
     marginVertical: 10, // 可选，调整Slider的上下间距
   },
   slider: {
-    flex: 1,  // 设置Slider的宽度
-    height: 10,  // 设置Slider的高度
+    flex: 1, // 设置Slider的宽度
+    height: 10, // 设置Slider的高度
     marginVertical: 10, // 可选，调整Slider的上下间距
   },
   trackStyle: {
@@ -402,19 +480,19 @@ const styles = StyleSheet.create({
     borderRadius: 2, // 圆角效果
   },
   timeText: {
-    color: '#fff',
+    color: "#fff",
     marginLeft: 14,
     fontSize: 12,
   },
   timeTextFS: {
-    color: '#fff',
+    color: "#fff",
     marginLeft: 12,
   },
   totalTimeText: {
-    color: '#ccc',
+    color: "#ccc",
     fontSize: 12,
   },
   totalTimeTextFS: {
-    color: '#ccc',
+    color: "#ccc",
   },
 });
