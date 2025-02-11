@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mystseed.marsx",
-      "buildNumber": "1.0.0"
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
