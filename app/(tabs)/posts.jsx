@@ -1,7 +1,15 @@
-import { SafeAreaView, FlatList, View, Text, Pressable } from "react-native";
+import {
+  SafeAreaView,
+  FlatList,
+  View,
+  Text,
+  Pressable,
+  Image,
+} from "react-native";
 import { useState, useEffect } from "react";
 import PostItem from "../../components/post/PostItem";
 import { useRouter } from "expo-router";
+import { mockPosts } from "../../constants/posts";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -9,29 +17,7 @@ export default function Posts() {
 
   useEffect(() => {
     // 模拟加载数据
-    setPosts([
-      {
-        id: "1",
-        title: "帖子一",
-        content: "这是帖子一的内容",
-        author: "作者A",
-        time: "2023-10-01",
-      },
-      {
-        id: "2",
-        title: "帖子二",
-        content: "这是帖子二的内容",
-        author: "作者B",
-        time: "2023-10-02",
-      },
-      {
-        id: "3",
-        title: "帖子三",
-        content: "这是帖子三的内容",
-        author: "作者C",
-        time: "2023-10-03",
-      },
-    ]);
+    setPosts(mockPosts);
   }, []);
 
   return (
@@ -58,6 +44,15 @@ export default function Posts() {
         )}
         contentContainerStyle={{ padding: 16 }}
       />
+      <Pressable
+        onPress={() => router.push("screens/create-post")}
+        className="absolute bottom-5 right-5 bg-sky-500 w-14 h-14 rounded-full justify-center items-center"
+      >
+        <Image
+          source={require("../../assets/icons/post/plus.png")}
+          className="w-8 h-8"
+        />
+      </Pressable>
     </SafeAreaView>
   );
 }
