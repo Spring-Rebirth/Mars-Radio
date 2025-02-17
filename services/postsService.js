@@ -52,4 +52,30 @@ const createPost = async ({ title, content, image, author }) => {
   }
 }
 
-export { fetchPostData, createPost };
+const createFileForPost = async (file) => {
+  try {
+    const fileId = ID.unique();
+    const response = await storage.createFile(
+      config.bucketId,
+      fileId,
+      file
+    );
+    return response;
+  } catch (error) {
+    console.error('Error creating file:', error);
+  }
+}
+
+async function fetchFileUrl(fileId) {
+  try {
+    const url = storage.getFileView(
+      config.bucketId,
+      fileId
+    );
+    return url;
+  } catch (error) {
+    console.warn('Error in getFileFromStorage:', error);
+  }
+}
+
+export { fetchPostData, createPost, createFileForPost, fetchFileUrl };

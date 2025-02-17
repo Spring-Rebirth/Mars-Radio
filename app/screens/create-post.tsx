@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, Alert } from "react-native";
+import { View, Text, TextInput, Pressable, Alert, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
-import { createPost } from "../../services/postsService"
+import { createPost, fetchFileUrl } from "../../services/postsService"
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { usePickFile } from "../../hooks/usePickFile";
 import * as FileSystem from 'expo-file-system';
 import mime from 'mime';
+import { useUploadFileForPost } from "../../hooks/useUploadFile";
 
 export default function CreatePost() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function CreatePost() {
     image: null,
     author: user?.$id,
   });
-  const [imageFile, setImageFile] = useState<object | null>(null);
+  const [imageFile, setImageFile] = useState<any | null>(null);
 
   const publishPost = async () => {
     try {
@@ -66,7 +67,15 @@ export default function CreatePost() {
     try {
       await handlePickImage();
       if (imageFile) {
-        setForm({ ...form, image: imageFile });
+        const imageUpload = await useUploadFileForPost(imageFile);
+        if (!imageUpload) {
+          throw new Error('Image upload failed');
+        }
+        const { fileId: image_ID } = imageUpload;
+        console.log(`image_ID: ${image_ID}`);
+        const StorageImageUrl = await fetchFileUrl(image_ID);
+        console.log(`StorageImageUrl: ${StorageImageUrl}`);
+        setForm({ ...form, image: StorageImageUrl });
       }
     } catch (error) {
       console.error(error);
@@ -106,8 +115,19 @@ export default function CreatePost() {
         <Pressable onPress={() => { handleUploadImages() }}
           className="border border-dashed border-gray-300 rounded p-4 justify-center items-center"
         >
-          <Ionicons name="image-outline" size={24} color="gray" />
-          <Text className="text-gray-500 mt-2">{t("Click to select image")}</Text>
+          {!form.image ? (
+            <>
+              <Ionicons name="image-outline" size={24} color="gray" />
+              <Text className="text-gray-500 mt-2">{t("Click to select image")}</Text>
+            </>
+          ) : (
+            <Image
+              source={{ uri: form.image }}
+              style={{ width: 200, height: 200 }}
+              resizeMode="contain"
+            />
+          )}
+
         </Pressable>
       </View>
       <Pressable
