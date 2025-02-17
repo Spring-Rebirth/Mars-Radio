@@ -18,3 +18,17 @@ export const databases = new Databases(client);
 const avatars = new Avatars(client);
 const storage = new Storage(client);
 
+const fetchPostData = async (postId) => {
+  try {
+    const post = await databases.getDocument(
+      config.databaseId,
+      config.postColletionId,
+      [Query.equal('$id', postId)]
+    );
+    return post;
+  } catch (error) {
+    console.error('Error fetching post:', error);
+  }
+}
+
+export { fetchPostData }
