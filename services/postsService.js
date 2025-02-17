@@ -31,4 +31,24 @@ const fetchPostData = async (postId) => {
   }
 }
 
-export { fetchPostData }
+const createPost = async (title, content, image) => {
+  try {
+    const data = {
+      // 仅当参数存在时才添加
+      ...(title != null && { title }),
+      ...(content != null && { content }),
+      ...(image != null && { image })
+    };
+    const result = await databases.createDocument(
+      config.databaseId,
+      config.postColletionId,
+      ID.unique(),
+      data
+    );
+    return result;
+  } catch (error) {
+    console.error('Error creating post:', error);
+  }
+}
+
+export { fetchPostData, createPost };

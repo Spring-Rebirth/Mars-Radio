@@ -4,10 +4,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
+import { createPost } from "../../services/postsService"
 
 export default function CreatePost() {
   const router = useRouter();
   const { t } = useTranslation();
+
+  const publishPost = async () => {
+    try {
+      await createPost(
+        "New Post",
+        "This is a new post",
+        null
+      );
+      router.navigate("posts");
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white px-5 pt-5 pb-5">
@@ -43,7 +57,7 @@ export default function CreatePost() {
         </Pressable>
       </View>
       <Pressable
-        onPress={() => {/* 发布操作，数据代码先不用写 */ }}
+        onPress={() => { publishPost() }}
         className="bg-blue-500 p-4 rounded justify-center items-center"
       >
         <Text className="text-white font-bold">{t("Publish")}</Text>
