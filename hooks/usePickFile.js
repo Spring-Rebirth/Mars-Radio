@@ -44,7 +44,7 @@ export function usePickFile() {
 
         // 选择视频
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+            mediaTypes: ImagePicker.MediaType,
             allowsEditing: false,
             quality: 1,
         });
