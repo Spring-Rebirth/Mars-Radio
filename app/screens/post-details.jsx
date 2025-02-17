@@ -23,19 +23,26 @@ export default function PostDetails() {
     <SafeAreaView className="flex-1 bg-white">
       {/* 顶部返回按钮 */}
       <Pressable onPress={() => navigation.goBack()} className="p-4">
-        <Text className="text-blue-500">返回</Text>
+        <Image
+          source={require("../../assets/icons/back-arrow.png")}
+          className="w-6 h-6"
+        />
       </Pressable>
       {/* 帖子详情 */}
-      <View className="p-5 border-b border-gray-300">
+      <View className="p-5 pt-0 border-b border-gray-300">
         <Image
-          source={{ uri: "https://via.placeholder.com/150" }}
-          className="w-20 h-20 rounded-full mx-auto"
+          source={{ uri: "https://picsum.photos/200/300" }}
+          className="h-44 w-full mx-auto"
+          resizeMode="contain"
         />
         <Text className="mt-3 text-center text-2xl font-bold text-gray-900">
-          {post?.title}
+          {post?.title || "标题"}
         </Text>
-        <Text className="mt-2 text-center text-base text-gray-600">
-          {post?.content}
+        <Text
+          className="mt-2 text-center text-base text-gray-600"
+          numberOfLines={20}
+        >
+          {post?.content || "lorem ipsum dolor sit amet fsdgsgsg dssa"}
         </Text>
       </View>
       {/* 评论列表 */}
