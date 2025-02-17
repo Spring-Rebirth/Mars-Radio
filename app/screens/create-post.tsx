@@ -25,7 +25,10 @@ export default function CreatePost() {
 
   const publishPost = async () => {
     try {
+      await handleUploadImages();
+      console.log('图片上传成功');
       await createPost(form);
+      console.log('发布成功');
       router.navigate("posts");
     } catch (error) {
       console.error(error);
@@ -65,9 +68,9 @@ export default function CreatePost() {
 
   const handleUploadImages = async () => {
     try {
-      await handlePickImage();
       if (imageFile) {
         const imageUpload = await useUploadFileForPost(imageFile);
+        console.log(`imageUpload: ${imageUpload}`);
         if (!imageUpload) {
           throw new Error('Image upload failed');
         }
@@ -112,17 +115,17 @@ export default function CreatePost() {
       {/* 新增上传图片表单项 */}
       <View className="mb-4">
         <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
-        <Pressable onPress={() => { handleUploadImages() }}
+        <Pressable onPress={() => { handlePickImage() }}
           className="border border-dashed border-gray-300 rounded p-4 justify-center items-center"
         >
-          {!form.image ? (
+          {!imageFile?.uri ? (
             <>
               <Ionicons name="image-outline" size={24} color="gray" />
               <Text className="text-gray-500 mt-2">{t("Click to select image")}</Text>
             </>
           ) : (
             <Image
-              source={{ uri: form.image }}
+              source={{ uri: imageFile.uri }}
               style={{ width: 200, height: 200 }}
               resizeMode="contain"
             />

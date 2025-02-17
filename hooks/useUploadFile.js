@@ -52,6 +52,7 @@ export const useUploadFileForPost = async (file, retries = 3) => {
                 const result = await createFileForPost(fileModel);
                 response = result.response;
                 fileId = result.fileId;
+                console.log('fileId:', fileId, '\n', 'response:', response);
                 console.log('File uploaded successfully on attempt:', attempt + 1);
                 break; // 成功上传后退出循环
             } catch (error) {

@@ -32,6 +32,7 @@ const fetchPostData = async (postId) => {
 }
 
 const createPost = async ({ title, content, image, author }) => {
+  let documentId = ID.unique();
   try {
     const data = {
       // 仅当参数存在时才添加
@@ -43,24 +44,25 @@ const createPost = async ({ title, content, image, author }) => {
     const result = await databases.createDocument(
       config.databaseId,
       config.postColletionId,
-      ID.unique(),
+      documentId,
       data
     );
     return result;
+
   } catch (error) {
     console.error('Error creating post:', error);
   }
 }
 
 const createFileForPost = async (file) => {
+  const fileId = ID.unique();
   try {
-    const fileId = ID.unique();
     const response = await storage.createFile(
       config.bucketId,
       fileId,
       file
     );
-    return response;
+    return { response, fileId };
   } catch (error) {
     console.error('Error creating file:', error);
   }
