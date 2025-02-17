@@ -89,6 +89,27 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="posts"
+        options={{
+          title: t("Posts"),
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              name={t("Posts")}
+              icon={require("../../assets/icons/post/post-icon.png")}
+              color={color}
+              focused={focused}
+            />
+          ),
+          tabBarButton: (props) => (
+            <TouchableWithoutFeedback {...props}>
+              <View {...props} />
+            </TouchableWithoutFeedback>
+          ),
+        }}
+      />
+
+      <Tabs.Screen
         name="create"
         options={{
           title: t("Create"),
