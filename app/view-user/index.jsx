@@ -295,7 +295,7 @@ export default function UserProfile() {
                 resizeMode="contain"
               />
               <Text className="text-[#333333] text-lg">
-                {isSaved ? "Cancel save video" : "Save video"}
+                {isSaved ? t("Cancel save video") : t("Save video")}
               </Text>
             </Pressable>
 
@@ -309,7 +309,7 @@ export default function UserProfile() {
                   className="w-6 h-6 mr-8"
                   resizeMode="contain"
                 />
-                <Text className="text-black text-lg">Delete video</Text>
+                <Text className="text-black text-lg">{t("Delete video")}</Text>
               </Pressable>
             ) : null}
           </View>

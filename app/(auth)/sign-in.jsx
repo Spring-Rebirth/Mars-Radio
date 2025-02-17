@@ -1,22 +1,29 @@
-import { View, Image, Text, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
-import { Link, router } from 'expo-router';
-import { getCurrentUser } from '../../lib/appwrite';
-import { useGlobalContext } from '../../context/GlobalProvider';
-import images from '../../constants/images';
-import CustomForm from '../../components/CustomForm';
-import CustomButton from '../../components/CustomButton';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import { updatePushToken } from '../../functions/notifications/index';
-import { useTranslation } from 'react-i18next';
-import { useSignIn, useUser } from '@clerk/clerk-expo'
+import {
+  View,
+  Image,
+  Text,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import { Link, router } from "expo-router";
+import { getCurrentUser } from "../../lib/appwrite";
+import { useGlobalContext } from "../../context/GlobalProvider";
+import images from "../../constants/images";
+import CustomForm from "../../components/CustomForm";
+import CustomButton from "../../components/CustomButton";
+import * as ScreenOrientation from "expo-screen-orientation";
+import { updatePushToken } from "../../functions/notifications/index";
+import { useTranslation } from "react-i18next";
+import { useSignIn, useUser } from "@clerk/clerk-expo";
 
 export default function SignIn() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const { user } = useUser();
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false); // 新增状态控制页面跳转
   const { setUser, setIsLoggedIn } = useGlobalContext();
@@ -29,7 +36,7 @@ export default function SignIn() {
           ScreenOrientation.OrientationLock.PORTRAIT_UP
         );
       } catch (error) {
-        console.error('Failed to lock orientation:', error);
+        console.error("Failed to lock orientation:", error);
       }
     };
 
@@ -41,8 +48,8 @@ export default function SignIn() {
   }, []);
 
   async function submit() {
-    if (form.email === '' || form.password === '') {
-      Alert.alert('Error', t('Please fill in all the fields!'));
+    if (form.email === "" || form.password === "") {
+      Alert.alert("Error", t("Please fill in all the fields!"));
       return;
     }
 
@@ -57,26 +64,27 @@ export default function SignIn() {
         const signInAttempt = await signIn.create({
           identifier: form.email,
           password: form.password,
-        })
+        });
 
-        if (signInAttempt.status === 'complete') {
+        if (signInAttempt.status === "complete") {
           await setActive({ session: signInAttempt.createdSessionId });
         } else {
           // See https://clerk.com/docs/custom-flows/error-handling
           // for more info on error handling
-          console.error(JSON.stringify(signInAttempt, null, 2))
+          console.error(JSON.stringify(signInAttempt, null, 2));
         }
       } catch (err) {
         console.error(JSON.stringify(err, null, 2));
         setIsSubmitting(false);
         Alert.alert(
-          t('Error'),
-          t('The account does not exist or the password is incorrect. Please check and try again.')
+          t("Error"),
+          t(
+            "The account does not exist or the password is incorrect. Please check and try again."
+          )
         );
       }
-
     } catch (error) {
-      Alert.alert('Error in submit', error.message);
+      Alert.alert("Error in submit", error.message);
       setIsSubmitting(false);
     }
   }
@@ -98,10 +106,9 @@ export default function SignIn() {
         await updatePushToken();
 
         setTimeout(() => {
-          router.replace('/home');
+          router.replace("/home");
         }, 100); // 延迟 100 毫秒以确保状态同步完成
       }
-
     };
     handleUserUpdate();
   }, [user]);
@@ -116,69 +123,68 @@ export default function SignIn() {
 
   return (
     <>
-      <SafeAreaView className='bg-primary'>
-        <ScrollView contentContainerStyle={{ height: '100%' }}>
-          <View className='h-full justify-center px-6'>
-            <View className='h-[85vh] justify-center'>
-              <View className='flex-row items-center space-x-2'>
+      <SafeAreaView className="bg-primary">
+        <ScrollView contentContainerStyle={{ height: "100%" }}>
+          <View className="h-full justify-center px-6">
+            <View className="h-[85vh] justify-center">
+              <View className="flex-row items-center space-x-2">
                 <Image
                   source={images.logoSmall}
-                  resizeMode='contain'
-                  className='w-9 h-10'
+                  resizeMode="contain"
+                  className="w-9 h-10"
                 />
-                <Text className='text-black text-4xl font-semibold'>MarsX</Text>
+                <Text className="text-black text-4xl font-semibold">MarsX</Text>
               </View>
 
-              <Text className='text-black text-2xl font-psemibold mt-6'>Sign in</Text>
+              <Text className="text-black text-2xl font-psemibold mt-6">
+                {t("Sign in")}
+              </Text>
 
-              <CustomForm title='Email'
+              <CustomForm
+                title={t("Email")}
                 handleChangeText={(text) => setForm({ ...form, email: text })}
                 value={form.email}
-                placeholder={'Enter your email address'}
+                placeholder={t("Enter your email address")}
               />
-              <CustomForm title='Password'
-                handleChangeText={(text) => setForm({ ...form, password: text })}
+              <CustomForm
+                title={t("Password")}
+                handleChangeText={(text) =>
+                  setForm({ ...form, password: text })
+                }
                 value={form.password}
-                placeholder={'Enter your password'}
+                placeholder={t("Enter your password")}
               />
 
               <CustomButton
-                title='Sign In'
-                style='h-16 mt-6 py-3'
-                textStyle={'text-lg text-[#F5F5F5]'}
+                title={t("Sign In")}
+                style="h-16 mt-6 py-3"
+                textStyle={"text-lg text-[#F5F5F5]"}
                 onPress={submit}
                 isLoading={isSubmitting}
               />
-              <View className='items-center mt-6'>
-                <Text className='text-[#808080]'>
-                  Don't have an account ?&nbsp;&nbsp;
-                  <Link
-                    href='/sign-up'
-                    className='text-secondary'
-                  >
-                    Sign up
+              <View className="items-center mt-6">
+                <Text className="text-[#808080]">
+                  {t("Do not have an account")} ?&nbsp;&nbsp;
+                  <Link href="/sign-up" className="text-secondary">
+                    {t("Sign up")}
                   </Link>
                 </Text>
               </View>
 
-              <View className='items-center mt-4'>
-                <Text className='text-[#808080]'>
-                  Forgot your password? ?&nbsp;&nbsp;
-                  <Link
-                    href='/pw-reset'
-                    className='text-secondary'
-                  >
-                    Reset
+              <View className="items-center mt-4">
+                <Text className="text-[#808080]">
+                  {t("Forgot your password")} ?&nbsp;&nbsp;
+                  <Link href="/pw-reset" className="text-secondary">
+                    {t("Reset")}
                   </Link>
                 </Text>
               </View>
-
             </View>
           </View>
         </ScrollView>
 
-        <StatusBar style='dark' />
+        <StatusBar style="dark" />
       </SafeAreaView>
     </>
-  )
+  );
 }

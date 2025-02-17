@@ -1,31 +1,45 @@
-import { View, Text, FlatList, Image, ActivityIndicator, TouchableOpacity, RefreshControl, Alert, Pressable, StyleSheet } from 'react-native'
-import React, { useEffect, useState, useRef } from 'react'
-import useGetData from '../../hooks/useGetData'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useGlobalContext } from '../../context/GlobalProvider'
-import EmptyState from '../../components/EmptyState'
-import CustomButton from '../../components/CustomButton'
-import VideoCard from '../../components/VideoCard'
-import { router, useFocusEffect } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import { getCurrentUser } from '../../lib/appwrite'
-import settingIcon from '../../assets/menu/setting.png'
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  ActivityIndicator,
+  TouchableOpacity,
+  RefreshControl,
+  Alert,
+  Pressable,
+  StyleSheet,
+} from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import useGetData from "../../hooks/useGetData";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useGlobalContext } from "../../context/GlobalProvider";
+import EmptyState from "../../components/EmptyState";
+import CustomButton from "../../components/CustomButton";
+import VideoCard from "../../components/VideoCard";
+import { router, useFocusEffect } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { getCurrentUser } from "../../lib/appwrite";
+import settingIcon from "../../assets/menu/setting.png";
 import { useTranslation } from "react-i18next";
-import notifyIcon from '../../assets/menu/notify.png'
-import editIcon from '../../assets/icons/edit.png'
-import { useAuth } from '@clerk/clerk-expo'
-import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler'
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
-import Toast from 'react-native-root-toast'
-import { getVideoDetails } from '../../lib/appwrite'
-import trash from '../../assets/menu/trash-solid.png'
-import closeIcon from '../../assets/icons/close.png'
-import { deleteVideoDoc, deleteVideoFiles } from '../../lib/appwrite'
-import Drawer from '../(drawer)/Drawer';
-import backIcon from '../../assets/icons/left-arrow.png'
-import arrowRightIcon from '../../assets/icons/arrow-one.png'
-import { Animated } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import notifyIcon from "../../assets/menu/notify.png";
+import editIcon from "../../assets/icons/edit.png";
+import { useAuth } from "@clerk/clerk-expo";
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+} from "react-native-gesture-handler";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import Toast from "react-native-root-toast";
+import { getVideoDetails } from "../../lib/appwrite";
+import trash from "../../assets/menu/trash-solid.png";
+import closeIcon from "../../assets/icons/close.png";
+import { deleteVideoDoc, deleteVideoFiles } from "../../lib/appwrite";
+import Drawer from "../(drawer)/Drawer";
+import backIcon from "../../assets/icons/left-arrow.png";
+import arrowRightIcon from "../../assets/icons/arrow-one.png";
+import { Animated } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Profile() {
   const insetTop = useSafeAreaInsets().top;
@@ -52,7 +66,7 @@ export default function Profile() {
     { useNativeDriver: false }
   );
 
-  const [switchLangResult, setSwitchLangResult] = useState('');
+  const [switchLangResult, setSwitchLangResult] = useState("");
 
   const onHandlerStateChange = (event) => {
     if (event.nativeEvent.translationX > 50) {
@@ -66,42 +80,40 @@ export default function Profile() {
     setLoading(true);
 
     if (user?.$id) {
-      fetchUserPosts(user.$id)
-        .finally(() => {
-          setLoading(false);
-        });
+      fetchUserPosts(user.$id).finally(() => {
+        setLoading(false);
+      });
     } else {
       setLoading(false);
     }
-
-  }, [user?.$id, user?.avatar])
+  }, [user?.$id, user?.avatar]);
 
   useEffect(() => {
     if (showControlMenu) {
-      bottomSheetRef.current?.expand()
+      bottomSheetRef.current?.expand();
     } else {
-      bottomSheetRef.current?.close()
+      bottomSheetRef.current?.close();
     }
-  }, [showControlMenu])
+  }, [showControlMenu]);
 
   useFocusEffect(
     React.useCallback(() => {
       return () => {
-        bottomSheetRef.current?.close()
-      }
+        bottomSheetRef.current?.close();
+      };
     }, [])
   );
 
   const changeLanguage = async (lang) => {
     try {
       await i18n.changeLanguage(lang);
-      await AsyncStorage.setItem('language', lang);
-      setSwitchLangResult(t('Selected language') + lang);
+      await AsyncStorage.setItem("language", lang);
+      setSwitchLangResult(t("Selected language") + lang);
     } catch (error) {
-      setSwitchLangResult(t('Failed to switch language'));
-      console.error('Failed to switch language:', error);
+      setSwitchLangResult(t("Failed to switch language"));
+      console.error("Failed to switch language:", error);
     } finally {
-      setSwitchLangResult('');
+      setSwitchLangResult("");
     }
   };
 
@@ -123,35 +135,35 @@ export default function Profile() {
       setUser(null);
       setIsLoggedIn(false);
     } catch (error) {
-      console.error('Sign out failed:', error);
-      Alert.alert('Error', 'Failed to sign out. Please try again.');
+      console.error("Sign out failed:", error);
+      Alert.alert("Error", "Failed to sign out. Please try again.");
       setIsTransitioning(false); // 如果出错，重置跳转状态
     }
   };
 
   const handleDelete = async () => {
-    setShowControlMenu(false)
+    setShowControlMenu(false);
     try {
-      const videoDetails = await getVideoDetails(selectedVideoId)
-      const { image_ID, video_ID } = videoDetails
+      const videoDetails = await getVideoDetails(selectedVideoId);
+      const { image_ID, video_ID } = videoDetails;
       if (image_ID && video_ID) {
         await Promise.all([
           deleteVideoDoc(selectedVideoId),
           deleteVideoFiles(image_ID),
-          deleteVideoFiles(video_ID)
-        ])
-        Toast.show('Delete Success', {
+          deleteVideoFiles(video_ID),
+        ]);
+        Toast.show("Delete Success", {
           duration: Toast.durations.SHORT,
-          position: Toast.positions.CENTER
+          position: Toast.positions.CENTER,
         });
-        handleRefresh && handleRefresh()
+        handleRefresh && handleRefresh();
       } else {
-        Alert.alert('Delete Failed, File ID not found')
+        Alert.alert("Delete Failed, File ID not found");
       }
     } catch (error) {
-      console.error('删除出错:', error)
+      console.error("删除出错:", error);
     }
-  }
+  };
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -159,14 +171,14 @@ export default function Profile() {
 
     if (userId) {
       await getCurrentUser(userId)
-        .then(res => setUser(res))
-        .catch(error => {
-          console.error('getCurrentUser() failed:', error);
+        .then((res) => setUser(res))
+        .catch((error) => {
+          console.error("getCurrentUser() failed:", error);
         });
     }
 
     setRefreshing(false);
-  }
+  };
 
   if (isTransitioning) {
     return (
@@ -177,7 +189,10 @@ export default function Profile() {
   }
 
   return (
-    <GestureHandlerRootView className='bg-primary h-full' style={{ marginTop: insetTop }}>
+    <GestureHandlerRootView
+      className="bg-primary h-full"
+      style={{ marginTop: insetTop }}
+    >
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
@@ -192,13 +207,14 @@ export default function Profile() {
           >
             {/* 这里可以添加 Drawer 的内容 */}
             <View>
-              <Text style={{ fontSize: 18, marginBottom: 10 }}>{t("Setting")}</Text>
+              <Text style={{ fontSize: 18, marginBottom: 10 }}>
+                {t("Setting")}
+              </Text>
 
               <View style={styles.drawerContent}>
                 {viewLevel === 1 ? (
                   // 一级视图
-                  <View className='w-full items-center space-y-3'>
-
+                  <View className="w-full items-center space-y-3">
                     <TouchableOpacity
                       onPress={goToNextLevel}
                       className="w-full h-10 flex-row items-center justify-between pr-2"
@@ -206,8 +222,8 @@ export default function Profile() {
                       <Text>{t("Language")}</Text>
                       <Image
                         source={arrowRightIcon}
-                        className='w-4 h-4'
-                        resizeMode={'contain'}
+                        className="w-4 h-4"
+                        resizeMode={"contain"}
                       />
                     </TouchableOpacity>
 
@@ -218,25 +234,28 @@ export default function Profile() {
                       <Text>{t("Sign Out")}</Text>
                       <Image
                         source={arrowRightIcon}
-                        className='w-4 h-4'
-                        resizeMode={'contain'}
+                        className="w-4 h-4"
+                        resizeMode={"contain"}
                       />
                     </TouchableOpacity>
                   </View>
                 ) : (
                   // 二级视图
-                  <View className='items-center'>
-                    <TouchableOpacity onPress={goToPreviousLevel}
+                  <View className="items-center">
+                    <TouchableOpacity
+                      onPress={goToPreviousLevel}
                       className="absolute top-0 left-0.5 w-full h-8 justify-center items-start"
                     >
-                      <Image source={backIcon} resizeMode={'contain'}
-                        className={'w-5 h-5'}
+                      <Image
+                        source={backIcon}
+                        resizeMode={"contain"}
+                        className={"w-5 h-5"}
                       />
                     </TouchableOpacity>
                     <Text style={styles.title}>Switch Language</Text>
                     <TouchableOpacity
                       onPress={() => {
-                        changeLanguage('en');
+                        changeLanguage("en");
                       }}
                     >
                       <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
@@ -245,7 +264,7 @@ export default function Profile() {
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
-                        changeLanguage('zh');
+                        changeLanguage("zh");
                       }}
                     >
                       <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center mt-2">
@@ -255,7 +274,6 @@ export default function Profile() {
                   </View>
                 )}
               </View>
-
             </View>
           </Drawer>
           <View style={{ marginTop: 28 }}>
@@ -267,47 +285,56 @@ export default function Profile() {
               contentContainerStyle={{ paddingBottom: 44 }}
               ListHeaderComponent={() => {
                 return (
-                  <View className='mb-2 px-4 relative'>
-                    <View className='flex-row items-center justify-between'>
-                      <TouchableOpacity onPress={() => setIsDrawerVisible(true)}
-                        className='w-6 h-6'
+                  <View className="mb-2 px-4 relative">
+                    <View className="flex-row items-center justify-between">
+                      <TouchableOpacity
+                        onPress={() => setIsDrawerVisible(true)}
+                        className="w-6 h-6"
                       >
                         <Image
                           source={settingIcon}
-                          className='w-6 h-6'
-                          resizeMode='contain'
+                          className="w-6 h-6"
+                          resizeMode="contain"
                         />
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={() => { router.navigate('/notifications/notice-screen') }}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          router.navigate("/notifications/notice-screen");
+                        }}
+                      >
                         <Image
                           source={notifyIcon}
-                          className='w-6 h-6'
-                          resizeMode='contain'
+                          className="w-6 h-6"
+                          resizeMode="contain"
                         />
                       </TouchableOpacity>
                     </View>
-                    <View className='justify-between items-center mt-3'>
-
-                      <View
-                        className='w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center'
-                      >
+                    <View className="justify-between items-center mt-3">
+                      <View className="w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center">
                         <Image
                           source={{ uri: user?.avatar }}
-                          className='w-full h-full'
-                          resizeMode='cover'
+                          className="w-full h-full"
+                          resizeMode="cover"
                         />
                       </View>
 
-                      <Text className='text-black text-xl font-psemibold mt-2.5'>{user?.username}</Text>
-                      <Text className='text-[#999999] text-base font-psemibold'>{'#' + user?.email.split("@")[0]}</Text>
+                      <Text className="text-black text-xl font-psemibold mt-2.5">
+                        {user?.username}
+                      </Text>
+                      <Text className="text-[#999999] text-base font-psemibold">
+                        {"#" + user?.email.split("@")[0]}
+                      </Text>
 
-                      <TouchableOpacity onPress={() => { router.navigate('/user-info') }}
-                        className='w-10 h-10 justify-center items-center'
+                      <TouchableOpacity
+                        onPress={() => {
+                          router.navigate("/user-info");
+                        }}
+                        className="w-10 h-10 justify-center items-center"
                       >
                         <Image
                           source={editIcon}
-                          className='w-6 h-6'
-                          resizeMode='contain'
+                          className="w-6 h-6"
+                          resizeMode="contain"
                         />
                       </TouchableOpacity>
                     </View>
@@ -320,39 +347,42 @@ export default function Profile() {
                   <VideoCard
                     post={item}
                     onMenuPress={(videoId) => {
-                      setSelectedVideoId(videoId)
-                      setShowControlMenu((prev) => !prev)
+                      setSelectedVideoId(videoId);
+                      setShowControlMenu((prev) => !prev);
                     }}
                     handleRefresh={handleRefresh}
                   />
-                )
+                );
               }}
               ListEmptyComponent={() => {
                 return loading ? (
                   <View className="flex-1 justify-center items-center bg-primary">
                     <ActivityIndicator size="large" color="#000" />
-                    <Text className='mt-[10] text-black text-xl'>{t("Loading, please wait...")}</Text>
+                    <Text className="mt-[10] text-black text-xl">
+                      {t("Loading, please wait...")}
+                    </Text>
                   </View>
                 ) : (
                   <View>
                     <EmptyState />
                     <CustomButton
-                      title={t('Create Video')}
-                      textStyle={'text-black'}
-                      style={'h-16 my-5 mx-4'}
-                      onPress={() => router.push('/create')}
+                      title={t("Create Video")}
+                      textStyle={"text-black"}
+                      style={"h-16 my-5 mx-4"}
+                      onPress={() => router.push("/create")}
                     />
                   </View>
                 );
               }}
-
               refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={handleRefresh}
+                />
               }
             />
           </View>
         </Animated.View>
-
       </PanGestureHandler>
       <BottomSheet
         ref={bottomSheetRef}
@@ -362,51 +392,48 @@ export default function Profile() {
         onClose={() => setShowControlMenu(false)}
       >
         <BottomSheetView>
-          <View className='relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'>
+          <View className="relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto">
             <Pressable
               onPress={() => setShowControlMenu(false)}
-              className='z-20 items-end'
+              className="z-20 items-end"
             >
               <Image
                 source={closeIcon}
-                className='w-6 h-6'
-                resizeMode='contain'
+                className="w-6 h-6"
+                resizeMode="contain"
               />
             </Pressable>
 
             <Pressable
               onPress={handleDelete}
-              className='w-full h-12 flex-row items-center'
+              className="w-full h-12 flex-row items-center"
             >
-              <Image source={trash} className='w-6 h-6 mr-8' />
-              <Text className='text-black text-lg'>
-                Delete video
-              </Text>
+              <Image source={trash} className="w-6 h-6 mr-8" />
+              <Text className="text-black text-lg">{t("Delete video")}</Text>
             </Pressable>
-
           </View>
         </BottomSheetView>
       </BottomSheet>
 
-      <StatusBar style='dark' />
+      <StatusBar style="dark" />
     </GestureHandlerRootView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   drawerContent: {
-    position: 'relative',
-    backgroundColor: 'white',
+    position: "relative",
+    backgroundColor: "white",
     paddingVertical: 15,
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
     marginTop: 50,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

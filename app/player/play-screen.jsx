@@ -10,7 +10,7 @@ import {
   Text,
 } from "react-native";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode } from "expo-av";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CommentInputBox from "../../components/comment/CommentInputBox";
@@ -286,19 +286,6 @@ export default function PlayScreen() {
             <Image
               source={replayIcon}
               style={styles.replayIcon}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        )}
-
-        {showControls && (
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="absolute top-2 left-3 z-10 w-10 h-10 justify-center items-center"
-          >
-            <Image
-              source={require("../../assets/icons/left-arrow-2.png")}
-              style={{ width: 30, height: 30 }}
               resizeMode="contain"
             />
           </TouchableOpacity>

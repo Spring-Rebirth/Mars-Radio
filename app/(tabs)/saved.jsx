@@ -1,22 +1,30 @@
 //cSpell:words psemibold appwrite
-import { View, Text, FlatList, Image, ActivityIndicator, RefreshControl, Pressable } from 'react-native'
-import React, { useEffect, useState, useRef } from 'react'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { images } from '../../constants'
-import SearchInput from '../../components/SearchInput'
-import VideoCard from '../../components/VideoCard'
-import useGetData from '../../hooks/useGetData'
-import { StatusBar } from 'expo-status-bar'
-import { useGlobalContext } from '../../context/GlobalProvider'
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  ActivityIndicator,
+  RefreshControl,
+  Pressable,
+} from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { images } from "../../constants";
+import SearchInput from "../../components/SearchInput";
+import VideoCard from "../../components/VideoCard";
+import useGetData from "../../hooks/useGetData";
+import { StatusBar } from "expo-status-bar";
+import { useGlobalContext } from "../../context/GlobalProvider";
 import { useTranslation } from "react-i18next";
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
-import Toast from 'react-native-root-toast'
-import { updateSavedCounts, updateSavedVideo } from '../../lib/appwrite'
-import star from '../../assets/menu/star-solid.png'
-import starThree from '../../assets/menu/star3.png'
-import closeIcon from '../../assets/icons/close.png'
-import { useFocusEffect } from 'expo-router'
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import Toast from "react-native-root-toast";
+import { updateSavedCounts, updateSavedVideo } from "../../lib/appwrite";
+import star from "../../assets/menu/star-solid.png";
+import starThree from "../../assets/menu/star3.png";
+import closeIcon from "../../assets/icons/close.png";
+import { useFocusEffect } from "expo-router";
 
 export default function Saved() {
   const insetTop = useSafeAreaInsets().top;
@@ -33,9 +41,9 @@ export default function Saved() {
 
   useEffect(() => {
     if (showControlMenu) {
-      bottomSheetRef.current?.expand()
+      bottomSheetRef.current?.expand();
     } else {
-      bottomSheetRef.current?.close()
+      bottomSheetRef.current?.close();
     }
   }, [showControlMenu]);
 
@@ -50,55 +58,59 @@ export default function Saved() {
   useFocusEffect(
     React.useCallback(() => {
       return () => {
-        bottomSheetRef.current?.close()
-      }
+        bottomSheetRef.current?.close();
+      };
     }, [])
-  )
+  );
 
   const handleAddSaved = async () => {
     try {
-      let isIncrement
+      let isIncrement;
       if (!user?.favorite.includes(selectedVideoId)) {
-        const newUser = JSON.parse(JSON.stringify(user))
-        newUser.favorite.push(selectedVideoId)
-        setUser((prev) => ({ ...prev, favorite: newUser.favorite }))
-        setIsSaved(true)
-        isIncrement = true
-        Toast.show(t('Save successful'), {
+        const newUser = JSON.parse(JSON.stringify(user));
+        newUser.favorite.push(selectedVideoId);
+        setUser((prev) => ({ ...prev, favorite: newUser.favorite }));
+        setIsSaved(true);
+        isIncrement = true;
+        Toast.show(t("Save successful"), {
           duration: Toast.durations.SHORT,
-          position: Toast.positions.CENTER
+          position: Toast.positions.CENTER,
         });
-
       } else {
-        const updatedItems = user?.favorite.filter((item) => item !== selectedVideoId)
-        setUser((prev) => ({ ...prev, favorite: updatedItems }))
-        setIsSaved(false)
-        isIncrement = false
-        Toast.show(t('Cancel save successfully'), {
+        const updatedItems = user?.favorite.filter(
+          (item) => item !== selectedVideoId
+        );
+        setUser((prev) => ({ ...prev, favorite: updatedItems }));
+        setIsSaved(false);
+        isIncrement = false;
+        Toast.show(t("Cancel save successfully"), {
           duration: Toast.durations.SHORT,
-          position: Toast.positions.CENTER
+          position: Toast.positions.CENTER,
         });
       }
-      await updateSavedCounts(selectedVideoId, isIncrement)
+      await updateSavedCounts(selectedVideoId, isIncrement);
     } catch (error) {
-      console.error('Error handling favorite:', error)
-      Alert.alert('An error occurred while updating favorite count')
+      console.error("Error handling favorite:", error);
+      Alert.alert("An error occurred while updating favorite count");
     }
-  }
+  };
 
   const handleClickSave = () => {
-    setShowControlMenu(false)
-    handleAddSaved()
-  }
+    setShowControlMenu(false);
+    handleAddSaved();
+  };
 
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchSavedPosts(user?.favorite);
     setRefreshing(false);
-  }
+  };
 
   return (
-    <GestureHandlerRootView className='bg-primary h-full' style={{ marginTop: insetTop }}>
+    <GestureHandlerRootView
+      className="bg-primary h-full"
+      style={{ marginTop: insetTop }}
+    >
       <FlatList
         data={loading ? [] : savedPostsData}
         // item 是 data 数组中的每一项
@@ -106,21 +118,21 @@ export default function Saved() {
         contentContainerStyle={{ paddingBottom: 44 }}
         ListHeaderComponent={() => {
           return (
-            <View className='my-6 px-4'>
-
-              <View className='flex-row justify-between items-center mt-4 h-[60px]'>
-                <View >
-                  <Text className='text-black text-2xl font-psemibold'>{t("Saved Videos")}</Text>
+            <View className="my-6 px-4">
+              <View className="flex-row justify-between items-center mt-4 h-[60px]">
+                <View>
+                  <Text className="text-black text-2xl font-psemibold">
+                    {t("Saved Videos")}
+                  </Text>
                 </View>
                 <Image
                   source={images.logoSmall}
-                  className='w-9 h-10'
-                  resizeMode='contain'
+                  className="w-9 h-10"
+                  resizeMode="contain"
                 />
               </View>
 
-              <SearchInput containerStyle={'mt-6'} />
-
+              <SearchInput containerStyle={"mt-6"} />
             </View>
           );
         }}
@@ -130,27 +142,31 @@ export default function Saved() {
             <VideoCard
               post={item}
               onMenuPress={(videoId) => {
-                setSelectedVideoId(videoId)
-                setIsSaved(user?.favorite.includes(videoId))
-                setShowControlMenu((prev) => !prev)
+                setSelectedVideoId(videoId);
+                setIsSaved(user?.favorite.includes(videoId));
+                setShowControlMenu((prev) => !prev);
               }}
             />
-          )
+          );
         }}
         ListEmptyComponent={() => {
           return loading ? (
             <View className="flex-1 justify-center items-center bg-primary">
               <ActivityIndicator size="large" color="#000" />
-              <Text className='mt-[10] text-black text-xl'>{t("Loading, please wait...")}</Text>
+              <Text className="mt-[10] text-black text-xl">
+                {t("Loading, please wait...")}
+              </Text>
             </View>
           ) : (
-            <View className='items-center'>
+            <View className="items-center">
               <Image
                 source={images.empty}
-                className='w-[270px] h-[215px]'
-                resizeMode='contain'
+                className="w-[270px] h-[215px]"
+                resizeMode="contain"
               />
-              <Text className='mt-2 text-black font-psemibold text-xl'>{t("No Videos Saved")}</Text>
+              <Text className="mt-2 text-black font-psemibold text-xl">
+                {t("No Videos Saved")}
+              </Text>
             </View>
           );
         }}
@@ -167,39 +183,35 @@ export default function Saved() {
         onClose={() => setShowControlMenu(false)}
       >
         <BottomSheetView>
-          <View className='relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto'>
-
+          <View className="relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto">
             <Pressable
               onPress={() => setShowControlMenu(false)}
-              className='z-20 items-end'
+              className="z-20 items-end"
             >
               <Image
                 source={closeIcon}
-                className='w-6 h-6'
-                resizeMode='contain'
+                className="w-6 h-6"
+                resizeMode="contain"
               />
             </Pressable>
 
-            <Pressable onPress={handleClickSave} className='w-full h-12 flex-row items-center'>
+            <Pressable
+              onPress={handleClickSave}
+              className="w-full h-12 flex-row items-center"
+            >
               <Image
                 source={isSaved ? star : starThree}
-                className='w-6 h-6 mr-8'
+                className="w-6 h-6 mr-8"
               />
-              <Text className='text-[#333333] text-lg'>
-                {isSaved ? 'Cancel save video' : 'Save video'}
+              <Text className="text-[#333333] text-lg">
+                {isSaved ? t("Cancel save video") : t("Save video")}
               </Text>
             </Pressable>
-
           </View>
         </BottomSheetView>
       </BottomSheet>
 
-      <StatusBar style='dark' />
+      <StatusBar style="dark" />
     </GestureHandlerRootView>
-  )
+  );
 }
-
-
-
-
-
