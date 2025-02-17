@@ -1,23 +1,42 @@
 // CommentItem.js
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native';
-import commentIcon from '../../assets/icons/comment.png';
-import likeIcon from '../../assets/icons/like.png';
-import likedIcon from '../../assets/icons/liked.png';
-import deleteIcon from '../../assets/menu/delete.png';
-import ReactNativeModal from 'react-native-modal';
-import { useTranslation } from 'react-i18next';
-import { databases } from '../../lib/appwrite';
-import { config } from '../../lib/appwrite';
-import upIcon from '../../assets/icons/arrow-up.png';
-import downIcon from '../../assets/icons/arrow-down.png';
-import { sendLikedStatus } from '../../services/commentService';
-import { formatCommentsCounts } from '../../utils/numberFormatter';
-import { sendPushNotification } from '../../functions/notifications';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import commentIcon from "../../assets/icons/comment.png";
+import likeIcon from "../../assets/icons/like.png";
+import likedIcon from "../../assets/icons/liked.png";
+import deleteIcon from "../../assets/menu/delete.png";
+import ReactNativeModal from "react-native-modal";
+import { useTranslation } from "react-i18next";
+import { databases } from "../../lib/appwrite";
+import { config } from "../../lib/appwrite";
+import upIcon from "../../assets/icons/arrow-up.png";
+import downIcon from "../../assets/icons/arrow-down.png";
+import { sendLikedStatus } from "../../services/commentService";
+import { formatCommentsCounts } from "../../utils/numberFormatter";
+import { sendPushNotification } from "../../functions/notifications";
+import { router } from "expo-router";
 
 const CommentItem = ({
-  comment, level = 1, fetchReplies, setRefreshFlag, fetchUsername, userId, fetchCommentUser,
-  submitReply, onReplyDeleted, videoCreator, user, rootCommentId = comment.$id
+  comment,
+  level = 1,
+  fetchReplies,
+  setRefreshFlag,
+  fetchUsername,
+  userId,
+  fetchCommentUser,
+  submitReply,
+  onReplyDeleted,
+  videoCreator,
+  user,
+  rootCommentId = comment.$id,
 }) => {
   const [replies, setReplies] = useState([]);
   const [commentId, setCommentId] = useState(comment.$id);
@@ -27,10 +46,12 @@ const CommentItem = ({
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const { t } = useTranslation();
-  const [cmtUsername, setCmtUsername] = useState(t('loading...'));
-  const [cmtAvatar, setCmtAvatar] = useState(require('../../assets/images/default-avatar.png'));
+  const [cmtUsername, setCmtUsername] = useState(t("loading..."));
+  const [cmtAvatar, setCmtAvatar] = useState(
+    require("../../assets/images/default-avatar.png")
+  );
   const [showReplyModal, setShowReplyModal] = useState(false);
-  const [replyMsg, setReplyMsg] = useState('');
+  const [replyMsg, setReplyMsg] = useState("");
   const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
   const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
   const inputRef = useRef(null);
@@ -114,7 +135,7 @@ const CommentItem = ({
         commentId
       );
       if (result) {
-        Alert.alert('Delete Success');
+        Alert.alert("Delete Success");
         setCommentId("");
         // setRefreshFlag(prev => !prev);
         if (level !== 1) {
@@ -122,13 +143,13 @@ const CommentItem = ({
           onReplyDeleted();
         } else {
           // 如果是父评论，通知父组件刷新评论列表
-          setRefreshFlag(prev => !prev);
+          setRefreshFlag((prev) => !prev);
         }
       }
     } catch (error) {
-      console.error('Failed to delete comment:', error);
+      console.error("Failed to delete comment:", error);
     }
-  }
+  };
 
   handleReplySubmit = useCallback(async () => {
     // 调用提交回复的函数，传入回复内容和父评论 ID   // 获取回复的用户名
@@ -138,16 +159,21 @@ const CommentItem = ({
 
     // 如果评论层级大于MAX_LEVEL, 在回复内容前加上"@父评论用户名"
     if (level > MAX_LEVEL) {
-      await submitReply(`@${parentUsername}  ${replyMsg}`, parentCommentId, userId, comment.video_ID);
+      await submitReply(
+        `@${parentUsername}  ${replyMsg}`,
+        parentCommentId,
+        userId,
+        comment.video_ID
+      );
     } else {
       await submitReply(replyMsg, parentCommentId, userId, comment.video_ID);
     }
 
     setRepliesCount((prevCount) => prevCount + 1);
-    console.log('Submit reply:', replyMsg);
+    console.log("Submit reply:", replyMsg);
 
     // 根据视频ID获取视频的发布者信息
-    console.log('videoCreator.expo_push_token:', videoCreator.expo_push_token);
+    console.log("videoCreator.expo_push_token:", videoCreator.expo_push_token);
     // 获取上一级评论，里面包含了user_ID
     const parentComment = await databases.getDocument(
       config.databaseId, // 替换为你的数据库 ID
@@ -158,11 +184,14 @@ const CommentItem = ({
     // 通过 parentComment的user_ID获取用户信息
     const parentCommentUser = await fetchCommentUser(parentComment.user_ID);
 
-    if (parentCommentUser.expo_push_token && parentCommentUser.$id !== user?.$id) {
+    if (
+      parentCommentUser.expo_push_token &&
+      parentCommentUser.$id !== user?.$id
+    ) {
       // 发送推送通知
       sendPushNotification(
         parentCommentUser.expo_push_token,
-        t('notifications.userRepliedComment', { username: user?.username }),
+        t("notifications.userRepliedComment", { username: user?.username }),
         replyMsg,
         {
           videoId: comment.video_ID,
@@ -172,14 +201,13 @@ const CommentItem = ({
       );
     }
 
-    console.log('执行了发送视频子评论推送通知');
+    console.log("执行了发送视频子评论推送通知");
 
-    setReplyMsg('');
+    setReplyMsg("");
     setParentCommentUserId(null);
     setParentCommentId(null);
     setShowReplyModal(false);
-    setRefreshFlag(prev => !prev);
-
+    setRefreshFlag((prev) => !prev);
   }, [replyMsg, parentCommentId]);
 
   const handleClickLike = async () => {
@@ -197,9 +225,9 @@ const CommentItem = ({
       console.error("处理点赞时出错:", error);
       setLiked(liked);
       setLikeCount(likeCount);
-      Alert.alert('Failed to like comment');
+      Alert.alert("Failed to like comment");
     }
-  }
+  };
 
   if (!commentId) {
     return null;
@@ -208,7 +236,16 @@ const CommentItem = ({
   return (
     <View style={styles.commentContainer}>
       <View style={styles.header}>
-        <Image source={cmtAvatar} style={styles.avatar} />
+        <TouchableOpacity
+          onPress={() =>
+            router.navigate({
+              pathname: "view-user",
+              params: { creatorId: comment.user_ID },
+            })
+          }
+        >
+          <Image source={cmtAvatar} style={styles.avatar} />
+        </TouchableOpacity>
         <Text style={styles.username}>{cmtUsername}</Text>
       </View>
       <Text style={styles.commentText} numberOfLines={10}>
@@ -217,14 +254,14 @@ const CommentItem = ({
       <View style={styles.actions}>
         <TouchableOpacity
           onPress={handleClickLike}
-          className='w-[60] h-[40] items-center justify-center relative'
+          className="w-[60] h-[40] items-center justify-center relative"
         >
           <Image
             source={liked ? likedIcon : likeIcon}
             style={{ width: 20, height: 20 }}
           />
           {likeCount > 0 && (
-            <Text className='absolute right-0.5 top-2 text-[#333] text-base'>
+            <Text className="absolute right-0.5 top-2 text-[#333] text-base">
               {formatCommentsCounts(likeCount)}
             </Text>
           )}
@@ -235,39 +272,36 @@ const CommentItem = ({
             setParentCommentUserId(comment.user_ID); // 设置当前父评论用户 ID
             setShowReplyModal(true);
           }}
-          className='w-[60] h-[40] items-center justify-center'
+          className="w-[60] h-[40] items-center justify-center"
         >
           <Image
             source={commentIcon}
             style={{ width: 20, height: 20 }}
-            resizeMode='contain'
+            resizeMode="contain"
           />
         </TouchableOpacity>
 
         {comment.user_ID === userId && (
           <TouchableOpacity
             onPress={() => deleteComment(commentId)}
-            className='w-[60] h-[40] items-center justify-center'
+            className="w-[60] h-[40] items-center justify-center"
           >
-            <Image
-              source={deleteIcon}
-              style={{ width: 20, height: 20 }}
-            />
+            <Image source={deleteIcon} style={{ width: 20, height: 20 }} />
           </TouchableOpacity>
         )}
       </View>
       {repliesCount > 0 && (
         <TouchableOpacity
           onPress={toggleReplies}
-          className='mt-[10] ml-[36] h-10 w-28 justify-center flex-row space-x-2.5'
+          className="mt-[10] ml-[36] h-10 w-28 justify-center flex-row space-x-2.5"
         >
           <Image
             source={showReplies ? upIcon : downIcon}
             style={{ width: 20, height: 20 }}
-            resizeMode='contain'
+            resizeMode="contain"
           />
-          <Text className='text-blue-500'>
-            {`${repliesCount} ${t('replies')}`}
+          <Text className="text-blue-500">
+            {`${repliesCount} ${t("replies")}`}
           </Text>
         </TouchableOpacity>
       )}
@@ -322,35 +356,35 @@ const CommentItem = ({
 
 const styles = StyleSheet.create({
   commentContainer: {
-    paddingVertical: 10
+    paddingVertical: 10,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'start',
+    flexDirection: "row",
+    alignItems: "start",
   },
   avatar: {
     width: 25,
     height: 25,
     borderRadius: 15,
-    marginLeft: 0
+    marginLeft: 0,
   },
   username: {
     fontSize: 13,
-    fontWeight: '300',
+    fontWeight: "300",
     marginLeft: 15,
-    color: '#4F4F4F',
-    marginBottom: 0
+    color: "#4F4F4F",
+    marginBottom: 0,
   },
   commentText: {
-    color: '#333333',
+    color: "#333333",
     marginTop: 0,
     marginBottom: 5,
     marginLeft: 40,
     marginRight: 40,
-    lineHeight: 22
+    lineHeight: 22,
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 0,
     marginLeft: 20,
     gap: 20,
@@ -361,22 +395,22 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   modal: {
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     margin: 0,
   },
   modalContent: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     padding: 16,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    color: '#333333',
+    color: "#333333",
   },
 });
 

@@ -1,14 +1,21 @@
-import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useLocalSearchParams } from 'expo-router'
-import { t } from 'i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import useGetData from '../../hooks/useGetData';
-import { StatusBar } from 'expo-status-bar'
-import { config, databases } from '../../lib/appwrite';
-import { Query } from 'react-native-appwrite';
-import EmptyState from '../../components/EmptyState';
-import VideoCard from '../../components/VideoCard';
+import {
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  Image,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { t } from "i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import useGetData from "../../hooks/useGetData";
+import { StatusBar } from "expo-status-bar";
+import { config, databases } from "../../lib/appwrite";
+import EmptyState from "../../components/EmptyState";
+import VideoCard from "../../components/VideoCard";
+import backArrowIcon from "../../assets/icons/back-arrow.png";
 
 export default function UserProfile() {
   const insetTop = useSafeAreaInsets().top;
@@ -28,9 +35,8 @@ export default function UserProfile() {
       );
 
       return currentUserData;
-
     } catch (error) {
-      console.log('Error in getCurrentUser', error);
+      console.log("Error in getCurrentUser", error);
       return null;
     }
   }
@@ -49,20 +55,19 @@ export default function UserProfile() {
       .catch((error) => {
         console.log("Error in fetching user:", error);
         setUser(null);
-      })
+      });
 
     if (creatorId) {
-      fetchUserPosts(creatorId)
-        .finally(() => {
-          setLoading(false);  // 确保只有在 fetchUserPosts 完成后才更新 loading 状态
-        });
+      fetchUserPosts(creatorId).finally(() => {
+        setLoading(false); // 确保只有在 fetchUserPosts 完成后才更新 loading 状态
+      });
     } else {
       setLoading(false); // 如果没有 creatorId，也需要设置 loading 为 false
     }
-  }, [creatorId])
+  }, [creatorId]);
 
   return (
-    <View className='bg-primary h-full' style={{ marginTop: insetTop }}>
+    <View className="bg-primary h-full" style={{ marginTop: insetTop }}>
       <FlatList
         data={loading ? [] : userPostsData}
         // item 是 data 数组中的每一项
@@ -70,39 +75,50 @@ export default function UserProfile() {
         contentContainerStyle={{ paddingBottom: 44 }}
         ListHeaderComponent={() => {
           return (
-            <View className='my-6 px-4 mb-2 relative'>
-              <View className='justify-between items-center mt-10'>
-                <View
-                  className='w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center'
-                >
+            <View className="my-6 px-4 mb-2 relative">
+              <TouchableOpacity
+                onPress={() => router.back()}
+                className="w-12 h-12 justify-center items-center -ml-2"
+              >
+                <Image
+                  source={backArrowIcon}
+                  style={{ width: 25, height: 25 }}
+                />
+              </TouchableOpacity>
+
+              <View className="justify-between items-center">
+                <View className="w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center">
                   {user?.avatar && (
                     <Image
                       source={{ uri: user?.avatar }}
-                      className='w-full h-full'
-                      resizeMode='cover'
+                      className="w-full h-full"
+                      resizeMode="cover"
                     />
                   )}
                 </View>
 
-                <Text className='text-black text-xl font-psemibold mt-2.5'>{user?.username}</Text>
-                <Text className='text-[#999999] text-sm mt-1'>{'#' + user?.email.split("@")[0]}</Text>
+                <Text className="text-black text-xl font-psemibold mt-2.5">
+                  {user?.username}
+                </Text>
+                <Text className="text-[#999999] text-sm mt-1">
+                  {"#" + user?.email.split("@")[0]}
+                </Text>
               </View>
             </View>
           );
         }}
-
         ListHeaderComponentStyle={{ marginBottom: 20 }}
         // renderItem 接受一个对象参数，通常解构为 { item, index, separators }
         renderItem={({ item }) => {
-          return (
-            <VideoCard post={item} />
-          )
+          return <VideoCard post={item} />;
         }}
         ListEmptyComponent={() => {
           return loading ? (
             <View className="flex-1 justify-center items-center bg-primary">
               <ActivityIndicator size="large" color="#000" />
-              <Text className='mt-[10] text-black text-xl'>{t("Loading, please wait...")}</Text>
+              <Text className="mt-[10] text-black text-xl">
+                {t("Loading, please wait...")}
+              </Text>
             </View>
           ) : (
             <View>
@@ -112,7 +128,7 @@ export default function UserProfile() {
         }}
       />
 
-      <StatusBar style='dark' />
+      <StatusBar style="dark" />
     </View>
-  )
+  );
 }
