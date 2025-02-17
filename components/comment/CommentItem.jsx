@@ -23,6 +23,7 @@ import { sendLikedStatus } from "../../services/commentService";
 import { formatCommentsCounts } from "../../utils/numberFormatter";
 import { sendPushNotification } from "../../functions/notifications";
 import { router } from "expo-router";
+import { useAdminStore } from "../../store/adminStore";
 
 const CommentItem = ({
   comment,
@@ -54,6 +55,8 @@ const CommentItem = ({
   const [replyMsg, setReplyMsg] = useState("");
   const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
   const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
+  const adminList = useAdminStore((state) => state.adminList);
+  const admin = adminList?.includes(user?.email);
   const inputRef = useRef(null);
 
   const MAX_LEVEL = 1;
@@ -281,7 +284,7 @@ const CommentItem = ({
           />
         </TouchableOpacity>
 
-        {comment.user_ID === userId && (
+        {(comment.user_ID === userId || admin === true) && (
           <TouchableOpacity
             onPress={() => deleteComment(commentId)}
             className="w-[60] h-[40] items-center justify-center"

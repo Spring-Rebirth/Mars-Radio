@@ -1,25 +1,27 @@
-import 'react-native-url-polyfill/auto';
-import React, { useEffect, useState, useRef } from 'react';
+import "react-native-url-polyfill/auto";
+import React, { useEffect, useState, useRef } from "react";
 import { router, SplashScreen } from "expo-router";
-import { useFonts } from 'expo-font';
-import { GlobalProvider } from '../context/GlobalProvider';
-import * as Updates from 'expo-updates';
-import AppContent from '../context/AppContent';
-import { I18nextProvider } from 'react-i18next';
-import i18n from '../i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text, Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
-import { RootSiblingParent } from 'react-native-root-siblings';
-import Toast from 'react-native-root-toast';
-import { useTranslation } from 'react-i18next';
-import useNotificationStore from '../store/notificationStore';
-import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
-import { tokenCache } from '../lib/clerk/auth'
+import { useFonts } from "expo-font";
+import { GlobalProvider } from "../context/GlobalProvider";
+import * as Updates from "expo-updates";
+import AppContent from "../context/AppContent";
+import { I18nextProvider } from "react-i18next";
+import i18n from "../i18n";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, Text, Platform } from "react-native";
+import * as Notifications from "expo-notifications";
+import { RootSiblingParent } from "react-native-root-siblings";
+import Toast from "react-native-root-toast";
+import { useTranslation } from "react-i18next";
+import useNotificationStore from "../store/notificationStore";
+import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { tokenCache } from "../lib/clerk/auth";
+import { fetchAdminData } from "../lib/appwrite";
+import { useAdminStore } from "../store/adminStore";
 
 const originalWarn = console.warn;
 console.warn = (message) => {
-  if (message.includes('Clerk')) {
+  if (message.includes("Clerk")) {
     return;
   }
   originalWarn(message);
@@ -29,7 +31,7 @@ const clerkPublishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!clerkPublishableKey) {
   throw new Error(
-    'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
+    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env"
   );
 }
 
@@ -49,6 +51,7 @@ export default function RootLayout() {
   const { setChannels, setNotification } = useNotificationStore();
   const notificationListener = useRef();
   const responseListener = useRef();
+  const setAdminList = useAdminStore((state) => state.setAdminList);
   const { t } = useTranslation();
 
   // 加载字体
@@ -70,7 +73,7 @@ export default function RootLayout() {
         // 确保字体已加载
         if (fontsLoaded && !fontsError) {
           // 加载语言设置
-          const lang = await AsyncStorage.getItem('language');
+          const lang = await AsyncStorage.getItem("language");
           if (lang) {
             await i18n.changeLanguage(lang);
           }
@@ -80,7 +83,7 @@ export default function RootLayout() {
           if (update.isAvailable) {
             await Updates.fetchUpdateAsync();
             // 显示 Toast 提示
-            Toast.show(t('OTA update loaded, restarting soon.'), {
+            Toast.show(t("OTA update loaded, restarting soon."), {
               duration: 2500,
               position: Toast.positions.CENTER,
               shadow: true,
@@ -89,7 +92,7 @@ export default function RootLayout() {
               delay: 0,
             });
             // 等待N秒后重启
-            await new Promise(resolve => setTimeout(resolve, 2500));
+            await new Promise((resolve) => setTimeout(resolve, 2500));
             await Updates.reloadAsync();
           }
         }
@@ -103,11 +106,9 @@ export default function RootLayout() {
       } finally {
         setIsReady(true);
       }
-
     }
 
     prepare();
-
   }, [fontsLoaded, fontsError]);
 
   useEffect(() => {
@@ -119,38 +120,63 @@ export default function RootLayout() {
   // 如果字体加载出错，显示字体加载错误信息
   if (fontsError) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 16, color: 'red' }}>字体加载错误: {fontsError.message}</Text>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontSize: 16, color: "red" }}>
+          字体加载错误: {fontsError.message}
+        </Text>
       </View>
     );
   }
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      Notifications.getNotificationChannelsAsync()
-        .then(value => setChannels(value ?? [])); // 使用 Zustand 的 setChannels
+    if (Platform.OS === "android") {
+      Notifications.getNotificationChannelsAsync().then((value) =>
+        setChannels(value ?? [])
+      ); // 使用 Zustand 的 setChannels
     }
 
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification); // 使用 Zustand 的 setNotification
-    });
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification); // 使用 Zustand 的 setNotification
+      });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-      setTimeout(() => {
-        router.push({
-          pathname: '/notifications/notice-screen',
-          params: { data: JSON.stringify(response.notification.request.content) },
-        });
-      }, 500); // 延迟 500 毫秒后跳转
-    });
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+        setTimeout(() => {
+          router.push({
+            pathname: "/notifications/notice-screen",
+            params: {
+              data: JSON.stringify(response.notification.request.content),
+            },
+          });
+        }, 500); // 延迟 500 毫秒后跳转
+      });
 
     return () => {
       notificationListener.current &&
-        Notifications.removeNotificationSubscription(notificationListener.current);
+        Notifications.removeNotificationSubscription(
+          notificationListener.current
+        );
       responseListener.current &&
         Notifications.removeNotificationSubscription(responseListener.current);
     };
+  }, []);
+
+  useEffect(() => {
+    const addAdminData = async () => {
+      await fetchAdminData()
+        .then((data) => {
+          const adminArray = data.map((doc) => doc.account);
+          console.log("adminArray:", adminArray);
+          setAdminList(adminArray);
+        })
+        .catch((error) => {
+          console.error("Error fetching admin data:", error);
+        });
+    };
+
+    addAdminData();
   }, []);
 
   // 如果应用未准备好，保持 SplashScreen 可见
