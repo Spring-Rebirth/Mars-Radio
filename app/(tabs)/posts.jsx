@@ -10,10 +10,12 @@ import { useState, useEffect } from "react";
 import PostItem from "../../components/post/PostItem";
 import { useRouter } from "expo-router";
 import { mockPosts } from "../../constants/posts";
+import { useTranslation } from "react-i18next";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // 模拟加载数据
@@ -24,7 +26,7 @@ export default function Posts() {
     <SafeAreaView className="flex-1 bg-[#fafafa]">
       <View className="p-5 bg-white border-b border-gray-300 mb-3">
         <Text className="text-2xl font-bold text-gray-800 text-center">
-          精彩帖子
+          {t("Featured Posts")}
         </Text>
       </View>
       <FlatList
