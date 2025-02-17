@@ -13,7 +13,7 @@ export function usePickFile() {
 
         // 选择图片
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: ImagePicker.MediaType,
             allowsEditing: false,
             quality: 1,
         });

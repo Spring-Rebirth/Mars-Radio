@@ -1,23 +1,73 @@
-import React from "react";
-import { View, Text, TextInput, Pressable } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
 import { createPost } from "../../services/postsService"
+import { useGlobalContext } from "../../context/GlobalProvider";
+import { usePickFile } from "../../hooks/usePickFile";
+import * as FileSystem from 'expo-file-system';
+import mime from 'mime';
 
 export default function CreatePost() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { user } = useGlobalContext();
+  const [form, setForm] = React.useState({
+    title: "",
+    content: "",
+    image: null,
+    author: user?.$id,
+  });
+  const [imageFile, setImageFile] = useState<object | null>(null);
 
   const publishPost = async () => {
     try {
-      await createPost(
-        "New Post",
-        "This is a new post",
-        null
-      );
+      await createPost(form);
       router.navigate("posts");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const { pickImage } = usePickFile();
+
+  const handlePickImage = async () => {
+    try {
+      const result = await pickImage();
+
+      if (!result) {
+        // 用户可能取消了选择
+        return;
+      }
+
+      console.log('handlePickImage result:', result);
+      const { uri, name } = result;
+      const fileInfo = await FileSystem.getInfoAsync(uri);
+      const fileSize = fileInfo.exists && 'size' in fileInfo ? fileInfo.size : 0;
+      let mimeType: any;
+      if (fileInfo.exists) {
+        mimeType = mime.getType(uri);
+        console.log(`File MIME type: ${mimeType}`);
+
+      }
+      const fileModel = { uri, name, type: mimeType, size: fileSize }
+
+      setImageFile(fileModel);
+
+    } catch (err) {
+      console.log('Image selection failed:', err);
+      Alert.alert('Error', 'There was an error selecting the image');
+    }
+  };
+
+  const handleUploadImages = async () => {
+    try {
+      await handlePickImage();
+      if (imageFile) {
+        setForm({ ...form, image: imageFile });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -38,6 +88,7 @@ export default function CreatePost() {
         <TextInput
           placeholder={t("Enter title")}
           className="border border-gray-300 rounded p-2"
+          onChangeText={(text) => setForm({ ...form, title: text })}
         />
       </View>
       <View className="mb-4">
@@ -45,13 +96,16 @@ export default function CreatePost() {
         <TextInput
           placeholder={t("Enter content")}
           className="border border-gray-300 rounded p-2 h-40 text-top"
+          onChangeText={(text) => setForm({ ...form, content: text })}
           multiline
         />
       </View>
       {/* 新增上传图片表单项 */}
       <View className="mb-4">
         <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
-        <Pressable className="border border-dashed border-gray-300 rounded p-4 justify-center items-center">
+        <Pressable onPress={() => { handleUploadImages() }}
+          className="border border-dashed border-gray-300 rounded p-4 justify-center items-center"
+        >
           <Ionicons name="image-outline" size={24} color="gray" />
           <Text className="text-gray-500 mt-2">{t("Click to select image")}</Text>
         </Pressable>

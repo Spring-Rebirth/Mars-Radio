@@ -31,13 +31,14 @@ const fetchPostData = async (postId) => {
   }
 }
 
-const createPost = async (title, content, image) => {
+const createPost = async ({ title, content, image, author }) => {
   try {
     const data = {
       // 仅当参数存在时才添加
       ...(title != null && { title }),
       ...(content != null && { content }),
-      ...(image != null && { image })
+      ...(image != null && { image }),
+      author
     };
     const result = await databases.createDocument(
       config.databaseId,
