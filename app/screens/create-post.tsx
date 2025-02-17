@@ -2,10 +2,12 @@ import React from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { Ionicons } from '@expo/vector-icons'; // 新增图标导入
+import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from "react-i18next";
 
 export default function CreatePost() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className="flex-1 bg-white px-5 pt-5 pb-5">
@@ -14,37 +16,37 @@ export default function CreatePost() {
         <Pressable onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </Pressable>
-        <Text className="text-2xl font-bold ml-3">创建帖子</Text>
+        <Text className="text-2xl font-bold ml-3">{t("Create Post")}</Text>
       </View>
       {/* 表单区域 */}
       <View className="mb-4">
-        <Text className="mb-1 text-lg">标题 *</Text>
+        <Text className="mb-1 text-lg">{t("Title")} *</Text>
         <TextInput
-          placeholder="请输入标题"
+          placeholder={t("Enter title")}
           className="border border-gray-300 rounded p-2"
         />
       </View>
       <View className="mb-4">
-        <Text className="mb-1 text-lg">内容</Text>
+        <Text className="mb-1 text-lg">{t("Content")}</Text>
         <TextInput
-          placeholder="请输入内容"
+          placeholder={t("Enter content")}
           className="border border-gray-300 rounded p-2 h-40 text-top"
           multiline
         />
       </View>
       {/* 新增上传图片表单项 */}
       <View className="mb-4">
-        <Text className="mb-1 text-lg">上传图片</Text>
+        <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
         <Pressable className="border border-dashed border-gray-300 rounded p-4 justify-center items-center">
           <Ionicons name="image-outline" size={24} color="gray" />
-          <Text className="text-gray-500 mt-2">点击选择图片</Text>
+          <Text className="text-gray-500 mt-2">{t("Click to select image")}</Text>
         </Pressable>
       </View>
       <Pressable
         onPress={() => {/* 发布操作，数据代码先不用写 */ }}
         className="bg-blue-500 p-4 rounded justify-center items-center"
       >
-        <Text className="text-white font-bold">发布</Text>
+        <Text className="text-white font-bold">{t("Publish")}</Text>
       </Pressable>
     </SafeAreaView>
   );

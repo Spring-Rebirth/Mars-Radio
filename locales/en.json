@@ -91,5 +91,12 @@
     "ago": "ago",
     "notifications": {
         "userRepliedComment": "{username} replied to your comment"
-    }
+    },
+    "Create Post": "Create Post",
+    "Enter title": "Enter title",
+    "Content": "Content",
+    "Enter content": "Enter content",
+    "Upload Image": "Upload Image",
+    "Click to select image": "Click to select image",
+    "Publish": "Publish"
 }

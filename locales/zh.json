@@ -99,5 +99,12 @@
     "Login to continue": "登录以继续",
     "notifications": {
         "userRepliedComment": "{username} 回复了你的评论"
-    }
+    },
+    "Create Post": "创建帖子",
+    "Enter title": "请输入标题",
+    "Content": "内容",
+    "Enter content": "请输入内容",
+    "Upload Image": "上传图片",
+    "Click to select image": "点击选择图片",
+    "Publish": "发布"
 }
