@@ -1,7 +1,7 @@
 import { databases, config } from '../lib/appwrite';
 import { ID, Query } from 'react-native-appwrite';
 
-export async function fetchCommentsData(videoId) {
+export const fetchCommentsData = async (videoId) => {
   try {
     const result = await databases.listDocuments(
       config.databaseId,
