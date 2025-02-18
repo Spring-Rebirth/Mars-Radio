@@ -11,6 +11,7 @@ import PostItem from "../../components/post/PostItem";
 import { useRouter } from "expo-router";
 import { mockPosts } from "../../constants/posts";
 import { useTranslation } from "react-i18next";
+import { fetchAllPostsData } from "../../services/postsService";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -18,8 +19,13 @@ export default function Posts() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    // 模拟加载数据
-    setPosts(mockPosts);
+    const getAllPosts = async () => {
+      const allPosts = await fetchAllPostsData();
+      console.log("allPosts:", JSON.stringify(allPosts, null, 2));
+      setPosts(allPosts.documents);
+    };
+
+    getAllPosts();
   }, []);
 
   return (
@@ -31,7 +37,7 @@ export default function Posts() {
       </View>
       <FlatList
         data={posts}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
           <Pressable
             onPress={() => {

@@ -18,6 +18,19 @@ export const databases = new Databases(client);
 const avatars = new Avatars(client);
 const storage = new Storage(client);
 
+const fetchAllPostsData = async () => {
+  try {
+    const posts = await databases.listDocuments(
+      config.databaseId,
+      config.postColletionId
+    );
+    return posts;
+  } catch (error) {
+    console.error('Error fetching all posts:', error);
+  }
+
+}
+
 const fetchPostData = async (postId) => {
   try {
     const post = await databases.getDocument(
@@ -73,4 +86,4 @@ async function fetchFileUrl(fileId) {
   }
 }
 
-export { fetchPostData, createPost, createFileForPost, fetchFileUrl };
+export { fetchAllPostsData, fetchPostData, createPost, createFileForPost, fetchFileUrl };
