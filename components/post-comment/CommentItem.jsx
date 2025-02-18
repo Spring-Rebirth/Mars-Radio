@@ -89,32 +89,6 @@ const CommentItem = ({
     }
   }, [showReplyModal]);
 
-  useEffect(() => {
-    // 异步获取评论点赞状态
-    const fetchLikedStatus = async () => {
-      try {
-        // 获取评论文档
-        const comment = await databases.getDocument(
-          config.databaseId, // 替换为你的数据库 ID
-          config.commentColletionId, // 替换为你的评论集合 ID
-          commentId
-        );
-        setLikeCount(comment?.liked_users?.length || 0); // 设置点赞数
-        // 检查用户是否已点赞
-        if (comment.liked_users && comment.liked_users.includes(user.$id)) {
-          setLiked(true); // 设置为已点赞
-        } else {
-          setLiked(false); // 设置为未点赞
-        }
-      } catch (error) {
-        console.error("获取评论点赞状态时出错:", error);
-        setLiked(false); // 获取出错时默认未点赞
-      }
-    };
-
-    fetchLikedStatus();
-  }, [commentId, user.$id]); // 依赖项: 当 commentId 或 userId 变化时重新获取状态
-
   // 切换显示/隐藏子评论
   const toggleReplies = useCallback(async () => {
     if (!showReplies) {
@@ -220,9 +194,6 @@ const CommentItem = ({
       // 更新本地状态
       setLiked(newLikedStatus);
       setLikeCount(newLikeCount);
-
-      // 调用 sendLikedStatus 更新数据库中的点赞状态
-      await sendLikedStatus(commentId, user.$id, newLikedStatus);
     } catch (error) {
       console.error("处理点赞时出错:", error);
       setLiked(liked);
