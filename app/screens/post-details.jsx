@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { fetchUserData } from "../../services/userService";
 import CommentInputBox from "../../components/post-comment/CommentInputBox";
 import CommentList from "../../components/post-comment/CommentList";
+import { fetchCommentsOfPost } from "../../services/postsService";
 
 export default function PostDetails() {
   const { post } = useLocalSearchParams();
@@ -27,7 +28,12 @@ export default function PostDetails() {
       setPostCreator(postCreator);
     };
 
-    getPostCreatorInfo();
+    const getCommentsOfPost = async () => {
+      const comments = await fetchCommentsOfPost(parsedPost.$id);
+      setCommentsDoc(comments.documents);
+    };
+
+    Promise.all([getPostCreatorInfo(), getCommentsOfPost()]);
   }, []);
 
   const onCommentSubmitted = (newComment) => {
@@ -73,7 +79,7 @@ export default function PostDetails() {
           post_id={parsedPost.$id}
         />
         {/* 评论列表 */}
-        <CommentList />
+        <CommentList commentsDoc={commentsDoc} />
       </View>
     </SafeAreaView>
   );

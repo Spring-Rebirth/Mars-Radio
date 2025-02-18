@@ -16,10 +16,10 @@ import deleteIcon from "../../assets/menu/delete.png";
 import ReactNativeModal from "react-native-modal";
 import { useTranslation } from "react-i18next";
 import { databases } from "../../lib/appwrite";
-import { config } from "../../lib/appwrite";
+import { config } from "../../services/postsService";
 import upIcon from "../../assets/icons/arrow-up.png";
 import downIcon from "../../assets/icons/arrow-down.png";
-import { sendLikedStatus } from "../../services/commentService";
+import { sendLikedStatus } from "../../services/postsService";
 import { formatCommentsCounts } from "../../utils/numberFormatter";
 import { sendPushNotification } from "../../functions/notifications";
 import { router } from "expo-router";
@@ -39,6 +39,7 @@ const CommentItem = ({
   user,
   rootCommentId = comment.$id,
 }) => {
+  console.log("commentItem comment:", JSON.stringify(comment, null, 2));
   const [replies, setReplies] = useState([]);
   const [commentId, setCommentId] = useState(comment.$id);
   const [repliesCount, setRepliesCount] = useState(0);
@@ -65,7 +66,7 @@ const CommentItem = ({
   // 加载用户信息
   useEffect(() => {
     const loadUser = async () => {
-      const user = await fetchCommentUser(comment.user_ID);
+      const { creator: user } = comment;
       setCmtUsername(user.username);
       setCmtAvatar({ uri: user.avatar });
     };
@@ -96,7 +97,7 @@ const CommentItem = ({
         // 获取评论文档
         const comment = await databases.getDocument(
           config.databaseId, // 替换为你的数据库 ID
-          config.commentsCollectionId, // 替换为你的评论集合 ID
+          config.commentColletionId, // 替换为你的评论集合 ID
           commentId
         );
         setLikeCount(comment?.liked_users?.length || 0); // 设置点赞数
