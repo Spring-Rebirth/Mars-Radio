@@ -171,7 +171,7 @@ const CommentItem = ({
         replyMsg,
         {
           videoId: comment.video_ID,
-          userId,
+          userId: user.$id,
           commentId: rootCommentId,
         }
       );
@@ -294,8 +294,6 @@ const CommentItem = ({
                 fetchCommentUser={fetchCommentUser}
                 submitReply={submitReply}
                 onReplyDeleted={handleReplyDeleted}
-                videoCreator={videoCreator}
-                user={user}
                 rootCommentId={rootCommentId}
               />
             ))
