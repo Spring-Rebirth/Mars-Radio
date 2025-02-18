@@ -213,7 +213,7 @@ const CommentItem = ({
           onPress={() =>
             router.navigate({
               pathname: "view-user",
-              params: { creatorId: comment.user_ID },
+              params: { creatorId: comment.creator.$id },
             })
           }
         >
