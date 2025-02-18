@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, Alert, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { createPost, fetchFileUrl } from "../../services/postsService"
+import { createPost, fetchFileUrl } from "../../services/postsService";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { usePickFile } from "../../hooks/usePickFile";
-import * as FileSystem from 'expo-file-system';
-import mime from 'mime';
+import * as FileSystem from "expo-file-system";
+import mime from "mime";
 import { useUploadFileForPost } from "../../hooks/useUploadFile";
 
 export default function CreatePost() {
@@ -18,22 +18,9 @@ export default function CreatePost() {
   const [form, setForm] = React.useState({
     title: "",
     content: "",
-    image: null,
     author: user?.$id,
   });
-  const [imageFile, setImageFile] = useState<any | null>(null);
-
-  const publishPost = async () => {
-    try {
-      await handleUploadImages();
-      console.log('图片上传成功');
-      await createPost(form);
-      console.log('发布成功');
-      router.navigate("posts");
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  const [imageFile, setImageFile] = useState(null);
 
   const { pickImage } = usePickFile();
 
@@ -46,44 +33,53 @@ export default function CreatePost() {
         return;
       }
 
-      console.log('handlePickImage result:', result);
+      console.log("handlePickImage result:", result);
       const { uri, name } = result;
       const fileInfo = await FileSystem.getInfoAsync(uri);
-      const fileSize = fileInfo.exists && 'size' in fileInfo ? fileInfo.size : 0;
-      let mimeType: any;
+      const fileSize =
+        fileInfo.exists && "size" in fileInfo ? fileInfo.size : 0;
+      let mimeType;
       if (fileInfo.exists) {
         mimeType = mime.getType(uri);
         console.log(`File MIME type: ${mimeType}`);
-
       }
-      const fileModel = { uri, name, type: mimeType, size: fileSize }
+      const fileModel = { uri, name, type: mimeType, size: fileSize };
 
       setImageFile(fileModel);
-
     } catch (err) {
-      console.log('Image selection failed:', err);
-      Alert.alert('Error', 'There was an error selecting the image');
+      console.log("Image selection failed:", err);
+      Alert.alert("Error", "There was an error selecting the image");
     }
   };
 
-  const handleUploadImages = async () => {
+  const handlePublishPost = async () => {
     try {
       if (imageFile) {
         const imageUpload = await useUploadFileForPost(imageFile);
         console.log(`imageUpload: ${imageUpload}`);
         if (!imageUpload) {
-          throw new Error('Image upload failed');
+          throw new Error("Image upload failed");
         }
         const { fileId: image_ID } = imageUpload;
         console.log(`image_ID: ${image_ID}`);
-        const StorageImageUrl = await fetchFileUrl(image_ID);
-        console.log(`StorageImageUrl: ${StorageImageUrl}`);
-        setForm({ ...form, image: StorageImageUrl });
+        const storageImageUrl = await fetchFileUrl(image_ID);
+        console.log(`storageImageUrl: ${storageImageUrl}`);
+
+        const fileModel = {
+          title: form.title,
+          content: form.content,
+          image: storageImageUrl,
+          author: form.author,
+        };
+
+        await createPost(fileModel);
+        console.log("发布成功");
+        router.navigate("posts");
       }
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white px-5 pt-5 pb-5">
@@ -115,13 +111,18 @@ export default function CreatePost() {
       {/* 新增上传图片表单项 */}
       <View className="mb-4">
         <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
-        <Pressable onPress={() => { handlePickImage() }}
+        <Pressable
+          onPress={() => {
+            handlePickImage();
+          }}
           className="border border-dashed border-gray-300 rounded p-4 justify-center items-center"
         >
           {!imageFile?.uri ? (
             <>
               <Ionicons name="image-outline" size={24} color="gray" />
-              <Text className="text-gray-500 mt-2">{t("Click to select image")}</Text>
+              <Text className="text-gray-500 mt-2">
+                {t("Click to select image")}
+              </Text>
             </>
           ) : (
             <Image
@@ -130,11 +131,12 @@ export default function CreatePost() {
               resizeMode="contain"
             />
           )}
-
         </Pressable>
       </View>
       <Pressable
-        onPress={() => { publishPost() }}
+        onPress={() => {
+          handlePublishPost();
+        }}
         className="bg-blue-500 p-4 rounded justify-center items-center"
       >
         <Text className="text-white font-bold">{t("Publish")}</Text>
