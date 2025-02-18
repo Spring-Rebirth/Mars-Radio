@@ -6,12 +6,13 @@ import {
   FlatList,
   Pressable,
 } from "react-native";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function PostDetails() {
-  const { params } = useRoute();
-  const { post } = params || {};
-  const navigation = useNavigation();
+  const { post } = useLocalSearchParams();
+  const parsedPost = post ? JSON.parse(post) : null; // 解析为对象
+
+  console.log("Parsed post:", parsedPost);
 
   // 模拟评论数据
   const comments = [
@@ -22,7 +23,7 @@ export default function PostDetails() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* 顶部返回按钮 */}
-      <Pressable onPress={() => navigation.goBack()} className="p-4">
+      <Pressable onPress={() => router.back()} className="p-4">
         <Image
           source={require("../../assets/icons/back-arrow.png")}
           className="w-6 h-6"
@@ -31,7 +32,7 @@ export default function PostDetails() {
       {/* 帖子详情 */}
       <View className="p-5 pt-0 border-b border-gray-300">
         <Image
-          source={{ uri: "https://picsum.photos/200/300" }}
+          source={{ uri: parsedPost.image }}
           className="h-44 w-full mx-auto"
           resizeMode="contain"
         />

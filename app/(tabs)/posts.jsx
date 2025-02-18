@@ -8,13 +8,12 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import PostItem from "../../components/post/PostItem";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { fetchAllPostsData } from "../../services/postsService";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
-  const router = useRouter();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -42,7 +41,7 @@ export default function Posts() {
             onPress={() => {
               router.push({
                 pathname: "screens/post-details",
-                params: { post: item },
+                params: { post: JSON.stringify(item) },
               });
             }}
           >
