@@ -39,7 +39,7 @@ export default function PostDetails() {
     };
 
     Promise.all([getPostCreatorInfo(), getCommentsOfPost()]);
-  }, []);
+  }, [refreshFlag]);
 
   const onCommentSubmitted = (newComment) => {
     setCommentsDoc((prevComments) => [newComment, ...prevComments]);
