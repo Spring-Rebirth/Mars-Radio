@@ -52,7 +52,7 @@ export default function PostDetails() {
           source={{ uri: postCreator?.avatar }}
           className="w-6 h-6 rounded-full ml-2"
         />
-        <Text className="ml-2">{postCreator.username}</Text>
+        <Text className="ml-2">{postCreator?.username}</Text>
       </View>
       {/* 帖子详情 */}
       <View className="p-5 pt-0 border-b border-gray-300">
