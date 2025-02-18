@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-export default function PostItem({ title, content, author, $createdAt }) {
+export default function PostItem({ title, content, author_name, $createdAt }) {
   return (
     <View className="bg-white rounded-xl p-5 mb-5 border border-gray-300 shadow">
       <Text className="text-xl font-extrabold mb-2.5 text-gray-900">
@@ -15,7 +15,7 @@ export default function PostItem({ title, content, author, $createdAt }) {
         {content}
       </Text>
       <View className="flex-row justify-between">
-        <Text className="text-sm text-gray-500">{author}</Text>
+        <Text className="text-sm text-gray-500">{author_name}</Text>
         <Text className="text-sm text-gray-500">
           {$createdAt.split("T")[0]}
         </Text>

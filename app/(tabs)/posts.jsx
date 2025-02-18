@@ -9,7 +9,6 @@ import {
 import { useState, useEffect } from "react";
 import PostItem from "../../components/post/PostItem";
 import { useRouter } from "expo-router";
-import { mockPosts } from "../../constants/posts";
 import { useTranslation } from "react-i18next";
 import { fetchAllPostsData } from "../../services/postsService";
 

@@ -19,6 +19,7 @@ export default function CreatePost() {
     title: "",
     content: "",
     author: user?.$id,
+    author_name: user?.username,
   });
   const [imageFile, setImageFile] = useState(null);
 
@@ -65,12 +66,7 @@ export default function CreatePost() {
         const storageImageUrl = await fetchFileUrl(image_ID);
         console.log(`storageImageUrl: ${storageImageUrl}`);
 
-        const fileModel = {
-          title: form.title,
-          content: form.content,
-          image: storageImageUrl,
-          author: form.author,
-        };
+        const fileModel = { ...form, image: storageImageUrl };
 
         await createPost(fileModel);
         console.log("发布成功");
