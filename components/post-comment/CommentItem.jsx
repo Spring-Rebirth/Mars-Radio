@@ -222,7 +222,7 @@ const CommentItem = ({
       setLikeCount(newLikeCount);
 
       // 调用 sendLikedStatus 更新数据库中的点赞状态
-      await sendLikedStatus(commentId, userId, newLikedStatus);
+      await sendLikedStatus(commentId, user.$id, newLikedStatus);
     } catch (error) {
       console.error("处理点赞时出错:", error);
       setLiked(liked);

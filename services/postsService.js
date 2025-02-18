@@ -133,7 +133,7 @@ export const sendLikedStatus = async (commentId, userId, isLiked) => {
         const updatedLikedUsers = likedUsers.filter(id => id !== userId); // 移除用户 ID
         await databases.updateDocument(
           config.databaseId, // 替换为你的数据库 ID
-          config.commentsCollectionId, // 替换为你的评论集合 ID
+          config.commentColletionId, // 替换为你的评论集合 ID
           commentId,
           {
             liked_users: updatedLikedUsers, // 更新数组
