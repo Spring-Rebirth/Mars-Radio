@@ -9,10 +9,14 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { fetchUserData } from "../../services/userService";
 import CommentInputBox from "../../components/post-comment/CommentInputBox";
 import CommentList from "../../components/post-comment/CommentList";
-import { fetchCommentsOfPost } from "../../services/postsService";
+import {
+  fetchCommentsOfPost,
+  fetchReplies,
+  submitReply,
+} from "../../services/postsService";
+import { fetchUserData } from "../../services/userService";
 
 export default function PostDetails() {
   const { post } = useLocalSearchParams();
@@ -20,6 +24,7 @@ export default function PostDetails() {
   const { t } = useTranslation();
   const [commentsDoc, setCommentsDoc] = useState([]);
   const [postCreator, setPostCreator] = useState(null);
+  const [refreshFlag, setRefreshFlag] = useState(false);
 
   // 获取帖子的用户信息
   useEffect(() => {
@@ -79,7 +84,13 @@ export default function PostDetails() {
           post_id={parsedPost.$id}
         />
         {/* 评论列表 */}
-        <CommentList commentsDoc={commentsDoc} />
+        <CommentList
+          commentsDoc={commentsDoc}
+          setRefreshFlag={setRefreshFlag}
+          fetchCommentUser={fetchUserData}
+          fetchReplies={fetchReplies}
+          submitReply={submitReply}
+        />
       </View>
     </SafeAreaView>
   );

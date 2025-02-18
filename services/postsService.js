@@ -149,6 +149,41 @@ export const sendLikedStatus = async (commentId, userId, isLiked) => {
   }
 };
 
+export const fetchReplies = async (parentCommentId) => {
+  try {
+    const replies = await databases.listDocuments(
+      config.databaseId,
+      config.commentColletionId,
+      [
+        Query.equal("parent_comment_ID", parentCommentId)
+      ]
+    );
+    return replies.documents; // 返回子评论数组
+  } catch (error) {
+    console.error("Failed to fetch replies:", error);
+    return [];
+  }
+};
+
+export const submitReply = async (content, parentCommentId, userId, post_id) => {
+  try {
+    await databases.createDocument(
+      config.databaseId,
+      config.commentColletionId,
+      ID.unique(),
+      {
+        content: content,
+        parent_comment_ID: parentCommentId,
+        creator: userId,
+        post_id
+      }
+    );
+    console.log('Reply submitted successfully');
+  } catch (error) {
+    console.error('Failed to submit reply:', error);
+  }
+};
+
 
 export {
   fetchAllPostsData,

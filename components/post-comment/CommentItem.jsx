@@ -24,19 +24,17 @@ import { formatCommentsCounts } from "../../utils/numberFormatter";
 import { sendPushNotification } from "../../functions/notifications";
 import { router } from "expo-router";
 import { useAdminStore } from "../../store/adminStore";
+import { fetchCommentUsername } from "../../services/commentService";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const CommentItem = ({
   comment,
   level = 1,
   fetchReplies,
   setRefreshFlag,
-  fetchUsername,
-  userId,
   fetchCommentUser,
   submitReply,
   onReplyDeleted,
-  videoCreator,
-  user,
   rootCommentId = comment.$id,
 }) => {
   console.log("commentItem comment:", JSON.stringify(comment, null, 2));
@@ -57,6 +55,7 @@ const CommentItem = ({
   const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
   const [parentCommentUserId, setParentCommentUserId] = useState(null); // 当前回复的父评论用户 ID
   const adminList = useAdminStore((state) => state.adminList);
+  const { user } = useGlobalContext();
   const admin = adminList?.includes(user?.email);
   const inputRef = useRef(null);
 
@@ -71,7 +70,7 @@ const CommentItem = ({
       setCmtAvatar({ uri: user.avatar });
     };
     loadUser();
-  }, [comment.user_ID]);
+  }, [comment.creator.$id]);
 
   useEffect(() => {
     const loadRepliesCount = async () => {
@@ -102,7 +101,7 @@ const CommentItem = ({
         );
         setLikeCount(comment?.liked_users?.length || 0); // 设置点赞数
         // 检查用户是否已点赞
-        if (comment.liked_users && comment.liked_users.includes(userId)) {
+        if (comment.liked_users && comment.liked_users.includes(user.$id)) {
           setLiked(true); // 设置为已点赞
         } else {
           setLiked(false); // 设置为未点赞
@@ -114,7 +113,7 @@ const CommentItem = ({
     };
 
     fetchLikedStatus();
-  }, [commentId, userId]); // 依赖项: 当 commentId 或 userId 变化时重新获取状态
+  }, [commentId, user.$id]); // 依赖项: 当 commentId 或 userId 变化时重新获取状态
 
   // 切换显示/隐藏子评论
   const toggleReplies = useCallback(async () => {
@@ -135,13 +134,12 @@ const CommentItem = ({
     try {
       const result = await databases.deleteDocument(
         config.databaseId,
-        config.commentsCollectionId,
+        config.commentColletionId,
         commentId
       );
       if (result) {
         Alert.alert("Delete Success");
         setCommentId("");
-        // setRefreshFlag(prev => !prev);
         if (level !== 1) {
           // 如果是子评论，通知父组件删除子评论
           onReplyDeleted();
@@ -159,7 +157,7 @@ const CommentItem = ({
     // 调用提交回复的函数，传入回复内容和父评论 ID   // 获取回复的用户名
     if (!replyMsg.trim()) return;
 
-    const parentUsername = await fetchUsername(parentCommentUserId);
+    const parentUsername = await fetchCommentUsername(parentCommentUserId);
 
     // 如果评论层级大于MAX_LEVEL, 在回复内容前加上"@父评论用户名"
     if (level > MAX_LEVEL) {
@@ -167,7 +165,7 @@ const CommentItem = ({
         `@${parentUsername}  ${replyMsg}`,
         parentCommentId,
         userId,
-        comment.video_ID
+        comment.post_id
       );
     } else {
       await submitReply(replyMsg, parentCommentId, userId, comment.video_ID);
@@ -181,7 +179,7 @@ const CommentItem = ({
     // 获取上一级评论，里面包含了user_ID
     const parentComment = await databases.getDocument(
       config.databaseId, // 替换为你的数据库 ID
-      config.commentsCollectionId, // 替换为你的评论集合 ID
+      config.commentColletionId, // 替换为你的评论集合 ID
       parentCommentId
     );
 
@@ -285,7 +283,7 @@ const CommentItem = ({
           />
         </TouchableOpacity>
 
-        {(comment.user_ID === userId || admin === true) && (
+        {(comment.creator.$id === user.$id || admin === true) && (
           <TouchableOpacity
             onPress={() => deleteComment(commentId)}
             className="w-[60] h-[40] items-center justify-center"
