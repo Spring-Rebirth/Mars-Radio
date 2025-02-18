@@ -175,7 +175,7 @@ export const submitReply = async (content, parentCommentId, userId, post_id) => 
         content: content,
         parent_comment_ID: parentCommentId,
         creator: userId,
-        post_id
+        post_id: post_id
       }
     );
     console.log('Reply submitted successfully');

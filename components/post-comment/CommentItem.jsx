@@ -142,7 +142,7 @@ const CommentItem = ({
         comment.post_id
       );
     } else {
-      await submitReply(replyMsg, parentCommentId, user.$id, comment.video_ID);
+      await submitReply(replyMsg, parentCommentId, user.$id, comment.post_id);
     }
 
     setRepliesCount((prevCount) => prevCount + 1);
