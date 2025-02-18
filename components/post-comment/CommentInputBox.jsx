@@ -5,7 +5,7 @@ import { ID } from "react-native-appwrite";
 import { config, databases } from "../../services/postsService";
 import { useGlobalContext } from "../../context/GlobalProvider";
 
-export default function CommentInputBox({ onCommentSubmitted }) {
+export default function CommentInputBox({ onCommentSubmitted, post_id }) {
   const { t } = useTranslation();
   const [comment, setComment] = useState("");
   const { user } = useGlobalContext();
@@ -16,6 +16,7 @@ export default function CommentInputBox({ onCommentSubmitted }) {
         content: comment,
         creator: user.$id,
         parent_comment_ID: "", // 顶级评论
+        post_id,
       };
 
       const response = await databases.createDocument(

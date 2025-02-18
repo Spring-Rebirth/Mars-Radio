@@ -68,7 +68,10 @@ export default function PostDetails() {
       {/* 评论列表 */}
       <View className="p-4 flex-1">
         {/* 主评论输入框 */}
-        <CommentInputBox onCommentSubmitted={onCommentSubmitted} />
+        <CommentInputBox
+          onCommentSubmitted={onCommentSubmitted}
+          post_id={parsedPost.$id}
+        />
         {/* 评论列表 */}
         <CommentList />
       </View>
