@@ -153,7 +153,7 @@ const CommentItem = ({
     }
   };
 
-  handleReplySubmit = useCallback(async () => {
+  const handleReplySubmit = useCallback(async () => {
     // 调用提交回复的函数，传入回复内容和父评论 ID   // 获取回复的用户名
     if (!replyMsg.trim()) return;
 
@@ -164,11 +164,11 @@ const CommentItem = ({
       await submitReply(
         `@${parentUsername}  ${replyMsg}`,
         parentCommentId,
-        userId,
+        user.$id,
         comment.post_id
       );
     } else {
-      await submitReply(replyMsg, parentCommentId, userId, comment.video_ID);
+      await submitReply(replyMsg, parentCommentId, user.$id, comment.video_ID);
     }
 
     setRepliesCount((prevCount) => prevCount + 1);
@@ -271,7 +271,7 @@ const CommentItem = ({
         <TouchableOpacity
           onPress={() => {
             setParentCommentId(commentId); // 设置当前父评论 ID
-            setParentCommentUserId(comment.user_ID); // 设置当前父评论用户 ID
+            setParentCommentUserId(comment.creator.$id); // 设置当前父评论用户 ID
             setShowReplyModal(true);
           }}
           className="w-[60] h-[40] items-center justify-center"
@@ -317,11 +317,9 @@ const CommentItem = ({
               <CommentItem
                 key={reply.$id}
                 comment={reply}
-                userId={userId}
                 level={level + 1}
                 fetchReplies={fetchReplies}
                 setRefreshFlag={setRefreshFlag}
-                fetchUsername={fetchUsername}
                 fetchCommentUser={fetchCommentUser}
                 submitReply={submitReply}
                 onReplyDeleted={handleReplyDeleted}
