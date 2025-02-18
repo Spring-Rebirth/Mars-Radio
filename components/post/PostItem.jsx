@@ -7,7 +7,13 @@ export default function PostItem({ title, content, author, time }) {
       <Text className="text-xl font-extrabold mb-2.5 text-gray-900">
         {title}
       </Text>
-      <Text className="text-base text-gray-600 leading-6 mb-4">{content}</Text>
+      <Text
+        className="text-base text-gray-600 leading-6 mb-4"
+        numberOfLines={3}
+        lineBreakMode={"tail"}
+      >
+        {content}
+      </Text>
       <View className="flex-row justify-between">
         <Text className="text-sm text-gray-500">{author}</Text>
         <Text className="text-sm text-gray-500">{time}</Text>

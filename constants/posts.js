@@ -2,7 +2,7 @@ export const mockPosts = [
   {
     id: "1",
     title: "帖子一",
-    content: "这是帖子一的内容",
+    content: "这是帖子一",
     author: "作者A",
     time: "2023-10-01",
   },
