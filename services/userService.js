@@ -13,3 +13,19 @@ export async function updateUserInfo(userId, content = {}) {
     console.warn('updateUserInfo failed:', error.message);
   }
 }
+
+const fetchUserData = async (userId) => {
+  try {
+    const user = await databases.getDocument(
+      config.databaseId,
+      config.usersCollectionId,
+      userId
+    );
+    console.log('appwrite user:', user);
+    return user;
+  } catch (error) {
+    console.error('Error fetching user:', error);
+  }
+}
+
+export { fetchUserData }

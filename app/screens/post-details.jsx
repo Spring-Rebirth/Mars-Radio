@@ -7,10 +7,14 @@ import {
   Pressable,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { fetchUserData } from "../../services/userService";
 
 export default function PostDetails() {
   const { post } = useLocalSearchParams();
   const parsedPost = post ? JSON.parse(post) : null; // 解析为对象
+  const { t } = useTranslation();
 
   console.log("Parsed post:", parsedPost);
 
@@ -20,15 +24,36 @@ export default function PostDetails() {
     { id: "2", author: "评论者2", text: "期待更多内容。" },
   ];
 
+  const [postCreator, setPostCreator] = useState(null);
+
+  // 获取帖子的用户信息
+  useEffect(() => {
+    const getPostCreatorInfo = async () => {
+      const postCreator = await fetchUserData(parsedPost.author);
+      console.log("postCreator:", postCreator);
+      setPostCreator(postCreator);
+    };
+
+    getPostCreatorInfo();
+  }, []);
+
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* 顶部返回按钮 */}
-      <Pressable onPress={() => router.back()} className="p-4">
+      <View className="flex-row items-center">
+        {/* 顶部返回按钮 */}
+        <Pressable onPress={() => router.back()} className="p-4">
+          <Image
+            source={require("../../assets/icons/back-arrow.png")}
+            className="w-6 h-6"
+          />
+        </Pressable>
+        {/* 用户信息 */}
         <Image
-          source={require("../../assets/icons/back-arrow.png")}
-          className="w-6 h-6"
+          source={{ uri: postCreator?.avatar }}
+          className="w-6 h-6 rounded-full ml-2"
         />
-      </Pressable>
+        <Text className="ml-2">{postCreator.username}</Text>
+      </View>
       {/* 帖子详情 */}
       <View className="p-5 pt-0 border-b border-gray-300">
         <Image
@@ -36,19 +61,18 @@ export default function PostDetails() {
           className="h-44 w-full mx-auto"
           resizeMode="contain"
         />
-        <Text className="mt-3 text-center text-2xl font-bold text-gray-900">
-          {post?.title || "标题"}
+        <Text className="mt-3 text-2xl font-bold text-gray-900">
+          {parsedPost?.title || "无法读取到标题文本"}
         </Text>
-        <Text
-          className="mt-2 text-center text-base text-gray-600"
-          numberOfLines={20}
-        >
-          {post?.content || "lorem ipsum dolor sit amet fsdgsgsg dssa"}
+        <Text className="mt-2 text-base text-gray-600" numberOfLines={20}>
+          {parsedPost?.content || "无法读取到内容文本"}
         </Text>
       </View>
       {/* 评论列表 */}
       <View className="p-4 flex-1">
-        <Text className="mb-3 text-lg font-semibold text-gray-800">评论</Text>
+        <Text className="mb-3 text-lg font-semibold text-gray-800">
+          {t("Comments")}
+        </Text>
         <FlatList
           data={comments}
           keyExtractor={(item) => item.id}
