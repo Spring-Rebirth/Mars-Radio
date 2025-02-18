@@ -70,7 +70,7 @@ const CommentItem = ({
       setCmtAvatar({ uri: user.avatar });
     };
     loadUser();
-  }, [comment.creator.$id]);
+  }, [comment.creator?.$id]);
 
   useEffect(() => {
     const loadRepliesCount = async () => {
@@ -283,7 +283,7 @@ const CommentItem = ({
           />
         </TouchableOpacity>
 
-        {(comment.creator.$id === user.$id || admin === true) && (
+        {(comment.creator?.$id === user.$id || admin === true) && (
           <TouchableOpacity
             onPress={() => deleteComment(commentId)}
             className="w-[60] h-[40] items-center justify-center"

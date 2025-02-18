@@ -15,16 +15,20 @@ export default function CommentInputBox({ onCommentSubmitted, post_id }) {
       const newComment = {
         content: comment,
         creator: user.$id,
-        parent_comment_ID: "", // 顶级评论
+        parent_comment_ID: "",
         post_id,
       };
+
+      const uniqueId = ID.unique(); // 生成新的 ID
+      console.log("Generated ID: ", uniqueId); // 输出 ID 查看是否不同
 
       const response = await databases.createDocument(
         config.databaseId,
         config.commentColletionId,
-        ID.unique(),
+        uniqueId,
         newComment
       );
+
       Alert.alert("Publish successfully");
 
       setComment("");
