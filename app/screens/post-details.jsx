@@ -10,32 +10,29 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { fetchUserData } from "../../services/userService";
+import CommentInputBox from "../../components/post-comment/CommentInputBox";
+import CommentList from "../../components/post-comment/CommentList";
 
 export default function PostDetails() {
   const { post } = useLocalSearchParams();
   const parsedPost = post ? JSON.parse(post) : null; // 解析为对象
   const { t } = useTranslation();
-
-  console.log("Parsed post:", parsedPost);
-
-  // 模拟评论数据
-  const comments = [
-    { id: "1", author: "评论者1", text: "很赞哦！" },
-    { id: "2", author: "评论者2", text: "期待更多内容。" },
-  ];
-
+  const [commentsDoc, setCommentsDoc] = useState([]);
   const [postCreator, setPostCreator] = useState(null);
 
   // 获取帖子的用户信息
   useEffect(() => {
     const getPostCreatorInfo = async () => {
       const postCreator = await fetchUserData(parsedPost.author);
-      console.log("postCreator:", postCreator);
       setPostCreator(postCreator);
     };
 
     getPostCreatorInfo();
   }, []);
+
+  const onCommentSubmitted = (newComment) => {
+    setCommentsDoc((prevComments) => [newComment, ...prevComments]);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -70,19 +67,10 @@ export default function PostDetails() {
       </View>
       {/* 评论列表 */}
       <View className="p-4 flex-1">
-        <Text className="mb-3 text-lg font-semibold text-gray-800">
-          {t("Comments")}
-        </Text>
-        <FlatList
-          data={comments}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View className="mb-4 p-3 border border-gray-200 rounded-lg">
-              <Text className="font-bold text-gray-700">{item.author}</Text>
-              <Text className="mt-1 text-gray-600">{item.text}</Text>
-            </View>
-          )}
-        />
+        {/* 主评论输入框 */}
+        <CommentInputBox onCommentSubmitted={onCommentSubmitted} />
+        {/* 评论列表 */}
+        <CommentList />
       </View>
     </SafeAreaView>
   );
