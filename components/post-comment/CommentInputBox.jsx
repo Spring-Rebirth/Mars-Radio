@@ -22,7 +22,7 @@ export default function CommentInputBox({ onCommentSubmitted, post_id }) {
       const response = await databases.createDocument(
         config.databaseId,
         config.commentColletionId,
-        ID.unique(), // 自动生成唯一文档 ID
+        ID.unique(),
         newComment
       );
       Alert.alert("Publish successfully");

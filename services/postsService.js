@@ -2,7 +2,7 @@ import { Client, Account, ID, Avatars, Databases, Query, Storage } from 'react-n
 
 export const config = {
   endpoint: 'https://cloud.appwrite.io/v1',
-  platform: 'com.mystseed.aora',
+  platform: 'com.mystseed.marsx',
   projectId: '66e00f73002ee6e0e71f',
   databaseId: '66e0120d0001cf7791eb',
   postColletionId: '67b36cdf001dac351bc2',
