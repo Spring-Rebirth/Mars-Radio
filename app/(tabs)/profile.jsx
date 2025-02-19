@@ -40,6 +40,7 @@ import backIcon from "../../assets/icons/left-arrow.png";
 import arrowRightIcon from "../../assets/icons/arrow-one.png";
 import { Animated } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ImageModal from "../../components/modal/ImageModal";
 
 export default function Profile() {
   const insetTop = useSafeAreaInsets().top;
@@ -55,7 +56,7 @@ export default function Profile() {
   const flatListRef = useRef(null);
   const [showControlMenu, setShowControlMenu] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState(null);
-
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [viewLevel, setViewLevel] = useState(1); // 控制当前视图层级
 
@@ -238,6 +239,17 @@ export default function Profile() {
                         resizeMode={"contain"}
                       />
                     </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setIsImageModalVisible(true)}
+                      className="w-full h-10 flex-row items-center justify-between pr-2"
+                    >
+                      <Text>{t("Support Us")}</Text>
+                      <Image
+                        source={arrowRightIcon}
+                        className="w-4 h-4"
+                        resizeMode={"contain"}
+                      />
+                    </TouchableOpacity>
                   </View>
                 ) : (
                   // 二级视图
@@ -414,6 +426,12 @@ export default function Profile() {
           </View>
         </BottomSheetView>
       </BottomSheet>
+
+      <ImageModal
+        isVisible={isImageModalVisible}
+        imageSource={require("../../assets/images/ali-pay.jpg")}
+        setIsVisible={setIsImageModalVisible}
+      />
 
       <StatusBar style="dark" />
     </GestureHandlerRootView>
