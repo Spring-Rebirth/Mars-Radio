@@ -28,7 +28,6 @@ const fetchAllPostsData = async () => {
   } catch (error) {
     console.error('Error fetching all posts:', error);
   }
-
 }
 
 const fetchPostData = async (postId) => {
@@ -83,6 +82,20 @@ async function fetchFileUrl(fileId) {
     return url;
   } catch (error) {
     console.warn('Error in getFileFromStorage:', error);
+  }
+}
+
+const deleteSinglePost = async (post_id) => {
+  try {
+    await databases.deleteDocument(
+      config.databaseId,
+      config.postColletionId,
+      post_id
+    );
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 }
 
@@ -192,4 +205,5 @@ export {
   createFileForPost,
   fetchFileUrl,
   fetchCommentsOfPost,
+  deleteSinglePost
 };
