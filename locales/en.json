@@ -100,5 +100,15 @@
     "Upload Image": "Upload Image",
     "Click to select image": "Click to select image",
     "Publish": "Publish",
-    "Featured Posts": "Featured Posts"
+    "Featured Posts": "Featured Posts",
+    "Delete Successful": "Delete Successful",
+    "Delete Failed": "Delete Failed",
+    "Delete Post": "Delete Post",
+    "Are you sure you want to delete this post?": "Are you sure you want to delete this post?",
+    "Cancel": "Cancel",
+    "Confirm": "Confirm",
+    "Deleting post...": "Deleting post...",
+    "Publishing post...": "Publishing post...",
+    "Publish Successful": "Publish Successful",
+    "Publish Failed": "Publish Failed"
 }

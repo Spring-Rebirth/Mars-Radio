@@ -108,5 +108,15 @@
     "Upload Image": "上传图片",
     "Click to select image": "点击选择图片",
     "Publish": "发布",
-    "Featured Posts": "精彩帖子"
+    "Featured Posts": "精彩帖子",
+    "Delete Successful": "删除成功",
+    "Delete Failed": "删除失败",
+    "Delete Post": "删除帖子",
+    "Are you sure you want to delete this post?": "确定要删除这篇帖子吗？",
+    "Cancel": "取消",
+    "Confirm": "确认",
+    "Deleting post...": "正在删除帖子...",
+    "Publishing post...": "正在发布帖子...",
+    "Publish Successful": "发布成功",
+    "Publish Failed": "发布失败"
 }
