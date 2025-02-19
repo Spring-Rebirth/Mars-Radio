@@ -1,5 +1,4 @@
 import {
-  SafeAreaView,
   View,
   Text,
   Image,
@@ -23,6 +22,7 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 import { deleteSinglePost } from "../../services/postsService";
 import Toast from "react-native-toast-message";
 import LoadingModal from "../../components/modal/LoadingModal";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PostDetails() {
   const { post } = useLocalSearchParams();

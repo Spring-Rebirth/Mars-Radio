@@ -1,5 +1,4 @@
 import {
-  SafeAreaView,
   FlatList,
   View,
   Text,
@@ -7,6 +6,7 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import PostItem from "../../components/post/PostItem";
 import { router } from "expo-router";

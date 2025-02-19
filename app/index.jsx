@@ -58,7 +58,7 @@ export default function Welcome() {
       await AsyncStorage.setItem("language", newLang);
       Toast.show(t("Selected language") + ": " + newLang, {
         duration: Toast.durations.SHORT,
-        position: Toast.positions.TOP,
+        position: 60,
         backgroundColor: "#333",
         textColor: "#fff",
         shadow: false,
@@ -69,7 +69,7 @@ export default function Welcome() {
     } catch (error) {
       Toast.show(t("Failed to switch language"), {
         duration: Toast.durations.SHORT,
-        position: Toast.positions.TOP,
+        position: 60,
         backgroundColor: "#ff0000",
         textColor: "#fff",
         shadow: false,
