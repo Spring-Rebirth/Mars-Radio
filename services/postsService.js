@@ -105,7 +105,11 @@ const fetchCommentsOfPost = async (post_id) => {
     const comments = await databases.listDocuments(
       config.databaseId,
       config.commentColletionId,
-      [Query.equal('post_id', post_id)]
+      [
+        Query.equal('post_id', post_id),
+        Query.equal('parent_comment_ID', ''),
+        Query.orderDesc('$createdAt')
+      ]
     );
     return comments;
   } catch (error) {

@@ -148,8 +148,6 @@ const CommentItem = ({
     setRepliesCount((prevCount) => prevCount + 1);
     console.log("Submit reply:", replyMsg);
 
-    // 根据视频ID获取视频的发布者信息
-    console.log("videoCreator.expo_push_token:", videoCreator.expo_push_token);
     // 获取上一级评论，里面包含了user_ID
     const parentComment = await databases.getDocument(
       config.databaseId, // 替换为你的数据库 ID
@@ -158,7 +156,7 @@ const CommentItem = ({
     );
 
     // 通过 parentComment的user_ID获取用户信息
-    const parentCommentUser = await fetchCommentUser(parentComment.user_ID);
+    const parentCommentUser = await fetchCommentUser(parentComment.creator.$id);
 
     if (
       parentCommentUser.expo_push_token &&
