@@ -10,6 +10,8 @@ import { usePickFile } from "../../hooks/usePickFile";
 import * as FileSystem from "expo-file-system";
 import mime from "mime";
 import { useUploadFileForPost } from "../../hooks/useUploadFile";
+import LoadingModal from "../../components/modal/LoadingModal";
+import Toast from "react-native-toast-message";
 
 export default function CreatePost() {
   const router = useRouter();
@@ -22,8 +24,8 @@ export default function CreatePost() {
     author_name: user?.username,
   });
   const [imageFile, setImageFile] = useState(null);
-
   const { pickImage } = usePickFile();
+  const [onPublish, setOnPublish] = useState(false);
 
   const handlePickImage = async () => {
     try {
@@ -54,6 +56,7 @@ export default function CreatePost() {
   };
 
   const handlePublishPost = async () => {
+    setOnPublish(true);
     try {
       if (imageFile) {
         const imageUpload = await useUploadFileForPost(imageFile);
@@ -71,9 +74,21 @@ export default function CreatePost() {
         await createPost(fileModel);
         console.log("发布成功");
         router.navigate("posts");
+        Toast.show({
+          type: "success",
+          topOffset: "80",
+          text1: "Publish Successful",
+        });
       }
     } catch (error) {
       console.error(error);
+      Toast.show({
+        type: "error",
+        topOffset: "80",
+        text1: "Publish Failed",
+      });
+    } finally {
+      setOnPublish(false);
     }
   };
 
@@ -137,6 +152,10 @@ export default function CreatePost() {
       >
         <Text className="text-white font-bold">{t("Publish")}</Text>
       </Pressable>
+      <LoadingModal
+        isVisible={onPublish}
+        loadingText={t("Publishing post...")}
+      />
     </SafeAreaView>
   );
 }

@@ -15,7 +15,6 @@ client.setEndpoint(config.endpoint).setProject(config.projectId).setPlatform(con
 
 export const account = new Account(client);
 export const databases = new Databases(client);
-const avatars = new Avatars(client);
 const storage = new Storage(client);
 
 const fetchAllPostsData = async () => {
