@@ -115,7 +115,11 @@ const CommentItem = ({
         commentId
       );
       if (result) {
-        Alert.alert("Delete Success");
+        Toast.show({
+          type: "success",
+          topOffset: 80,
+          text1: t("Delete Success"),
+        });
         setCommentId("");
         if (level !== 1) {
           // 如果是子评论，通知父组件删除子评论
