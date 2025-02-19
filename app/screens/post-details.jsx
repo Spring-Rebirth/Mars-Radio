@@ -36,6 +36,7 @@ export default function PostDetails() {
   const [isCreator, setIsCreator] = useState(false);
   const { user } = useGlobalContext();
   const [deleting, setDeleting] = useState(false);
+  const [isCommentsLoading, setIsCommentsLoading] = useState(true);
 
   // 获取帖子的用户信息
   useEffect(() => {
@@ -45,8 +46,15 @@ export default function PostDetails() {
     };
 
     const getCommentsOfPost = async () => {
-      const comments = await fetchCommentsOfPost(parsedPost.$id);
-      setCommentsDoc(comments.documents);
+      setIsCommentsLoading(true);
+      try {
+        const comments = await fetchCommentsOfPost(parsedPost.$id);
+        setCommentsDoc(comments.documents);
+      } catch (error) {
+        console.error("Failed to fetch comments:", error);
+      } finally {
+        setIsCommentsLoading(false);
+      }
     };
 
     Promise.all([getPostCreatorInfo(), getCommentsOfPost()]);
@@ -185,6 +193,7 @@ export default function PostDetails() {
           fetchCommentUser={fetchUserData}
           fetchReplies={fetchReplies}
           submitReply={submitReply}
+          isLoading={isCommentsLoading}
         />
       </View>
       <LoadingModal isVisible={deleting} loadingText={t("Deleting post...")} />

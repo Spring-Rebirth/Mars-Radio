@@ -1,6 +1,6 @@
 // CommentList.js
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, View, Image, Text } from "react-native";
+import { FlatList, View, Image, Text, ActivityIndicator } from "react-native";
 import CommentItem from "./CommentItem";
 import emptyIcon from "../../assets/images/empty-msg.png";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,7 @@ export default function CommentList({
   setRefreshFlag,
   fetchCommentUser,
   submitReply,
+  isLoading,
 }) {
   const flatListRef = useRef(null);
   const { t } = useTranslation();
@@ -24,6 +25,14 @@ export default function CommentList({
       submitReply={submitReply}
     />
   );
+
+  if (isLoading) {
+    return (
+      <View className="w-full h-full justify-start items-center">
+        <ActivityIndicator size="large" color="#0000ff" className="mt-4" />
+      </View>
+    );
+  }
 
   if (!commentsDoc || commentsDoc.length === 0) {
     return (
