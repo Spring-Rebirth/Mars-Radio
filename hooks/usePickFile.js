@@ -13,7 +13,7 @@ export function usePickFile() {
 
         // 选择图片
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaType,
+            mediaTypes: 'images',
             allowsEditing: false,
             quality: 1,
         });
@@ -44,7 +44,7 @@ export function usePickFile() {
 
         // 选择视频
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaType,
+            mediaTypes: 'videos',
             allowsEditing: false,
             quality: 1,
         });
