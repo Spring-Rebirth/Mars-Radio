@@ -26,6 +26,8 @@ import { router } from "expo-router";
 import { useAdminStore } from "../../store/adminStore";
 import { fetchCommentUsername } from "../../services/commentService";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import LoadingModal from "../modal/LoadingModal";
+import Toast from "react-native-toast-message";
 
 const CommentItem = ({
   comment,
@@ -58,6 +60,7 @@ const CommentItem = ({
   const { user } = useGlobalContext();
   const admin = adminList?.includes(user?.email);
   const inputRef = useRef(null);
+  const [replySubmiting, setReplySubmiting] = useState(false);
 
   const MAX_LEVEL = 1;
   let paddingLeft = level <= MAX_LEVEL ? 40 : 0;
@@ -131,6 +134,8 @@ const CommentItem = ({
     // 调用提交回复的函数，传入回复内容和父评论 ID   // 获取回复的用户名
     if (!replyMsg.trim()) return;
 
+    setReplySubmiting(true);
+
     const parentUsername = await fetchCommentUsername(parentCommentUserId);
 
     // 如果评论层级大于MAX_LEVEL, 在回复内容前加上"@父评论用户名"
@@ -182,6 +187,13 @@ const CommentItem = ({
     setParentCommentId(null);
     setShowReplyModal(false);
     setRefreshFlag((prev) => !prev);
+
+    setReplySubmiting(false);
+    Toast.show({
+      type: "success",
+      topOffset: 80,
+      text1: t("Reply Success"),
+    });
   }, [replyMsg, parentCommentId]);
 
   const handleClickLike = async () => {
@@ -317,6 +329,7 @@ const CommentItem = ({
           />
         </View>
       </ReactNativeModal>
+      <LoadingModal isVisible={replySubmiting} loadingText={t("Submitting")} />
     </View>
   );
 };
