@@ -21,7 +21,8 @@ const fetchAllPostsData = async () => {
   try {
     const posts = await databases.listDocuments(
       config.databaseId,
-      config.postColletionId
+      config.postColletionId,
+      [Query.orderDesc('$createdAt')]
     );
     return posts;
   } catch (error) {
