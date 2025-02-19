@@ -77,7 +77,7 @@ export default function CreatePost() {
         Toast.show({
           type: "success",
           topOffset: "80",
-          text1: "Publish Successful",
+          text1: t("Publish Successful"),
         });
       }
     } catch (error) {
@@ -85,7 +85,7 @@ export default function CreatePost() {
       Toast.show({
         type: "error",
         topOffset: "80",
-        text1: "Publish Failed",
+        text1: t("Publish Failed"),
       });
     } finally {
       setOnPublish(false);
