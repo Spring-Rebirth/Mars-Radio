@@ -133,8 +133,7 @@ export default function Welcome() {
             />
           </View>
           <Text className="text-[#808080] text-center mt-6 font-pregular text-sm">
-            Where Creativity Meets Innovation: Embark on a Journey of Limitless
-            Exploration with MarsX
+            {t("welcome_description")}
           </Text>
 
           {isLoading ? (

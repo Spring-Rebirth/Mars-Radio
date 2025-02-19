@@ -1,4 +1,6 @@
 {
+    "Login to continue": "Login to continue",
+    "Sign Up": "Sign Up",
     "Comments": "Comments",
     "Posts": "Posts",
     "Password reset successfully": "Password reset successfully",
@@ -110,5 +112,19 @@
     "Deleting post...": "Deleting post...",
     "Publishing post...": "Publishing post...",
     "Publish Successful": "Publish Successful",
-    "Publish Failed": "Publish Failed"
+    "Publish Failed": "Publish Failed",
+    "User Name": "User Name",
+    "Give your account a catchy name": "Give your account a catchy name",
+    "Enter your new password": "Enter your new password",
+    "Confirm Password": "Confirm Password",
+    "Enter your password to confirm": "Enter your password to confirm",
+    "Already have an account ?": "Already have an account ?",
+    "Verification": "Verification",
+    "We sent a verification code to": "We sent a verification code to",
+    "Code": "Code",
+    "Enter Code": "Enter Code",
+    "Verify Email": "Verify Email",
+    "Verification Successful": "Verification Successful",
+    "Auto-redirect to homepage after 2 seconds": "Auto-redirect to homepage after 2 seconds",
+    "welcome_description": "Where Creativity Meets Innovation: Embark on a Journey of Limitless Exploration with MarsX"
 }

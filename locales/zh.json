@@ -1,4 +1,5 @@
 {
+    "Sign Up": "注册",
     "Comments": "评论",
     "Posts": "帖子",
     "Password reset successfully": "密码重置成功",
@@ -97,7 +98,7 @@
     "A new update has been downloaded. Would you like to restart the app now?": "已下载新的更新。是否立即重启应用？",
     "LATER": "稍后",
     "RESTART NOW": "立即重启",
-    "Login to continue": "登录以继续",
+    "Login to continue": "立即登录，开启探索之旅",
     "notifications": {
         "userRepliedComment": "{username} 回复了你的评论"
     },
@@ -118,5 +119,19 @@
     "Deleting post...": "正在删除帖子...",
     "Publishing post...": "正在发布帖子...",
     "Publish Successful": "发布成功",
-    "Publish Failed": "发布失败"
+    "Publish Failed": "发布失败",
+    "User Name": "用户名",
+    "Give your account a catchy name": "给你的账号起个好听的名字",
+    "Enter your new password": "输入你的新密码",
+    "Confirm Password": "确认密码",
+    "Enter your password to confirm": "再次输入密码以确认",
+    "Already have an account ?": "已经有账号了？",
+    "Verification": "验证",
+    "We sent a verification code to": "我们已发送验证码至",
+    "Code": "验证码",
+    "Enter Code": "输入验证码",
+    "Verify Email": "验证邮箱",
+    "Verification Successful": "验证成功",
+    "Auto-redirect to homepage after 2 seconds": "2秒后自动跳转到主页",
+    "welcome_description": "创意与创新的交汇：与 MarsX 一起开启无限探索之旅"
 }
