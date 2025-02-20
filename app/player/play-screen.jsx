@@ -205,6 +205,12 @@ export default function PlayScreen() {
     setCommentsDoc((prevComments) => [newComment, ...prevComments]);
   };
 
+  const changeVideoProgress = async (value) => {
+    if (videoRef.current != null && playbackStatus.isLoaded) {
+      await videoRef.current.setPositionAsync(value);
+    }
+  };
+
   const memoizedCommentView = useMemo(() => {
     return (
       <CommentList
@@ -235,9 +241,7 @@ export default function PlayScreen() {
     <View
       style={[
         styles.container,
-        {
-          backgroundColor: fullscreen ? "black" : "#F5F5F5",
-        },
+        { backgroundColor: fullscreen ? "black" : "#F5F5F5" },
       ]}
     >
       <View
@@ -342,15 +346,9 @@ export default function PlayScreen() {
                   }
                   setShowControls(true);
                 }}
-                onValueChange={async (value) => {
-                  if (videoRef.current != null && playbackStatus.isLoaded) {
-                    await videoRef.current.setPositionAsync(value);
-                  }
-                }}
-                onSlidingComplete={async (value) => {
-                  if (videoRef.current != null && playbackStatus.isLoaded) {
-                    await videoRef.current.setPositionAsync(value);
-                  }
+                onValueChange={changeVideoProgress}
+                onSlidingComplete={() => {
+                  changeVideoProgress();
                   showControlsWithTimer();
                 }}
               />
