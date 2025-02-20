@@ -99,6 +99,8 @@ export default function Profile() {
 
   useFocusEffect(
     React.useCallback(() => {
+      goToPreviousLevel();
+
       return () => {
         bottomSheetRef.current?.close();
       };
@@ -109,7 +111,8 @@ export default function Profile() {
     try {
       await i18n.changeLanguage(lang);
       await AsyncStorage.setItem("language", lang);
-      setSwitchLangResult(t("Selected language") + lang);
+      const newLangText = lang === "en" ? "English" : "中文";
+      setSwitchLangResult(t("Selected language") + " " + newLangText);
     } catch (error) {
       setSwitchLangResult(t("Failed to switch language"));
       console.error("Failed to switch language:", error);

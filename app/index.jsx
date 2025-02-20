@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-toast-message";
 // cSpell:word pregular appwrite
 //cSpell:ignore Aora pregular
 export default function Welcome() {
@@ -56,26 +56,17 @@ export default function Welcome() {
       const newLang = currentLang === "en" ? "zh" : "en";
       await i18n.changeLanguage(newLang);
       await AsyncStorage.setItem("language", newLang);
-      Toast.show(t("Selected language") + ": " + newLang, {
-        duration: Toast.durations.SHORT,
-        position: 60,
-        backgroundColor: "#333",
-        textColor: "#fff",
-        shadow: false,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
+      const newLangText = newLang === "en" ? "English" : "中文";
+      Toast.show({
+        type: "success",
+        topOffset: 62,
+        text1: t("Selected language") + " " + newLangText,
       });
     } catch (error) {
-      Toast.show(t("Failed to switch language"), {
-        duration: Toast.durations.SHORT,
-        position: 60,
-        backgroundColor: "#ff0000",
-        textColor: "#fff",
-        shadow: false,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
+      Toast.show({
+        type: "error",
+        topOffset: 62,
+        text1: t("Failed to switch language"),
       });
       console.error("Failed to switch language:", error);
     }

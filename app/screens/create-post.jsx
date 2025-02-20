@@ -114,14 +114,15 @@ export default function CreatePost() {
         <Text className="mb-1 text-lg">{t("Content")}</Text>
         <TextInput
           placeholder={t("Enter content")}
-          className="border border-gray-300 rounded p-2 h-40 text-top"
+          className="border border-gray-300 rounded p-2 h-40"
           onChangeText={(text) => setForm({ ...form, content: text })}
           multiline
+          textAlignVertical="top"
         />
       </View>
       {/* 新增上传图片表单项 */}
       <View className="mb-4">
-        <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
+        <Text className="mb-1 text-lg">{t("Upload Image")} *</Text>
         <Pressable
           onPress={() => {
             handlePickImage();
