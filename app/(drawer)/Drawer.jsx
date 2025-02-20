@@ -1,10 +1,15 @@
 // app/(drawer)/Drawer.jsx
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Toast from 'react-native-root-toast';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Dimensions,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 const DRAWER_WIDTH = width * 0.65;
 
 const Drawer = ({ isVisible, onClose, switchLangResult, children }) => {
@@ -46,10 +51,11 @@ const Drawer = ({ isVisible, onClose, switchLangResult, children }) => {
   }, [isVisible, slideAnim, overlayOpacity]);
 
   useEffect(() => {
-    if (switchLangResult !== '') {
-      Toast.show(switchLangResult, {
-        position: 40,
-        duration: Toast.durations.SHORT,
+    if (switchLangResult !== "") {
+      Toast.show({
+        text1: switchLangResult,
+        type: "success",
+        topOffset: 68,
       });
     }
   }, [switchLangResult]);
@@ -65,7 +71,9 @@ const Drawer = ({ isVisible, onClose, switchLangResult, children }) => {
         <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
       </TouchableWithoutFeedback>
       {/* 抽屉内容 */}
-      <Animated.View style={[styles.drawer, { transform: [{ translateX: slideAnim }] }]}>
+      <Animated.View
+        style={[styles.drawer, { transform: [{ translateX: slideAnim }] }]}
+      >
         {children}
       </Animated.View>
     </GestureHandlerRootView>
@@ -74,7 +82,7 @@ const Drawer = ({ isVisible, onClose, switchLangResult, children }) => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -83,23 +91,23 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   overlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   drawer: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     width: DRAWER_WIDTH,
-    height: '100%',
-    backgroundColor: '#fff',
+    height: "100%",
+    backgroundColor: "#fff",
     padding: 20,
     // 添加阴影效果
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 2, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 5,

@@ -7,28 +7,40 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PostItem from "../../components/post/PostItem";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { fetchAllPostsData } from "../../services/postsService";
+import Toast from "react-native-toast-message";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const getAllPosts = async () => {
-      try {
-        const allPosts = await fetchAllPostsData();
-        console.log("allPosts:", JSON.stringify(allPosts, null, 2));
-        setPosts(allPosts.documents);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const getAllPosts = async () => {
+    try {
+      const allPosts = await fetchAllPostsData();
+      setPosts(allPosts.documents);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await getAllPosts(); // 刷新数据
+    setRefreshing(false);
+    Toast.show({
+      text1: t("Refresh Successful"),
+      type: "success",
+      topOffset: 68,
+    });
+  }, []);
+
+  useEffect(() => {
     getAllPosts();
   }, []);
 
@@ -62,6 +74,8 @@ export default function Posts() {
             </Pressable>
           )}
           contentContainerStyle={{ padding: 16 }}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
         />
       )}
       <Pressable
