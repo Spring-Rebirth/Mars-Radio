@@ -211,7 +211,7 @@ export default function Create() {
           <TouchableOpacity onPress={handlePickVideo}>
             <View className='w-full h-44 bg-[#D9D9D9] rounded-2xl mt-2 justify-center items-center'>
               <View className='w-14 h-14 border border-dashed border-secondary-100
-                                                justify-center items-center'>
+                               justify-center items-center'>
                 <Image
                   source={icons.upload}
                   className='w-1/2 h-1/2'
@@ -225,7 +225,6 @@ export default function Create() {
               source={{ uri: videoFile?.uri }}
               className='w-full h-full rounded-xl'
               resizeMode={ResizeMode.COVER}
-              useNativeControls={true}
             />
             <TouchableOpacity
               onPress={() => handleCancelSelected('video')}

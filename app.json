@@ -3,7 +3,7 @@
     "name": "MarsX",
     "slug": "marsx",
     "scheme": "marsx",
-    "version": "2.3.3",
+    "version": "2.3.5",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
