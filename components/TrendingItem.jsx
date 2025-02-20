@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import {
   View,
   Image,
-  TouchableOpacity,
+  Pressable,
   ImageBackground,
   ActivityIndicator,
   Alert,
@@ -107,7 +107,7 @@ export default function TrendingItem({ activeItem, item }) {
       duration={500}
       className="mr-4 relative rounded-4 overflow-hidden"
     >
-      <TouchableOpacity
+      <Pressable
         onPress={handleAddSaved}
         className="absolute z-10 top-3 right-3"
       >
@@ -115,9 +115,9 @@ export default function TrendingItem({ activeItem, item }) {
         <View className="absolute top-2.5 right-2.5 bg-[rgba(255,255,255,0.1)] p-1.25 rounded-[12px]">
           <Image source={isSaved ? star : starTwo} className="w-6 h-6" />
         </View>
-      </TouchableOpacity>
+      </Pressable>
 
-      <TouchableOpacity
+      <Pressable
         onPress={handlePlay}
         className="relative justify-center items-center w-[290px] h-[332px] rounded-[24px] overflow-hidden"
       >
@@ -155,7 +155,7 @@ export default function TrendingItem({ activeItem, item }) {
             className="absolute top-1/2 left-1/2 -translate-x-5 -translate-y-5"
           />
         )}
-      </TouchableOpacity>
+      </Pressable>
     </Animatable.View>
   );
 }
