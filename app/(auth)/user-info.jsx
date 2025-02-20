@@ -18,7 +18,7 @@ import { useState } from "react";
 import CustomModal from "../../components/modal/CustomModal";
 import CustomButton from "../../components/CustomButton";
 import { updateUserInfo } from "../../services/userService";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-toast-message";
 import backArrowIcon from "../../assets/icons/back-arrow.png";
 import { router } from "expo-router";
 
@@ -71,7 +71,11 @@ const UserInfo = () => {
             console.log("updateAvatar result:", result);
             setUser(result);
             if (result) {
-              Alert.alert(t("Avatar uploaded successfully"));
+              Toast.show({
+                text1: t("Avatar uploaded successfully"),
+                type: "success",
+                topOffset: 68,
+              });
             }
           }
         } catch (error) {
