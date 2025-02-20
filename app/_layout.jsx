@@ -11,7 +11,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { RootSiblingParent } from "react-native-root-siblings";
-import ToastOld from "react-native-root-toast";
 import { useTranslation } from "react-i18next";
 import useNotificationStore from "../store/notificationStore";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
@@ -84,13 +83,10 @@ export default function RootLayout() {
           if (update.isAvailable) {
             await Updates.fetchUpdateAsync();
             // 显示 Toast 提示
-            ToastOld.show(t("OTA update loaded, restarting soon."), {
-              duration: 2500,
-              position: Toast.positions.CENTER,
-              shadow: true,
-              animation: true,
-              hideOnPress: true,
-              delay: 0,
+            Toast.show({
+              text1: t("OTA update loaded, restarting soon."),
+              type: "info",
+              topOffset: 68,
             });
             // 等待N秒后重启
             await new Promise((resolve) => setTimeout(resolve, 2500));
