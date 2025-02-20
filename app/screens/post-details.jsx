@@ -175,9 +175,11 @@ export default function PostDetails() {
         <Text className="mt-3 text-2xl font-bold text-gray-900">
           {parsedPost?.title || "无法读取到标题文本"}
         </Text>
-        <Text className="mt-2 text-base text-gray-600" numberOfLines={20}>
-          {parsedPost?.content || "无法读取到内容文本"}
-        </Text>
+        {parsedPost?.content && (
+          <Text className="mt-2 text-base text-gray-600" numberOfLines={20}>
+            {parsedPost?.content}
+          </Text>
+        )}
       </View>
       {/* 评论列表 */}
       <View className="p-4 flex-1">
