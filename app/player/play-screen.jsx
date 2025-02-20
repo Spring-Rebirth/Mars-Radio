@@ -63,24 +63,17 @@ export default function PlayScreen() {
   const [commentsDoc, setCommentsDoc] = useComments(videoId, refreshFlag);
   const [fullscreen, setFullscreen] = useState(false);
   const [playbackStatus, setPlaybackStatus] = useState({});
-  const currentProgress = playbackStatus.positionMillis || 0; // 当前播放位置（毫秒）
-  const totalDuration = playbackStatus.durationMillis || 1; // 视频总时长（毫秒）
+  const currentProgress = playbackStatus.positionMillis || 0;
+  const totalDuration = playbackStatus.durationMillis || 1;
 
-  const [safeAreaInsets, setSafeAreaInsets] = useState({
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  });
+  const [safeAreaInsets, setSafeAreaInsets] = useState({ top: 0, bottom: 0});
   const insets = useSafeAreaInsets();
   const safeAreaInset = safeAreaInsets.top;
 
   const handlePlaybackStatusUpdate = () => {
     if (playbackStatus.isLoaded) {
-      // 当视频已加载时，根据是否正在缓冲更新 loading 状态
       setLoading(false);
     } else {
-      // 视频尚未加载，保持 loading 为 true
       setLoading(true);
     }
 
@@ -142,12 +135,7 @@ export default function PlayScreen() {
 
   useEffect(() => {
     // 初始化时仅设置一次
-    setSafeAreaInsets({
-      top: insets.top,
-      bottom: insets.bottom,
-      left: insets.left,
-      right: insets.right,
-    });
+    setSafeAreaInsets({ top: insets.top, bottom: insets.bottom});
   }, []);
 
   useEffect(() => {
@@ -196,8 +184,8 @@ export default function PlayScreen() {
     const updateStatusBar = () => {
       StatusBar.setHidden(fullscreen);
     };
+    
     updateStatusBar();
-
     return () => StatusBar.setHidden(false);
   }, [fullscreen]);
 
@@ -226,16 +214,7 @@ export default function PlayScreen() {
         scrollToComment={targetCommentId} // 传递用于滚动的评论ID
       />
     );
-  }, [
-    userId,
-    videoId,
-    avatar,
-    username,
-    commentsDoc,
-    fetchReplies,
-    submitReply,
-    targetCommentId,
-  ]);
+  }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply, targetCommentId]);
 
   return (
     <View
@@ -270,10 +249,7 @@ export default function PlayScreen() {
             color="#000"
             style={[
               styles.activityIndicator,
-              {
-                top: "50%",
-                transform: [{ translateX: -20 }, { translateY: -20 }],
-              },
+              { top: "50%", transform: [{ translateX: -20 }, { translateY: -20 }] },
             ]}
           />
         )}
@@ -282,9 +258,7 @@ export default function PlayScreen() {
           <TouchableOpacity
             onPress={() => replayVideo(videoRef)}
             style={
-              fullscreen
-                ? styles.replayIconContainerFS
-                : styles.replayIconContainer
+              fullscreen ? styles.replayIconContainerFS : styles.replayIconContainer
             }
           >
             <Image
@@ -299,11 +273,11 @@ export default function PlayScreen() {
           <>
             {/* 播放/暂停按钮 */}
             <TouchableOpacity
-              style={[styles.controlButton]} // 根据 fullscreen 状态调整样式
+              style={[styles.controlButton]}
               onPress={() => {
                 setPlaying((prev) => !prev);
                 showControlsWithTimer();
-              }} // 添加点击事件来控制播放暂停
+              }}
             >
               <Image
                 source={playing ? pauseIcon : playbackIcon}
