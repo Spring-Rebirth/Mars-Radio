@@ -141,7 +141,11 @@ const CommentItem = ({
         commentId
       );
       if (result) {
-        Alert.alert("Delete Success");
+        Toast.show({
+          type: "success",
+          topOffset: 80,
+          text1: t("Delete Success"),
+        });
         setCommentId("");
         // setRefreshFlag(prev => !prev);
         if (level !== 1) {
