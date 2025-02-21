@@ -143,7 +143,8 @@ const CommentItem = ({
       if (result) {
         Toast.show({
           type: "success",
-          topOffset: 80,
+          position: "bottom",
+          bottomOffset: 68,
           text1: t("Delete Success"),
         });
         setCommentId("");
