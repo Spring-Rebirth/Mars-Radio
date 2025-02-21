@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ID } from "react-native-appwrite";
 import { config, databases } from "../../services/postsService";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import Toast from "react-native-toast-message";
 
 export default function CommentInputBox({ onCommentSubmitted, post_id }) {
   const { t } = useTranslation();
@@ -29,7 +30,12 @@ export default function CommentInputBox({ onCommentSubmitted, post_id }) {
         newComment
       );
 
-      Alert.alert("Publish successfully");
+      Toast.show({
+        text1: t("Publish successfully"),
+        type: "success",
+        position: "bottom",
+        bottomOffset: 68,
+      });
 
       setComment("");
       onCommentSubmitted(response); // 调用回调，传递新评论数据

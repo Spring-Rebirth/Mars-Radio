@@ -195,7 +195,8 @@ const CommentItem = ({
     setReplySubmiting(false);
     Toast.show({
       type: "success",
-      topOffset: 80,
+      position: "bottom",
+      bottomOffset: 68,
       text1: t("Reply Success"),
     });
   }, [replyMsg, parentCommentId]);

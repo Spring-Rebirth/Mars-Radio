@@ -24,6 +24,8 @@ import { formatCommentsCounts } from "../../utils/numberFormatter";
 import { sendPushNotification } from "../../functions/notifications";
 import { router } from "expo-router";
 import { useAdminStore } from "../../store/adminStore";
+import Toast from "react-native-toast-message";
+import LoadingModal from "../modal/LoadingModal";
 
 const CommentItem = ({
   comment,
@@ -58,6 +60,7 @@ const CommentItem = ({
   const adminList = useAdminStore((state) => state.adminList);
   const admin = adminList?.includes(user?.email);
   const inputRef = useRef(null);
+  const [replySubmiting, setReplySubmiting] = useState(false);
 
   const MAX_LEVEL = 1;
   let paddingLeft = level <= MAX_LEVEL ? 40 : 0;
@@ -154,9 +157,11 @@ const CommentItem = ({
     }
   };
 
-  handleReplySubmit = useCallback(async () => {
+  const handleReplySubmit = useCallback(async () => {
     // 调用提交回复的函数，传入回复内容和父评论 ID   // 获取回复的用户名
     if (!replyMsg.trim()) return;
+
+    setReplySubmiting(true);
 
     const parentUsername = await fetchUsername(parentCommentUserId);
 
@@ -211,6 +216,15 @@ const CommentItem = ({
     setParentCommentId(null);
     setShowReplyModal(false);
     setRefreshFlag((prev) => !prev);
+
+    setReplySubmiting(false);
+    Toast.show({
+      type: "success",
+      position: "bottom",
+      bottomOffset: 68,
+      text1: t("Reply Success"),
+    });
+
   }, [replyMsg, parentCommentId]);
 
   const handleClickLike = async () => {
@@ -353,6 +367,8 @@ const CommentItem = ({
           />
         </View>
       </ReactNativeModal>
+
+      <LoadingModal isVisible={replySubmiting} loadingText={t("Submitting")} />
     </View>
   );
 };
