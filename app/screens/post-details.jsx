@@ -145,7 +145,7 @@ export default function PostDetails() {
         <View className="relative overflow-hidden">
           <Image
             source={{ uri: parsedPost.image }}
-            className="w-screen bg-gray-50"
+            className="w-screen bg-gray-100"
             style={{ height: imageHeight }}
             resizeMode="contain"
             onLoad={() => setImageLoading(false)}
