@@ -81,6 +81,7 @@ export default function CommentList({
       ref={flatListRef}
       data={commentsDoc}
       renderItem={renderComment}
+      showsVerticalScrollIndicator={false}
       keyExtractor={(item) => item.$id.toString()}
       contentContainerStyle={{ paddingHorizontal: 15 }}
       removeClippedSubviews={false} // 仅渲染视口中的子项，设置为true会导致modal弹出时子项不可见而被卸载
