@@ -137,6 +137,46 @@ export default function PostDetails() {
     );
   };
 
+  // 创建一个头部组件
+  const PostHeader = () => (
+    <>
+      {/* 帖子详情 */}
+      <View className="py-5 pt-0 border-b border-gray-300">
+        <View className="relative overflow-hidden">
+          <Image
+            source={{ uri: parsedPost.image }}
+            className="w-screen bg-gray-50"
+            style={{ height: imageHeight }}
+            resizeMode="contain"
+            onLoad={() => setImageLoading(false)}
+          />
+          {imageLoading && (
+            <View className="absolute inset-x-0 items-center justify-center bg-gray-50">
+              <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+          )}
+        </View>
+        <View className="px-5">
+          <Text className="mt-3 text-2xl font-bold text-gray-900">
+            {parsedPost?.title || "无法读取到标题文本"}
+          </Text>
+          {parsedPost?.content && (
+            <Text className="mt-2 text-base text-gray-600" numberOfLines={20}>
+              {parsedPost.content}
+            </Text>
+          )}
+        </View>
+      </View>
+      {/* 评论输入框 */}
+      <View className="p-4">
+        <CommentInputBox
+          onCommentSubmitted={onCommentSubmitted}
+          post_id={parsedPost.$id}
+        />
+      </View>
+    </>
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-row items-center justify-between">
@@ -173,48 +213,15 @@ export default function PostDetails() {
           </Pressable>
         )}
       </View>
-      {/* 帖子详情 */}
-      <View className="p-5 pt-0 border-b border-gray-300">
-        <View className="relative w-screen -mx-5">
-          <Image
-            source={{ uri: parsedPost.image }}
-            className="w-screen bg-gray-50"
-            style={{ height: imageHeight }}
-            resizeMode="contain"
-            onLoad={() => setImageLoading(false)}
-          />
-          {imageLoading && (
-            <View className="absolute top-0 inset-x-0 w-full h-full items-center justify-center bg-gray-50">
-              <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-          )}
-        </View>
-        <Text className="mt-3 text-2xl font-bold text-gray-900">
-          {parsedPost?.title || "无法读取到标题文本"}
-        </Text>
-        {parsedPost?.content && (
-          <Text className="mt-2 text-base text-gray-600" numberOfLines={20}>
-            {parsedPost?.content}
-          </Text>
-        )}
-      </View>
-      {/* 评论列表 */}
-      <View className="p-4 flex-1">
-        {/* 主评论输入框 */}
-        <CommentInputBox
-          onCommentSubmitted={onCommentSubmitted}
-          post_id={parsedPost.$id}
-        />
-        {/* 评论列表 */}
-        <CommentList
-          commentsDoc={commentsDoc}
-          setRefreshFlag={setRefreshFlag}
-          fetchCommentUser={fetchUserData}
-          fetchReplies={fetchReplies}
-          submitReply={submitReply}
-          isLoading={isCommentsLoading}
-        />
-      </View>
+      <CommentList
+        commentsDoc={commentsDoc}
+        setRefreshFlag={setRefreshFlag}
+        fetchCommentUser={fetchUserData}
+        fetchReplies={fetchReplies}
+        submitReply={submitReply}
+        isLoading={isCommentsLoading}
+        ListHeaderComponent={PostHeader} // 传入头部组件
+      />
       <LoadingModal isVisible={deleting} loadingText={t("Deleting post...")} />
     </SafeAreaView>
   );
