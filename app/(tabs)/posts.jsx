@@ -73,7 +73,7 @@ export default function Posts() {
               <PostItem {...item} />
             </Pressable>
           )}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
           onRefresh={onRefresh}
           refreshing={refreshing}
         />
