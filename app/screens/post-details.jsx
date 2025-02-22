@@ -5,6 +5,7 @@ import {
   Pressable,
   ActivityIndicator,
   Alert,
+  Dimensions,
 } from "react-native";
 import {
   fetchCommentsOfPost,
@@ -32,6 +33,9 @@ export default function PostDetails() {
   const [postCreator, setPostCreator] = useState(null);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [imageHeight, setImageHeight] = useState(0);
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const maxHeight = screenHeight * 0.6; // 设置为屏幕高度的70%
   const adminList = useAdminStore((state) => state.adminList);
   const [isCreator, setIsCreator] = useState(false);
   const { user } = useGlobalContext();
@@ -68,6 +72,19 @@ export default function PostDetails() {
       }
     }
   }, [user, parsedPost, adminList]);
+
+  useEffect(() => {
+    if (parsedPost.image) {
+      Image.getSize(parsedPost.image, (width, height) => {
+        // 计算等比例缩放后的高度
+        const scaledHeight = (screenWidth * height) / width;
+        // 使用原始比例计算的高度和最大高度中的较小值
+        setImageHeight(Math.min(scaledHeight, maxHeight));
+      }, (error) => {
+        console.error('Error getting image size:', error);
+      });
+    }
+  }, [parsedPost.image]);
 
   const onCommentSubmitted = (newComment) => {
     setCommentsDoc((prevComments) => [newComment, ...prevComments]);
@@ -158,16 +175,16 @@ export default function PostDetails() {
       </View>
       {/* 帖子详情 */}
       <View className="p-5 pt-0 border-b border-gray-300">
-        <View className="relative">
+        <View className="relative w-screen -mx-5">
           <Image
             source={{ uri: parsedPost.image }}
-            className="h-44 w-full mx-auto"
+            className="w-screen bg-gray-50"
+            style={{ height: imageHeight }}
             resizeMode="contain"
-            onLoadStart={() => setImageLoading(true)}
-            onLoadEnd={() => setImageLoading(false)}
+            onLoad={() => setImageLoading(false)}
           />
           {imageLoading && (
-            <View className="h-44 w-full absolute inset-0 items-center justify-center">
+            <View className="absolute top-0 inset-x-0 w-full h-full items-center justify-center bg-gray-50">
               <ActivityIndicator size="large" color="#0000ff" />
             </View>
           )}
