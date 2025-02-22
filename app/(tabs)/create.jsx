@@ -19,6 +19,7 @@ import * as Progress from 'react-native-progress';
 import mime from 'mime';
 import { useTranslation } from "react-i18next";
 import Toast from 'react-native-root-toast';
+import VideoPlayButton from '../../components/VideoPlayButton';
 
 export default function Create() {
   const insetTop = useSafeAreaInsets().top;
@@ -32,6 +33,8 @@ export default function Create() {
   const isVideoSelected = videoFile?.uri != null;
   const [progress, setProgress] = useState({ type: '', percent: 0 });
   const { t } = useTranslation();
+  const [videoRef, setVideoRef] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // 处理图片选择
   const handlePickImage = async () => {
@@ -222,10 +225,19 @@ export default function Create() {
         ) : (
           <View className='w-full h-56 bg-[#1e1e2d] rounded-2xl mt-2 justify-center items-center relative'>
             <Video
+              ref={video => setVideoRef(video)}
               source={{ uri: videoFile?.uri }}
               className='w-full h-full rounded-xl'
               resizeMode={ResizeMode.COVER}
+              shouldPlay={isPlaying}
+              isLooping={true}
             />
+
+            <VideoPlayButton
+              onPress={() => setIsPlaying(!isPlaying)}
+              isPlaying={isPlaying}
+            />
+
             <TouchableOpacity
               onPress={() => handleCancelSelected('video')}
               className='absolute top-0 right-0 z-10 w-16 h-16 justify-start items-end py-1.5 px-2'

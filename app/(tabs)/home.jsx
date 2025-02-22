@@ -146,7 +146,7 @@ export default function Home() {
           return true;
         });
         isIncrement = true;
-        Toast.show("Save successful", {
+        Toast.show(t("Save successful"), {
           duration: Toast.durations.SHORT,
           position: Toast.positions.CENTER,
         });
@@ -164,7 +164,7 @@ export default function Home() {
           return false;
         });
         isIncrement = false;
-        Toast.show("Cancel save successfully", {
+        Toast.show(t("Cancel save successfully"), {
           duration: Toast.durations.SHORT,
           position: Toast.positions.CENTER,
         });
@@ -198,7 +198,7 @@ export default function Home() {
         ]);
         console.log("删除成功");
         handleRefresh();
-        Toast.show("Delete Success", {
+        Toast.show(t("Delete Success"), {
           duration: Toast.durations.SHORT,
           position: Toast.positions.CENTER,
         });
@@ -217,9 +217,8 @@ export default function Home() {
       style={{ marginTop: insetTop }}
     >
       <View
-        className={`flex-1 bg-primary ${
-          isFullscreen ? "w-full h-full" : "h-full"
-        }`}
+        className={`flex-1 bg-primary ${isFullscreen ? "w-full h-full" : "h-full"
+          }`}
       >
         <FlatList
           contentContainerStyle={{ paddingBottom: 44 }}
