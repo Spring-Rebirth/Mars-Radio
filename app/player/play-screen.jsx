@@ -59,6 +59,8 @@ export default function PlayScreen() {
 
   const videoRef = useRef(null);
   const landscapeVideoHeight = (Dimensions.get("window").width * 9) / 16;
+  const portraitVideoHeight = (Dimensions.get("window").width * 16) / 9;
+  const [selectedVideoHeight, setSelectedVideoHeight] = useState(landscapeVideoHeight);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [commentsDoc, setCommentsDoc] = useComments(videoId, refreshFlag);
   const [fullscreen, setFullscreen] = useState(false);
@@ -233,12 +235,19 @@ export default function PlayScreen() {
             source={{ uri: parsedVideoUrl }}
             style={[
               styles.video,
-              { height: fullscreen ? "100%" : landscapeVideoHeight },
+              { height: fullscreen ? "100%" : selectedVideoHeight },
             ]}
             resizeMode={ResizeMode.CONTAIN}
             useNativeControls={false}
             shouldPlay={playing}
             isLooping={false}
+            onReadyForDisplay={(status) => {
+              const { width, height } = status.naturalSize;
+              const ratio = width / height; // 计算宽高比
+              if (ratio < 1) {
+                setSelectedVideoHeight(portraitVideoHeight);
+              }
+            }}
             onPlaybackStatusUpdate={(status) => setPlaybackStatus(() => status)}
           />
         </TouchableWithoutFeedback>
