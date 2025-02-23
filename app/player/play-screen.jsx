@@ -58,7 +58,7 @@ export default function PlayScreen() {
   } = useVideoControls(videoRef);
 
   const videoRef = useRef(null);
-  const screenHeight = (Dimensions.get("window").width * 9) / 16;
+  const landscapeVideoHeight = (Dimensions.get("window").width * 9) / 16;
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [commentsDoc, setCommentsDoc] = useComments(videoId, refreshFlag);
   const [fullscreen, setFullscreen] = useState(false);
@@ -66,7 +66,7 @@ export default function PlayScreen() {
   const currentProgress = playbackStatus.positionMillis || 0;
   const totalDuration = playbackStatus.durationMillis || 1;
 
-  const [safeAreaInsets, setSafeAreaInsets] = useState({ top: 0, bottom: 0});
+  const [safeAreaInsets, setSafeAreaInsets] = useState({ top: 0, bottom: 0 });
   const insets = useSafeAreaInsets();
   const safeAreaInset = safeAreaInsets.top;
 
@@ -135,7 +135,7 @@ export default function PlayScreen() {
 
   useEffect(() => {
     // 初始化时仅设置一次
-    setSafeAreaInsets({ top: insets.top, bottom: insets.bottom});
+    setSafeAreaInsets({ top: insets.top, bottom: insets.bottom });
   }, []);
 
   useEffect(() => {
@@ -184,7 +184,7 @@ export default function PlayScreen() {
     const updateStatusBar = () => {
       StatusBar.setHidden(fullscreen);
     };
-    
+
     updateStatusBar();
     return () => StatusBar.setHidden(false);
   }, [fullscreen]);
@@ -233,7 +233,7 @@ export default function PlayScreen() {
             source={{ uri: parsedVideoUrl }}
             style={[
               styles.video,
-              { height: fullscreen ? "100%" : screenHeight },
+              { height: fullscreen ? "100%" : landscapeVideoHeight },
             ]}
             resizeMode={ResizeMode.CONTAIN}
             useNativeControls={false}
