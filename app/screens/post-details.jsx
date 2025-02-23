@@ -151,7 +151,10 @@ export default function PostDetails() {
             onLoad={() => setImageLoading(false)}
           />
           {imageLoading && (
-            <View className="absolute inset-x-0 items-center justify-center bg-gray-50">
+            <View
+              className="absolute inset-x-0 items-center justify-center bg-gray-50"
+              style={{ height: imageHeight || 200 }}
+            >
               <ActivityIndicator size="large" color="#0000ff" />
             </View>
           )}
