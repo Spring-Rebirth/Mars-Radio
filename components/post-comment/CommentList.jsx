@@ -45,7 +45,7 @@ export default function CommentList({
         <View className="w-full h-full justify-start items-center">
           <Image
             source={emptyIcon}
-            className="w-20 h-20 mt-14"
+            className="w-20 h-20 mt-12"
             resizeMode="contain"
           />
           <Text style={{ fontSize: 18, color: "gray", marginTop: 16 }}>
