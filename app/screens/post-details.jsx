@@ -14,7 +14,7 @@ import {
 } from "../../services/postsService";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import CommentInputBox from "../../components/post-comment/CommentInputBox";
 import CommentList from "../../components/post-comment/CommentList";
 import { fetchUserData } from "../../services/userService";
@@ -24,6 +24,56 @@ import { deleteSinglePost } from "../../services/postsService";
 import Toast from "react-native-toast-message";
 import LoadingModal from "../../components/modal/LoadingModal";
 import { SafeAreaView } from "react-native-safe-area-context";
+import React from "react";
+
+// 将 PostHeader 组件提取出来并使用 React.memo 包装
+const PostHeader = React.memo(({
+  parsedPost,
+  imageHeight,
+  imageLoading,
+  setImageLoading,
+  onCommentSubmitted
+}) => (
+  <>
+    {/* 帖子详情 */}
+    <View className="py-5 pt-0 border-b border-gray-300">
+      <View className="relative overflow-hidden">
+        <Image
+          source={{ uri: parsedPost.image }}
+          className="w-screen bg-[#EFEDED]"
+          style={{ height: imageHeight }}
+          resizeMode="contain"
+          onLoad={() => setImageLoading(false)}
+        />
+        {imageLoading && (
+          <View
+            className="absolute inset-x-0 items-center justify-center bg-gray-50"
+            style={{ height: imageHeight || 200 }}
+          >
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
+      </View>
+      <View className="px-5">
+        <Text className="mt-3 text-2xl font-bold text-gray-900">
+          {parsedPost?.title || "无法读取到标题文本"}
+        </Text>
+        {parsedPost?.content && (
+          <Text className="mt-2 text-base text-gray-600" numberOfLines={20}>
+            {parsedPost.content}
+          </Text>
+        )}
+      </View>
+    </View>
+    {/* 评论输入框 */}
+    <View className="p-4">
+      <CommentInputBox
+        onCommentSubmitted={onCommentSubmitted}
+        post_id={parsedPost.$id}
+      />
+    </View>
+  </>
+));
 
 export default function PostDetails() {
   const { post } = useLocalSearchParams();
@@ -42,27 +92,39 @@ export default function PostDetails() {
   const [deleting, setDeleting] = useState(false);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
 
-  // 获取帖子的用户信息
+  // 修改获取评论的逻辑，将其从 useEffect 中分离出来
+  const getCommentsOfPost = async () => {
+    setIsCommentsLoading(true);
+    try {
+      const comments = await fetchCommentsOfPost(parsedPost.$id);
+      setCommentsDoc(comments.documents);
+    } catch (error) {
+      console.error("Failed to fetch comments:", error);
+    } finally {
+      setIsCommentsLoading(false);
+    }
+  };
+
+  // 获取帖子作者信息
   useEffect(() => {
     const getPostCreatorInfo = async () => {
       const postCreator = await fetchUserData(parsedPost.author);
       setPostCreator(postCreator);
     };
+    getPostCreatorInfo();
+  }, []); // 只在组件挂载时获取作者信息
 
-    const getCommentsOfPost = async () => {
-      setIsCommentsLoading(true);
-      try {
-        const comments = await fetchCommentsOfPost(parsedPost.$id);
-        setCommentsDoc(comments.documents);
-      } catch (error) {
-        console.error("Failed to fetch comments:", error);
-      } finally {
-        setIsCommentsLoading(false);
-      }
-    };
+  // 单独处理评论的获取
+  useEffect(() => {
+    getCommentsOfPost();
+  }, []); // 只在组件挂载时获取评论
 
-    Promise.all([getPostCreatorInfo(), getCommentsOfPost()]);
-  }, [refreshFlag]);
+  // 删除评论后直接更新评论列表，而不是通过 refreshFlag
+  const handleCommentDeleted = (deletedCommentId) => {
+    setCommentsDoc(prevComments =>
+      prevComments.filter(comment => comment.$id !== deletedCommentId)
+    );
+  };
 
   useEffect(() => {
     if (user && parsedPost) {
@@ -137,48 +199,15 @@ export default function PostDetails() {
     );
   };
 
-  // 创建一个头部组件
-  const PostHeader = () => (
-    <>
-      {/* 帖子详情 */}
-      <View className="py-5 pt-0 border-b border-gray-300">
-        <View className="relative overflow-hidden">
-          <Image
-            source={{ uri: parsedPost.image }}
-            className="w-screen bg-[#EFEDED]"
-            style={{ height: imageHeight }}
-            resizeMode="contain"
-            onLoad={() => setImageLoading(false)}
-          />
-          {imageLoading && (
-            <View
-              className="absolute inset-x-0 items-center justify-center bg-gray-50"
-              style={{ height: imageHeight || 200 }}
-            >
-              <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-          )}
-        </View>
-        <View className="px-5">
-          <Text className="mt-3 text-2xl font-bold text-gray-900">
-            {parsedPost?.title || "无法读取到标题文本"}
-          </Text>
-          {parsedPost?.content && (
-            <Text className="mt-2 text-base text-gray-600" numberOfLines={20}>
-              {parsedPost.content}
-            </Text>
-          )}
-        </View>
-      </View>
-      {/* 评论输入框 */}
-      <View className="p-4">
-        <CommentInputBox
-          onCommentSubmitted={onCommentSubmitted}
-          post_id={parsedPost.$id}
-        />
-      </View>
-    </>
-  );
+  const headerComponent = useMemo(() => (
+    <PostHeader
+      parsedPost={parsedPost}
+      imageHeight={imageHeight}
+      imageLoading={imageLoading}
+      setImageLoading={setImageLoading}
+      onCommentSubmitted={onCommentSubmitted}
+    />
+  ), [parsedPost, imageHeight, imageLoading, onCommentSubmitted]);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -223,7 +252,8 @@ export default function PostDetails() {
         fetchReplies={fetchReplies}
         submitReply={submitReply}
         isLoading={isCommentsLoading}
-        ListHeaderComponent={PostHeader} // 传入头部组件
+        ListHeaderComponent={headerComponent}
+        onCommentDeleted={handleCommentDeleted}
       />
       <LoadingModal isVisible={deleting} loadingText={t("Deleting post...")} />
     </SafeAreaView>
