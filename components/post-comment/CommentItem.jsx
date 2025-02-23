@@ -33,15 +33,15 @@ const CommentItem = ({
   comment,
   level = 1,
   fetchReplies,
-  setRefreshFlag,
   fetchCommentUser,
   submitReply,
   onReplyDeleted,
-  rootCommentId = comment.$id,
+  onCommentDeleted,
+  onCommentAdded,
+  rootCommentId = comment?.$id,
 }) => {
-  console.log("commentItem comment:", JSON.stringify(comment, null, 2));
   const [replies, setReplies] = useState([]);
-  const [commentId, setCommentId] = useState(comment.$id);
+  const [commentId, setCommentId] = useState(comment?.$id);
   const [repliesCount, setRepliesCount] = useState(0);
   const [showReplies, setShowReplies] = useState(false);
   const [loadingReplies, setLoadingReplies] = useState(false);
@@ -73,12 +73,19 @@ const CommentItem = ({
       setCmtAvatar({ uri: user.avatar });
     };
     loadUser();
-  }, [comment.creator?.$id]);
+  }, [comment?.creator?.$id]);
 
+  // 加载回复数量
   useEffect(() => {
     const loadRepliesCount = async () => {
-      const childComments = await fetchReplies(commentId);
-      setRepliesCount(childComments?.length); // 设置子评论数量
+      if (!commentId) return; // 如果没有评论ID，直接返回
+      try {
+        const childComments = await fetchReplies(commentId);
+        setRepliesCount(childComments?.length || 0); // 设置子评论数量，如果为空则设为0
+      } catch (error) {
+        console.error('Error loading replies count:', error);
+        setRepliesCount(0);
+      }
     };
     loadRepliesCount();
   }, [commentId, fetchReplies]);
@@ -94,11 +101,17 @@ const CommentItem = ({
 
   // 切换显示/隐藏子评论
   const toggleReplies = useCallback(async () => {
-    if (!showReplies) {
+    if (!showReplies && commentId) { // 确保有评论ID
       setLoadingReplies(true);
-      const childComments = await fetchReplies(commentId);
-      setReplies(childComments);
-      setLoadingReplies(false);
+      try {
+        const childComments = await fetchReplies(commentId);
+        setReplies(childComments || []); // 如果返回undefined，设为空数组
+      } catch (error) {
+        console.error('Error loading replies:', error);
+        setReplies([]);
+      } finally {
+        setLoadingReplies(false);
+      }
     }
     setShowReplies((prev) => !prev);
   }, [showReplies, fetchReplies, commentId]);
@@ -126,8 +139,8 @@ const CommentItem = ({
           // 如果是子评论，通知父组件删除子评论
           onReplyDeleted();
         } else {
-          // 如果是父评论，通知父组件刷新评论列表
-          setRefreshFlag((prev) => !prev);
+          // 如果是父评论，直接调用删除回调
+          onCommentDeleted(commentId);
         }
       }
     } catch (error) {
@@ -136,71 +149,76 @@ const CommentItem = ({
   };
 
   const handleReplySubmit = useCallback(async () => {
-    // 调用提交回复的函数，传入回复内容和父评论 ID   // 获取回复的用户名
     if (!replyMsg.trim()) return;
 
     setReplySubmiting(true);
 
-    const parentUsername = await fetchCommentUsername(parentCommentUserId);
+    try {
+      const parentUsername = await fetchCommentUsername(parentCommentUserId);
 
-    // 如果评论层级大于MAX_LEVEL, 在回复内容前加上"@父评论用户名"
-    if (level > MAX_LEVEL) {
-      await submitReply(
-        `@${parentUsername}  ${replyMsg}`,
+      // 提交回复
+      const newReply = await submitReply(
+        level > MAX_LEVEL ? `@${parentUsername}  ${replyMsg}` : replyMsg,
         parentCommentId,
         user.$id,
         comment.post_id
       );
-    } else {
-      await submitReply(replyMsg, parentCommentId, user.$id, comment.post_id);
-    }
 
-    setRepliesCount((prevCount) => prevCount + 1);
-    console.log("Submit reply:", replyMsg);
+      setRepliesCount((prevCount) => prevCount + 1);
 
-    // 获取上一级评论，里面包含了user_ID
-    const parentComment = await databases.getDocument(
-      config.databaseId, // 替换为你的数据库 ID
-      config.commentColletionId, // 替换为你的评论集合 ID
-      parentCommentId
-    );
-
-    // 通过 parentComment的user_ID获取用户信息
-    const parentCommentUser = await fetchCommentUser(parentComment.creator.$id);
-
-    if (
-      parentCommentUser.expo_push_token &&
-      parentCommentUser.$id !== user?.$id
-    ) {
-      // 发送推送通知
-      sendPushNotification(
-        parentCommentUser.expo_push_token,
-        t("notifications.userRepliedComment", { username: user?.username }),
-        replyMsg,
-        {
-          videoId: comment.video_ID,
-          userId: user.$id,
-          commentId: rootCommentId,
-        }
+      // 获取上一级评论用户信息并发送通知
+      const parentComment = await databases.getDocument(
+        config.databaseId,
+        config.commentColletionId,
+        parentCommentId
       );
+      const parentCommentUser = await fetchCommentUser(parentComment.creator.$id);
+
+      if (
+        parentCommentUser.expo_push_token &&
+        parentCommentUser.$id !== user?.$id
+      ) {
+        sendPushNotification(
+          parentCommentUser.expo_push_token,
+          t("notifications.userRepliedComment", { username: user?.username }),
+          replyMsg,
+          {
+            videoId: comment.video_ID,
+            userId: user.$id,
+            commentId: rootCommentId,
+          }
+        );
+      }
+
+      // 重置状态
+      setReplyMsg("");
+      setParentCommentUserId(null);
+      setParentCommentId(null);
+      setShowReplyModal(false);
+
+      // 如果是主评论的回复，通知父组件添加新评论
+      if (level === 1) {
+        onCommentAdded(newReply);
+      }
+
+      Toast.show({
+        type: "success",
+        position: "bottom",
+        bottomOffset: 68,
+        text1: t("Reply Success"),
+      });
+    } catch (error) {
+      console.error("Failed to submit reply:", error);
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        bottomOffset: 68,
+        text1: t("Reply Failed"),
+      });
+    } finally {
+      setReplySubmiting(false);
     }
-
-    console.log("执行了发送视频子评论推送通知");
-
-    setReplyMsg("");
-    setParentCommentUserId(null);
-    setParentCommentId(null);
-    setShowReplyModal(false);
-    setRefreshFlag((prev) => !prev);
-
-    setReplySubmiting(false);
-    Toast.show({
-      type: "success",
-      position: "bottom",
-      bottomOffset: 68,
-      text1: t("Reply Success"),
-    });
-  }, [replyMsg, parentCommentId]);
+  }, [replyMsg, parentCommentId, level, user, comment?.post_id]);
 
   const handleClickLike = async () => {
     try {
@@ -306,7 +324,6 @@ const CommentItem = ({
                 comment={reply}
                 level={level + 1}
                 fetchReplies={fetchReplies}
-                setRefreshFlag={setRefreshFlag}
                 fetchCommentUser={fetchCommentUser}
                 submitReply={submitReply}
                 onReplyDeleted={handleReplyDeleted}

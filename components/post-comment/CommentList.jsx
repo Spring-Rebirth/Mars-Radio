@@ -8,11 +8,12 @@ import { useTranslation } from "react-i18next";
 export default function CommentList({
   commentsDoc,
   fetchReplies,
-  setRefreshFlag,
   fetchCommentUser,
   submitReply,
   isLoading,
   ListHeaderComponent,
+  onCommentDeleted,
+  setCommentsDoc,
 }) {
   const flatListRef = useRef(null);
   const { t } = useTranslation();
@@ -21,9 +22,12 @@ export default function CommentList({
     <CommentItem
       comment={item}
       fetchReplies={fetchReplies}
-      setRefreshFlag={setRefreshFlag}
       fetchCommentUser={fetchCommentUser}
       submitReply={submitReply}
+      onCommentDeleted={onCommentDeleted}
+      onCommentAdded={(newComment) => {
+        setCommentsDoc(prev => [newComment, ...prev]);
+      }}
     />
   );
 
@@ -54,7 +58,7 @@ export default function CommentList({
         </View>
       }
       showsVerticalScrollIndicator={false}
-      keyExtractor={(item) => item.$id.toString()}
+      keyExtractor={(item) => item?.$id.toString()}
       contentContainerStyle={{ paddingBottom: 80 }}
       removeClippedSubviews={false} // 仅渲染视口中的子项，设置为true会导致modal弹出时子项不可见而被卸载
       initialNumToRender={10} // 根据需要调整初始渲染的项数

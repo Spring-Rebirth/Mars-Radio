@@ -81,7 +81,6 @@ export default function PostDetails() {
   const { t } = useTranslation();
   const [commentsDoc, setCommentsDoc] = useState([]);
   const [postCreator, setPostCreator] = useState(null);
-  const [refreshFlag, setRefreshFlag] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageHeight, setImageHeight] = useState(0);
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -122,7 +121,7 @@ export default function PostDetails() {
   // 删除评论后直接更新评论列表，而不是通过 refreshFlag
   const handleCommentDeleted = (deletedCommentId) => {
     setCommentsDoc(prevComments =>
-      prevComments.filter(comment => comment.$id !== deletedCommentId)
+      prevComments.filter(comment => comment?.$id !== deletedCommentId)
     );
   };
 
@@ -247,13 +246,13 @@ export default function PostDetails() {
       </View>
       <CommentList
         commentsDoc={commentsDoc}
-        setRefreshFlag={setRefreshFlag}
         fetchCommentUser={fetchUserData}
         fetchReplies={fetchReplies}
         submitReply={submitReply}
         isLoading={isCommentsLoading}
         ListHeaderComponent={headerComponent}
         onCommentDeleted={handleCommentDeleted}
+        setCommentsDoc={setCommentsDoc}
       />
       <LoadingModal isVisible={deleting} loadingText={t("Deleting post...")} />
     </SafeAreaView>
