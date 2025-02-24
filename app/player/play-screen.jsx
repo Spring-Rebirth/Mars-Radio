@@ -8,6 +8,7 @@ import {
   StatusBar,
   TouchableWithoutFeedback,
   Text,
+  ScrollView,
 } from "react-native";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
@@ -219,7 +220,7 @@ export default function PlayScreen() {
   }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply, targetCommentId]);
 
   return (
-    <View
+    <ScrollView
       style={[
         styles.container,
         { backgroundColor: fullscreen ? "black" : "#F5F5F5" },
@@ -358,7 +359,7 @@ export default function PlayScreen() {
         </View>
         <View className="flex-1">{memoizedCommentView}</View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
