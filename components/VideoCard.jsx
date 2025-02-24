@@ -66,7 +66,7 @@ export default function VideoCard({
       <TouchableOpacity
         className='w-full justify-center items-center relative overflow-hidden mb-2.5' // 添加 overflow-hidden
         style={{ height: thumbnailHeight }}
-        activeOpacity={0.7}
+        activeOpacity={1}
         onPress={handlePlay}
       >
 
