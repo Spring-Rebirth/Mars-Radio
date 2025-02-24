@@ -348,7 +348,7 @@ export default function PlayScreen() {
         )}
       </View>
 
-      <View className="flex-1 mt-4">
+      <View className="flex-1 mt-2">
         <View className="px-2">
           <CommentInputBox
             userId={userId}

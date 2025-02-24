@@ -46,7 +46,7 @@ export default function CommentInputBox({ onCommentSubmitted, post_id }) {
 
   return (
     <View className="mt-4">
-      <Text className={"text-black text-xl mb-4 font-bold"}>
+      <Text className={"text-black text-xl mb-4 font-bold ml-1"}>
         {t("Comment")}
       </Text>
       <TextInput

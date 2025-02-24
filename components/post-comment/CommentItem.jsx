@@ -64,6 +64,7 @@ const CommentItem = ({
 
   const MAX_LEVEL = 1;
   let paddingLeft = level <= MAX_LEVEL ? 40 : 0;
+  let marginHorizontal = level <= MAX_LEVEL ? 15 : 0;
 
   // 加载用户信息
   useEffect(() => {
@@ -241,7 +242,7 @@ const CommentItem = ({
   }
 
   return (
-    <View style={styles.commentContainer}>
+    <View style={[styles.commentContainer, { marginHorizontal }]}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() =>
