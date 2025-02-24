@@ -45,7 +45,7 @@ export default function CommentInputBox({ onCommentSubmitted, post_id }) {
   };
 
   return (
-    <View>
+    <View className="mt-4">
       <Text className={"text-black text-xl mb-4 font-bold"}>
         {t("Comment")}
       </Text>
@@ -62,7 +62,6 @@ export default function CommentInputBox({ onCommentSubmitted, post_id }) {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   input: {
     height: 40,
     borderColor: "gray",

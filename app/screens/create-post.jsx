@@ -56,6 +56,15 @@ export default function CreatePost() {
   };
 
   const handlePublishPost = async () => {
+    if (form.title.trim() == "" || imageFile == null) {
+      Toast.show({
+        type: "error",
+        topOffset: "80",
+        visibilityTime: 5000,
+        text1: t("Title and image are required"),
+      });
+      return;
+    }
     setOnPublish(true);
     try {
       if (imageFile) {

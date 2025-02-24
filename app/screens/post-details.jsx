@@ -66,7 +66,7 @@ const PostHeader = React.memo(({
       </View>
     </View>
     {/* 评论输入框 */}
-    <View className="p-4">
+    <View className="-mx-2">
       <CommentInputBox
         onCommentSubmitted={onCommentSubmitted}
         post_id={parsedPost.$id}
