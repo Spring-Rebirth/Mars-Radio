@@ -59,7 +59,7 @@ export default function CommentList({
       }
       showsVerticalScrollIndicator={false}
       keyExtractor={(item) => item?.$id.toString()}
-      contentContainerStyle={{ paddingBottom: 80 }}
+      contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: 15 }}
       removeClippedSubviews={false} // 仅渲染视口中的子项，设置为true会导致modal弹出时子项不可见而被卸载
       initialNumToRender={10} // 根据需要调整初始渲染的项数
       maxToRenderPerBatch={10} // 根据需要调整每批渲染的最大项数

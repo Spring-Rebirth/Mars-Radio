@@ -360,7 +360,6 @@ const CommentItem = ({
 const styles = StyleSheet.create({
   commentContainer: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
   },
   header: {
     flexDirection: "row",
