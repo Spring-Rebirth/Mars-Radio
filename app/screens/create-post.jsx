@@ -56,7 +56,7 @@ export default function CreatePost() {
   };
 
   const handlePublishPost = async () => {
-    if (form.title.trim() == "" || imageFile == null) {
+    if (form.title == "" || imageFile == null) {
       Toast.show({
         type: "error",
         topOffset: "80",
@@ -78,7 +78,13 @@ export default function CreatePost() {
         const storageImageUrl = await fetchFileUrl(image_ID);
         console.log(`storageImageUrl: ${storageImageUrl}`);
 
-        const fileModel = { ...form, image: storageImageUrl };
+        const fileModel = {
+          title: form.title.trim(),
+          content: form.content.trim(),
+          author: form.author,
+          author_name: form.author_name,
+          image: storageImageUrl
+        };
 
         await createPost(fileModel);
         console.log("发布成功");
