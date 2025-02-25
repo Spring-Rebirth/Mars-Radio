@@ -219,7 +219,136 @@ export default function PlayScreen() {
     );
   }, [userId, videoId, avatar, username, commentsDoc, fetchReplies, submitReply, targetCommentId]);
 
-  return (
+  return fullscreen ? (
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: fullscreen ? "black" : "#F5F5F5" },
+      ]}
+    >
+      <View
+        className="relative"
+        style={[!fullscreen && { marginTop: safeAreaInset }]}
+      >
+        <TouchableWithoutFeedback onPress={handleClickedVideo}>
+          <Video
+            ref={videoRef}
+            source={{ uri: parsedVideoUrl }}
+            style={[
+              styles.video,
+              { height: fullscreen ? "100%" : selectedVideoHeight },
+            ]}
+            resizeMode={ResizeMode.CONTAIN}
+            useNativeControls={false}
+            shouldPlay={playing}
+            isLooping={false}
+            onReadyForDisplay={(status) => {
+              const { width, height } = status.naturalSize;
+              const ratio = width / height; // 计算宽高比
+              if (ratio < 1) {
+                setSelectedVideoHeight(portraitVideoHeight);
+              }
+            }}
+            onPlaybackStatusUpdate={(status) => setPlaybackStatus(() => status)}
+          />
+        </TouchableWithoutFeedback>
+
+        {loading && (
+          <ActivityIndicator
+            size="large"
+            color="#000"
+            style={[
+              styles.activityIndicator,
+              { top: "50%", transform: [{ translateX: -20 }, { translateY: -20 }] },
+            ]}
+          />
+        )}
+
+        {isEnded && (
+          <TouchableOpacity
+            onPress={() => replayVideo(videoRef)}
+            style={
+              fullscreen ? styles.replayIconContainerFS : styles.replayIconContainer
+            }
+          >
+            <Image
+              source={replayIcon}
+              style={styles.replayIcon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        )}
+
+        {showControls && !isEnded && (
+          <>
+            {/* 播放/暂停按钮 */}
+            <TouchableOpacity
+              style={[styles.controlButton]}
+              onPress={() => {
+                setPlaying((prev) => !prev);
+                showControlsWithTimer();
+              }}
+            >
+              <Image
+                source={playing ? pauseIcon : playbackIcon}
+                style={{ width: "100%", height: "100%" }}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+
+            <View
+              style={[
+                fullscreen ? styles.bottomBarFS : styles.bottomBar,
+                !fullscreen && { bottom: "5%", left: 0 },
+              ]}
+            >
+              <Text style={fullscreen ? styles.timeTextFS : styles.timeText}>
+                {formatTime(currentProgress)}
+                <Text
+                  style={
+                    fullscreen ? styles.totalTimeTextFS : styles.totalTimeText
+                  }
+                >
+                  {" "}
+                  / {formatTime(totalDuration)}
+                </Text>
+              </Text>
+              <Slider
+                style={fullscreen ? styles.sliderFS : styles.slider}
+                value={currentProgress}
+                minimumValue={0}
+                maximumValue={totalDuration}
+                minimumTrackTintColor="#87CEEB"
+                maximumTrackTintColor="#FFFFFF"
+                trackStyle={styles.trackStyle}
+                thumbTouchSize={{ width: 40, height: 50 }}
+                onSlidingStart={() => {
+                  // 用户开始滑动，显示控件并清除隐藏定时器
+                  if (hideControlsTimer.current) {
+                    clearTimeout(hideControlsTimer.current);
+                    hideControlsTimer.current = null;
+                  }
+                  setShowControls(true);
+                }}
+                onValueChange={changeVideoProgress}
+                onSlidingComplete={() => {
+                  changeVideoProgress();
+                  showControlsWithTimer();
+                }}
+              />
+              <TouchableOpacity onPress={toggleFullscreen}>
+                <Image
+                  source={fullscreen ? exitFullscreenIcon : fullscreenIcon}
+                  className={`${fullscreen ? "w-6 h-6 mr-3" : "w-4 h-4 mr-4"}`}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+      </View>
+    </View>
+  ) : (
     <ScrollView
       style={[
         styles.container,
@@ -347,8 +476,7 @@ export default function PlayScreen() {
           </>
         )}
       </View>
-
-      <View className="flex-1 mt-2">
+      <View className="flex-1">
         <View className="px-2">
           <CommentInputBox
             userId={userId}
