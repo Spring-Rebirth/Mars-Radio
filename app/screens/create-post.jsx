@@ -56,12 +56,12 @@ export default function CreatePost() {
   };
 
   const handlePublishPost = async () => {
-    if (form.title == "" || imageFile == null) {
+    if (form.title == "") {
       Toast.show({
         type: "error",
         topOffset: "80",
         visibilityTime: 5000,
-        text1: t("Title and image are required"),
+        text1: t("Title is required"),
       });
       return;
     }
@@ -84,6 +84,22 @@ export default function CreatePost() {
           author: form.author,
           author_name: form.author_name,
           image: storageImageUrl
+        };
+
+        await createPost(fileModel);
+        console.log("发布成功");
+        router.navigate("posts");
+        Toast.show({
+          type: "success",
+          topOffset: "80",
+          text1: t("Publish Successful"),
+        });
+      } else {
+        const fileModel = {
+          title: form.title.trim(),
+          content: form.content.trim(),
+          author: form.author,
+          author_name: form.author_name,
         };
 
         await createPost(fileModel);

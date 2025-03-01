@@ -37,23 +37,26 @@ const PostHeader = React.memo(({
   <>
     {/* 帖子详情 */}
     <View className="py-5 pt-0 border-b border-gray-300">
-      <View className="relative overflow-hidden">
-        <Image
-          source={{ uri: parsedPost.image }}
-          className="w-screen bg-[#EFEDED]"
-          style={{ height: imageHeight }}
-          resizeMode="contain"
-          onLoad={() => setImageLoading(false)}
-        />
-        {imageLoading && (
-          <View
-            className="absolute inset-x-0 items-center justify-center bg-gray-50"
-            style={{ height: imageHeight || 200 }}
-          >
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
-        )}
-      </View>
+      {parsedPost.image && (
+        <View className="relative overflow-hidden">
+          <Image
+            source={{ uri: parsedPost.image }}
+            className="w-screen bg-[#EFEDED]"
+            style={{ height: imageHeight }}
+            resizeMode="contain"
+            onLoad={() => setImageLoading(false)}
+          />
+          {imageLoading && (
+            <View
+              className="absolute inset-x-0 items-center justify-center bg-gray-50"
+              style={{ height: imageHeight || 200 }}
+            >
+              <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+          )}
+        </View>
+      )}
+
       <View className="px-5">
         <Text className="mt-3 text-2xl font-bold text-gray-900">
           {parsedPost?.title || "无法读取到标题文本"}
