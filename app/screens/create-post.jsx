@@ -153,7 +153,7 @@ export default function CreatePost() {
       </View>
       {/* 新增上传图片表单项 */}
       <View className="mb-4">
-        <Text className="mb-1 text-lg">{t("Upload Image")} *</Text>
+        <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
         <Pressable
           onPress={() => {
             handlePickImage();
