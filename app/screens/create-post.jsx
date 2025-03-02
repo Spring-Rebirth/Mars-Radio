@@ -153,7 +153,15 @@ export default function CreatePost() {
       </View>
       {/* 新增上传图片表单项 */}
       <View className="mb-4">
-        <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
+        <View className="flex-row justify-between">
+          <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
+          {imageFile?.uri && (
+            <Text className="mb-1 text-base text-gray-500">
+              {t("Click image to select again")}
+            </Text>
+          )}
+        </View>
+
         <Pressable
           onPress={() => {
             handlePickImage();
@@ -170,7 +178,7 @@ export default function CreatePost() {
           ) : (
             <Image
               source={{ uri: imageFile.uri }}
-              style={{ width: 200, height: 200 }}
+              style={{ width: 300, height: 250 }}
               resizeMode="contain"
             />
           )}

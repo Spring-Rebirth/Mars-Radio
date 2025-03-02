@@ -87,7 +87,7 @@ export default function PostDetails() {
   const [imageLoading, setImageLoading] = useState(true);
   const [imageHeight, setImageHeight] = useState(0);
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-  const maxHeight = screenHeight * 0.6; // 设置为屏幕高度的70%
+  const maxHeight = screenHeight * 1; // 设置为屏幕高度的100%
   const adminList = useAdminStore((state) => state.adminList);
   const [isCreator, setIsCreator] = useState(false);
   const { user } = useGlobalContext();
