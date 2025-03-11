@@ -4,14 +4,14 @@ import { GlobalContext } from './GlobalProvider';
 import { Stack } from "expo-router";
 
 const AppContent = () => {
-    const { playDataRef } = useContext(GlobalContext);
+    const { playbackDataRef } = useContext(GlobalContext);
 
     useEffect(() => {
         const loadPlayData = async () => {
             try {
                 const storedData = await AsyncStorage.getItem('playData');
                 if (storedData) {
-                    playDataRef.current = JSON.parse(storedData);
+                    playbackDataRef.current = JSON.parse(storedData);
                 }
             } catch (error) {
                 console.error('加载播放数据失败:', error);

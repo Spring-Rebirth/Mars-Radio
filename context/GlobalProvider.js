@@ -1,7 +1,7 @@
 // cSpell:word appwrite
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { getCurrentUser } from '../lib/appwrite';
-import { syncDataToBackend } from '../lib/appwrite'; // 导入同步函数
+import { syncDataToBackend } from '../lib/appwrite';
 import { useUser, useClerk } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
@@ -18,7 +18,7 @@ function GlobalProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const playDataRef = useRef({});
+  const playbackDataRef = useRef({});
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -56,16 +56,15 @@ function GlobalProvider({ children }) {
     fetchUser();
   }, [isLoaded, clerkUser]);
 
-  const updatePlayData = async (video_ID, count) => {
-    playDataRef.current[video_ID] = {
+  const updatePlaybackData = async (video_ID, count) => {
+    playbackDataRef.current[video_ID] = {
       count,
-      lastPlayTime: Date.now(),
+      lastPlaybackTime: Date.now(),
       synced: false,
     };
-    // 立即同步数据到后端
+
     try {
-      await syncDataToBackend(playDataRef);
-      // console.log('播放数据同步成功');
+      await syncDataToBackend(playbackDataRef);
     } catch (error) {
       console.error('同步播放数据失败:', error);
     }
@@ -73,10 +72,9 @@ function GlobalProvider({ children }) {
 
   const handleLogout = async () => {
     try {
-      await signOut(); // 根据 Clerk 的 API 进行注销
+      await signOut();
       setIsLoggedIn(false);
       setUser(null);
-      // 根据您的路由方案，导航到登录页面
       router.replace('/sign-in');
     } catch (error) {
       console.log('Error logging out:', error);
@@ -91,8 +89,8 @@ function GlobalProvider({ children }) {
       isLoggedIn,
       setIsLoggedIn,
       isLoading,
-      playDataRef,
-      updatePlayData,
+      playbackDataRef,
+      updatePlaybackData,
       handleLogout
     }}>
       {children}

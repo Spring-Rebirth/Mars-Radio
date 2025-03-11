@@ -20,7 +20,7 @@ export default function VideoCard({
 
   const { user } = useGlobalContext();
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { updatePlayData, playDataRef } = useContext(GlobalContext);
+  const { updatePlaybackData, playbackDataRef } = useContext(GlobalContext);
   const [playCount, setPlayCount] = useState(post.played_counts || 0);
 
   useEffect(() => {
@@ -36,15 +36,15 @@ export default function VideoCard({
     const currentTime = Date.now();
     const cooldownPeriod = 5 * 60 * 1000; // 5分钟
 
-    const lastPlayTime = playDataRef.current[$id]?.lastPlayTime || 0;
+    const lastPlaybackTime = playbackDataRef.current[$id]?.lastPlaybackTime || 0;
 
-    if (currentTime - lastPlayTime > cooldownPeriod) {
+    if (currentTime - lastPlaybackTime > cooldownPeriod) {
       // 冷却时间已过，递增播放次数
       const newCount = playCount + 1;
       setPlayCount(newCount);
 
       // 更新播放数据并同步到后端
-      updatePlayData($id, newCount);
+      updatePlaybackData($id, newCount);
     } else {
       console.log('冷却时间未过，播放次数不增加');
     }
