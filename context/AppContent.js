@@ -7,7 +7,7 @@ const AppContent = () => {
     const { playbackDataRef } = useContext(GlobalContext);
 
     useEffect(() => {
-        const loadPlayData = async () => {
+        const loadPlaybackData = async () => {
             try {
                 const storedData = await AsyncStorage.getItem('playData');
                 if (storedData) {
@@ -18,7 +18,7 @@ const AppContent = () => {
             }
         };
 
-        loadPlayData();
+        loadPlaybackData();
     }, []);
 
     return (
