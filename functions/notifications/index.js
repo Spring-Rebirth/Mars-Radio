@@ -92,13 +92,16 @@ async function sendPushNotification(expoPushToken, title, body, data) {
 
 async function updatePushToken(user, expoPushToken) {
   registerForPushNotificationsAsync().then(async (token) => {
-    console.log('token:', token);
+    console.log('updatePushToken token:', token);
+    console.log('user && expoPushToken:', user, expoPushToken);
     if (token) {
-      if (user && expoPushToken) {
+      if (user) {
+        console.log('updatePushToken user:', user);
         if (user.expo_push_token === token) return;
         const content = { expo_push_token: token };
 
         try {
+          console.log('进入向数据库发送token代码');
           const result = await updateUserInfo(user.$id, content);
           if (result) console.log('Update expo push token successful');
         } catch (error) {
