@@ -101,7 +101,7 @@ export default function PostDetails() {
       setPostCreator(postCreator);
     };
     getPostCreatorInfo();
-  }, [parsedPost]); // 依赖于 parsedPost
+  }, []);
 
   // 获取评论
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function PostDetails() {
       }
     };
     getCommentsOfPost();
-  }, [parsedPost]); // 依赖于 parsedPost
+  }, []);
 
   // 删除评论后直接更新评论列表，而不是通过 refreshFlag
   const handleCommentDeleted = (deletedCommentId) => {
