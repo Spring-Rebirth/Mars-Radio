@@ -245,16 +245,20 @@ export default function PostDetails() {
           </Pressable>
         )}
       </View>
-      <CommentList
-        commentsDoc={commentsDoc}
-        fetchCommentUser={fetchUserData}
-        fetchReplies={fetchReplies}
-        submitReply={submitReply}
-        isLoading={isCommentsLoading}
-        ListHeaderComponent={headerComponent}
-        onCommentDeleted={handleCommentDeleted}
-        setCommentsDoc={setCommentsDoc}
-      />
+      {isCommentsLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <CommentList
+          commentsDoc={commentsDoc}
+          fetchCommentUser={fetchUserData}
+          fetchReplies={fetchReplies}
+          submitReply={submitReply}
+          isLoading={isCommentsLoading}
+          ListHeaderComponent={headerComponent}
+          onCommentDeleted={handleCommentDeleted}
+          setCommentsDoc={setCommentsDoc}
+        />
+      )}
       <LoadingModal isVisible={deleting} loadingText={t("Deleting post...")} />
     </SafeAreaView>
   );
