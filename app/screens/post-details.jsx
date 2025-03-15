@@ -11,8 +11,8 @@ import {
   fetchCommentsOfPost,
   fetchReplies,
   submitReply,
-  fetchUserData,
 } from "../../services/postsService";
+import { fetchUserData } from '../../services/userService'
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, useMemo } from "react";
