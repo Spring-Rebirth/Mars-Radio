@@ -2,6 +2,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { updateUserInfo } from '../../services/userService';
 
 async function registerForPushNotificationsAsync() {
   let token;
@@ -40,15 +41,14 @@ async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
-      console.log(token);
+      console.log('token :', token);
+      return token;
     } catch (e) {
       token = `${e}`;
     }
   } else {
     alert('Must use physical device for Push Notifications');
   }
-
-  return token;
 }
 
 async function schedulePushNotification() {
@@ -90,12 +90,12 @@ async function sendPushNotification(expoPushToken, title, body, data) {
   }
 }
 
-async function updatePushToken() {
-  registerForPushNotificationsAsync().then(async token => {
+async function updatePushToken(user, expoPushToken) {
+  registerForPushNotificationsAsync().then(async (token) => {
+    console.log('token:', token);
     if (token) {
       if (user && expoPushToken) {
         if (user.expo_push_token === token) return;
-        console.log('expoPushToken:', token);
         const content = { expo_push_token: token };
 
         try {

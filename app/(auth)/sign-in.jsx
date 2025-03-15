@@ -95,6 +95,7 @@ export default function SignIn() {
         // 获取当前用户信息并更新状态
         const result = await getCurrentUser(user.id);
         if (result) setUser(result);
+        console.log('use result:', JSON.stringify(result, null, 2));
 
         setIsLoggedIn(true);
 
@@ -103,7 +104,8 @@ export default function SignIn() {
         setIsTransitioning(true); // 标记进入跳转状态
 
         // 更新推送令牌
-        await updatePushToken();
+        await updatePushToken(result, result.expo_push_token)
+          .then(console.log('推送令牌更新成功'));
 
         setTimeout(() => {
           router.replace("/home");

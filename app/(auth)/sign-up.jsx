@@ -137,9 +137,6 @@ export default function SignUp() {
       setIsSubmitting(false);
       // setIsTransitioning(true); // 标记进入跳转状态
 
-      // 更新推送令牌
-      await updatePushToken();
-
       setTimeout(() => {
         router.replace("/home");
       }, 2000); // 延迟 100 毫秒以确保状态同步完成
@@ -175,6 +172,8 @@ export default function SignUp() {
         );
 
         setUser(userDocument);
+        // 更新推送令牌
+        await updatePushToken(userDocument, userDocument.expo_push_token);
         setIsLoggedIn(true);
         setVerifySuccess(true);
       }
