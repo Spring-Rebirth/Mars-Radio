@@ -1,11 +1,10 @@
-import { Text, View, Button, FlatList } from 'react-native';
 import { schedulePushNotification } from '../../functions/notifications';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NoticeItem from '../../components/NoticeItem';
 import { useEffect, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { config, databases } from '../../lib/appwrite';
+import { config, databases } from '../../services/postsService';
 import { useTranslation } from 'react-i18next';
 
 function NoticeScreen() {
@@ -43,18 +42,19 @@ function NoticeScreen() {
   const handlePress = async () => {
     console.log('Notification clicked', notificationsData);
     // 在这里处理点击通知后的逻辑
-    const { userId, videoId, commentId } = notificationsData.data;
+    const { userId, postId, commentId } = notificationsData.data;
 
-    const videoPost = await databases.getDocument(
-      config.databaseId, // databaseId
-      config.videosCollectionId, // collectionId
-      videoId, // documentId
+    // 获取帖子信息
+    const post = await databases.getDocument(
+      config.databaseId,
+      config.postColletionId, // 确保使用正确的集合 ID
+      postId
     );
 
     router.push({
-      pathname: 'player/play-screen',
+      pathname: 'post-details', // 跳转到帖子详情页面
       params: {
-        post: JSON.stringify(videoPost),
+        post: JSON.stringify(post), // 将帖子数据传递给详情页面
         commentId: commentId,
       },
     });

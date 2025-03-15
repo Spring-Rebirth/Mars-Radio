@@ -5,8 +5,9 @@ import { ID } from "react-native-appwrite";
 import { config, databases } from "../../services/postsService";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import Toast from "react-native-toast-message";
+import { sendPushNotification } from "../../functions/notifications";
 
-export default function CommentInputBox({ onCommentSubmitted, post_id }) {
+export default function CommentInputBox({ onCommentSubmitted, post_id, postCreator }) {
   const { t } = useTranslation();
   const [comment, setComment] = useState("");
   const { user } = useGlobalContext();
@@ -36,6 +37,22 @@ export default function CommentInputBox({ onCommentSubmitted, post_id }) {
         position: "bottom",
         bottomOffset: 68,
       });
+
+      // 发送推送通知
+      if (postCreator.expo_push_token && postCreator.$id !== user?.$id) {
+        sendPushNotification(
+          postCreator.expo_push_token,
+          `${user?.username} ${t("sent you a comment")}`,
+          comment,
+          {
+            postId: post_id,
+            userId: user.$id,
+            commentId: response.$id,
+          }
+        );
+
+        console.log("执行了发送帖子主评论推送通知");
+      }
 
       setComment("");
       onCommentSubmitted(response); // 调用回调，传递新评论数据

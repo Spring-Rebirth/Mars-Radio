@@ -19,7 +19,6 @@ import { databases } from "../../lib/appwrite";
 import { config } from "../../services/postsService";
 import upIcon from "../../assets/icons/arrow-up.png";
 import downIcon from "../../assets/icons/arrow-down.png";
-import { sendLikedStatus } from "../../services/postsService";
 import { formatCommentsCounts } from "../../utils/numberFormatter";
 import { sendPushNotification } from "../../functions/notifications";
 import { router } from "expo-router";
@@ -184,7 +183,7 @@ const CommentItem = ({
           t("notifications.userRepliedComment", { username: user?.username }),
           replyMsg,
           {
-            videoId: comment.video_ID,
+            postId: comment.post_id,
             userId: user.$id,
             commentId: rootCommentId,
           }

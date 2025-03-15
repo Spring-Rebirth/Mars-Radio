@@ -11,13 +11,13 @@ import {
   fetchCommentsOfPost,
   fetchReplies,
   submitReply,
+  fetchUserData,
 } from "../../services/postsService";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, useMemo } from "react";
 import CommentInputBox from "../../components/post-comment/CommentInputBox";
 import CommentList from "../../components/post-comment/CommentList";
-import { fetchUserData } from "../../services/userService";
 import { useAdminStore } from "../../store/adminStore";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { deleteSinglePost } from "../../services/postsService";
@@ -94,19 +94,6 @@ export default function PostDetails() {
   const [deleting, setDeleting] = useState(false);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
 
-  // 修改获取评论的逻辑，将其从 useEffect 中分离出来
-  const getCommentsOfPost = async () => {
-    setIsCommentsLoading(true);
-    try {
-      const comments = await fetchCommentsOfPost(parsedPost.$id);
-      setCommentsDoc(comments.documents);
-    } catch (error) {
-      console.error("Failed to fetch comments:", error);
-    } finally {
-      setIsCommentsLoading(false);
-    }
-  };
-
   // 获取帖子作者信息
   useEffect(() => {
     const getPostCreatorInfo = async () => {
@@ -114,12 +101,23 @@ export default function PostDetails() {
       setPostCreator(postCreator);
     };
     getPostCreatorInfo();
-  }, []); // 只在组件挂载时获取作者信息
+  }, [parsedPost]); // 依赖于 parsedPost
 
-  // 单独处理评论的获取
+  // 获取评论
   useEffect(() => {
+    const getCommentsOfPost = async () => {
+      setIsCommentsLoading(true);
+      try {
+        const comments = await fetchCommentsOfPost(parsedPost.$id);
+        setCommentsDoc(comments.documents);
+      } catch (error) {
+        console.error("Failed to fetch comments:", error);
+      } finally {
+        setIsCommentsLoading(false);
+      }
+    };
     getCommentsOfPost();
-  }, []); // 只在组件挂载时获取评论
+  }, [parsedPost]); // 依赖于 parsedPost
 
   // 删除评论后直接更新评论列表，而不是通过 refreshFlag
   const handleCommentDeleted = (deletedCommentId) => {
