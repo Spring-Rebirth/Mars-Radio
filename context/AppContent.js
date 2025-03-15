@@ -6,6 +6,14 @@ import { updatePushToken } from '../functions/notifications'
 
 const AppContent = () => {
     const { playbackDataRef, user } = useContext(GlobalContext);
+    console.log('AppContent user:', user);
+
+    if (user !== null) {
+        // console.log('进入user !== null');
+
+        updatePushToken(user, user.expo_push_token)
+            .then(console.log('token 更新成功'));
+    }
 
     useEffect(() => {
         const loadPlaybackData = async () => {
@@ -20,12 +28,6 @@ const AppContent = () => {
         };
 
         loadPlaybackData();
-
-        if (user !== null) {
-            updatePushToken(user, user.expo_push_token)
-                .then('token 更新成功');
-        }
-
     }, []);
 
     return (
