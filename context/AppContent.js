@@ -2,9 +2,10 @@ import React, { useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GlobalContext } from './GlobalProvider';
 import { Stack } from "expo-router";
+import { updatePushToken } from '../functions/notifications'
 
 const AppContent = () => {
-    const { playbackDataRef } = useContext(GlobalContext);
+    const { playbackDataRef, user } = useContext(GlobalContext);
 
     useEffect(() => {
         const loadPlaybackData = async () => {
@@ -19,6 +20,12 @@ const AppContent = () => {
         };
 
         loadPlaybackData();
+
+        if (user !== null) {
+            updatePushToken(user, user.expo_push_token)
+                .then('token 更新成功');
+        }
+
     }, []);
 
     return (

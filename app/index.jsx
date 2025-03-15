@@ -18,21 +18,16 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import { updatePushToken } from '../functions/notifications'
 // cSpell:word pregular appwrite
 //cSpell:ignore Aora pregular
 export default function Welcome() {
-  const { isLoading, isLoggedIn, user } = useGlobalContext();
+  const { isLoading, isLoggedIn } = useGlobalContext();
   const [isNavigating, setIsNavigating] = useState(false);
   const { i18n, t } = useTranslation();
 
   useEffect(() => {
     if (isLoggedIn) {
       setIsNavigating(true); // 防止 Welcome 页面继续渲染
-      if (user !== null) {
-        updatePushToken(user, user.expo_push_token)
-          .then('token 更新成功');
-      }
       router.replace("/home");
     }
   }, [isLoggedIn]);
