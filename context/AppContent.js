@@ -18,7 +18,7 @@ const AppContent = () => {
     useEffect(() => {
         const loadPlaybackData = async () => {
             try {
-                const storedData = await AsyncStorage.getItem('playData');
+                const storedData = await AsyncStorage.getItem('playbackData');
                 if (storedData) {
                     playbackDataRef.current = JSON.parse(storedData);
                 }
