@@ -1,5 +1,6 @@
 // 文件相关的服务函数
 
+import { ID } from 'react-native-appwrite';
 import { storage, handleError } from '../lib/appwrite';
 
 export async function createFile(fileModel, setProgress, type) {

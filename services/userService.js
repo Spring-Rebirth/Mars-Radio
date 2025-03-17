@@ -1,8 +1,7 @@
 import { databases, config } from "../lib/appwrite";
 import { fetchData, handleError } from '../lib/appwrite';
 import { account, avatars } from '../lib/appwrite';
-import { Query } from 'appwrite';
-import { ID } from 'appwrite';
+import { ID, Query } from 'react-native-appwrite';
 
 export async function updateUserInfo(userId, content = {}) {
   try {
