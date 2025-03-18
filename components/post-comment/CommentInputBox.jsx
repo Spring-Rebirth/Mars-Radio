@@ -39,7 +39,7 @@ export default function CommentInputBox({ onCommentSubmitted, post_id, postCreat
       });
 
       // 发送推送通知
-      if (postCreator.expo_push_token && postCreator.$id !== user?.$id) {
+      if (postCreator?.expo_push_token && postCreator?.$id !== user?.$id) {
         sendPushNotification(
           postCreator.expo_push_token,
           `${user?.username} ${t("sent you a comment")}`,
