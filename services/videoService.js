@@ -1,40 +1,21 @@
 // 帖子相关的服务函数
+import { Query } from 'react-native-appwrite';
+import { config, databases } from '../lib/appwrite';
 
-import { fetchData, handleError } from '../lib/appwrite';
-
-export async function getAllPosts() {
-  return await fetchData(
-    config.databaseId,
-    config.videosCollectionId,
-    [Query.orderDesc('$createdAt')],
-    'Failed to fetch all posts'
-  );
-}
-
-export async function getPopularPosts() {
-  return await fetchData(
-    config.databaseId,
-    config.videosCollectionId,
-    [
-      Query.greaterThanEqual("played_counts", 1),
-      Query.orderDesc('played_counts'),
-      Query.limit(10)
-    ],
-    'Failed to popular posts'
-  );
-}
-
-export async function searchPosts(query) {
+export async function getPostsWithPagination(cursor = null, limit = 10) {
+  let queries = [Query.orderDesc('$createdAt'), Query.limit(limit)];
+  if (cursor) {
+    queries.push(Query.cursorAfter(cursor));
+  }
   try {
-    return await fetchData(
+    const response = await databases.listDocuments(
       config.databaseId,
       config.videosCollectionId,
-      [Query.search('title', query)],
-      'Failed to search posts'
+      queries
     );
+    return response.documents; // 返回 documents 数组
   } catch (error) {
-    console.warn('查询出错:', error);
+    console.error('Error fetching posts:', error);
+    throw error;
   }
 }
-
-// 其他与帖子相关的函数... 

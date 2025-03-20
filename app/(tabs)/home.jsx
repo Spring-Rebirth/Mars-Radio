@@ -7,6 +7,7 @@ import {
   RefreshControl,
   Pressable,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { images } from "../../constants";
@@ -35,6 +36,7 @@ import starThree from "../../assets/menu/star3.png";
 import trash from "../../assets/menu/trash-solid.png";
 import Toast from "react-native-root-toast";
 import closeIcon from "../../assets/icons/close.png";
+import { getPostsWithPagination } from "../../services/videoService";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -74,6 +76,35 @@ export default function Home() {
     addAdminData();
   }, []);
 
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [cursor, setCursor] = useState(null);
+  const limit = 10;
+
+  // 分页加载视频帖子数据
+  const loadPosts = async () => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    try {
+      const newPosts = await getPostsWithPagination(cursor, limit);
+      setData(prevPosts => [...prevPosts, ...newPosts]);
+      if (newPosts.length < limit) {
+        setHasMore(false);
+      } else {
+        const lastPost = newPosts[newPosts.length - 1];
+        setCursor(lastPost.$id);
+      }
+    } catch (error) {
+      console.error('Failed to load posts:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPosts();
+  }, []);
+
   useEffect(() => {
     const fetchDataAndUpdateVideo = async () => {
       if (!user) return; // 如果 user 不存在，直接返回
@@ -86,7 +117,7 @@ export default function Home() {
         await updateSavedVideo(user?.$id, { favorite });
 
         // 并行请求 fetchPosts 和 fetchPopularPosts
-        await Promise.all([fetchPosts(), fetchPopularPosts()]);
+        await fetchPopularPosts();
       } catch (error) {
         console.error(error); // 处理错误
       } finally {
@@ -324,6 +355,15 @@ export default function Home() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
+          onEndReached={loadPosts}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={() => {
+            return isLoadingMore ? (
+              <View className="items-center justify-center my-4">
+                <ActivityIndicator size="large" color="#FFB300" />
+              </View>
+            ) : null;
+          }}
         />
       </View>
 
