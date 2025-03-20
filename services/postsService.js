@@ -1,4 +1,4 @@
-import { Client, Account, ID, Avatars, Databases, Query, Storage } from 'react-native-appwrite';
+import { Client, Account, ID, Databases, Query, Storage } from 'react-native-appwrite';
 
 export const config = {
   endpoint: 'https://cloud.appwrite.io/v1',
@@ -17,19 +17,20 @@ export const account = new Account(client);
 export const databases = new Databases(client);
 const storage = new Storage(client);
 
-const fetchAllPostsData = async () => {
+async function fetchPostsWithPagination(offset = 0, limit = 10) {
+  const queries = [Query.orderDesc('$createdAt'), Query.limit(limit), Query.offset(offset)];
   try {
-    const posts = await databases.listDocuments(
+    const response = await databases.listDocuments(
       config.databaseId,
       config.postColletionId,
-      [Query.orderDesc('$createdAt')]
+      queries
     );
-    return posts;
+    return response.documents;
   } catch (error) {
-    console.error('Error fetching all posts:', error);
+    console.error('Error fetching posts:', error);
+    throw error;
   }
 }
-
 const fetchPostData = async (postId) => {
   try {
     const post = await databases.getDocument(
@@ -201,9 +202,8 @@ export const submitReply = async (content, parentCommentId, userId, post_id) => 
   }
 };
 
-
 export {
-  fetchAllPostsData,
+  fetchPostsWithPagination,
   fetchPostData,
   createPost,
   createFileForPost,

@@ -11,38 +11,83 @@ import { useState, useEffect, useCallback } from "react";
 import PostItem from "../../components/post/PostItem";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { fetchAllPostsData } from "../../services/postsService";
+import { fetchPostsWithPagination } from "../../services/postsService";
 import Toast from "react-native-toast-message";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const { t } = useTranslation();
+  const limit = 10;
 
-  const getAllPosts = async () => {
+  const loadPosts = async (isLoadMore = false) => {
+    const offset = isLoadMore ? posts.length : 0;
     try {
-      const allPosts = await fetchAllPostsData();
-      setPosts(allPosts.documents);
-    } finally {
-      setLoading(false);
+      const newPosts = await fetchPostsWithPagination(offset, limit);
+      if (isLoadMore) {
+        setPosts(prev => [...prev, ...newPosts]);
+      } else {
+        setPosts(newPosts);
+      }
+      if (newPosts.length < limit) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+    } catch (error) {
+      console.error('Error fetching posts:', error);
     }
   };
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await getAllPosts(); // 刷新数据
-    setRefreshing(false);
-    Toast.show({
-      text1: t("Refresh Successful"),
-      type: "success",
-      topOffset: 68,
-    });
+  useEffect(() => {
+    const fetchInitialPosts = async () => {
+      try {
+        setInitialLoading(true);
+        await loadPosts();
+      } catch (error) {
+        console.error('Initial load failed:', error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+    fetchInitialPosts();
   }, []);
 
-  useEffect(() => {
-    getAllPosts();
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await loadPosts(false, true);
+      Toast.show({
+        text1: t('Refresh Successful'),
+        type: 'success',
+        topOffset: 68,
+      });
+    } catch (error) {
+      console.error('Refresh failed:', error);
+      Toast.show({
+        text1: t('Refresh Failed'),
+        type: 'danger',
+        topOffset: 68,
+      });
+    } finally {
+      setRefreshing(false);
+    }
   }, []);
+
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    try {
+      setLoadingMore(true);
+      await loadPosts(true);
+    } catch (error) {
+      console.error('Load more failed:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#fafafa]">
@@ -52,7 +97,7 @@ export default function Posts() {
         </Text>
       </View>
 
-      {loading ? (
+      {initialLoading ? (
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#0ea5e9" />
           <Text className="mt-2 text-gray-600">{t("Loading")}</Text>
@@ -76,6 +121,15 @@ export default function Posts() {
           contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
           onRefresh={onRefresh}
           refreshing={refreshing}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={() => {
+            return loadingMore ? (
+              <View className="items-center justify-center my-4">
+                <ActivityIndicator size="large" color="#FFB300" />
+              </View>
+            ) : null;
+          }}
         />
       )}
       <Pressable
