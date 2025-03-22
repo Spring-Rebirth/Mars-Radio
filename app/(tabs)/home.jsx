@@ -103,6 +103,7 @@ export default function Home() {
 
   useEffect(() => {
     loadPosts();
+    // console.log("data:", JSON.stringify(data, null, 2));
   }, []);
 
   useEffect(() => {
@@ -248,8 +249,7 @@ export default function Home() {
       style={{ marginTop: insetTop }}
     >
       <View
-        className={`flex-1 bg-primary ${isFullscreen ? "w-full h-full" : "h-full"
-          }`}
+        className={`flex-1 bg-primary ${isFullscreen ? "w-full h-full" : "h-full"}`}
       >
         <FlatList
           contentContainerStyle={{ paddingBottom: 44 }}
