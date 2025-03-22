@@ -87,6 +87,10 @@ export default function Home() {
     setIsLoadingMore(true);
     try {
       const newPosts = await getPostsWithPagination(cursor, limit);
+      // 提取所有 thumbnail URL
+      const imageUrls = newPosts.map(post => post.thumbnail).filter(url => url);
+      // 预加载图片
+      await Promise.all(imageUrls.map(url => Image.prefetch(url)));
       setData(prevPosts => [...prevPosts, ...newPosts]);
       if (newPosts.length < limit) {
         setHasMore(false);
