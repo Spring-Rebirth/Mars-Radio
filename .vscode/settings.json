@@ -1,3 +1,8 @@
 {
-  "commentTranslate.browse.mode": "contrast"
+    "commentTranslate.browse.mode": "contrast",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modifications"
 }
