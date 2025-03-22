@@ -6,7 +6,11 @@ import { useUser, useClerk } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 
+// 创建全局上下文
 export const GlobalContext = createContext();
+
+// Tab事件上下文
+export const TabContext = createContext();
 
 const useGlobalContext = () => {
   return useContext(GlobalContext);
@@ -98,4 +102,36 @@ function GlobalProvider({ children }) {
   );
 }
 
+// Tab事件Provider
+export const TabProvider = ({ children }) => {
+  const [tabEvents, setTabEvents] = useState({
+    homeTab: 0,
+    postsTab: 0,
+  });
+
+  // 触发Tab点击事件
+  const triggerTabPress = (tabName) => {
+    setTabEvents(prev => ({
+      ...prev,
+      [tabName]: prev[tabName] + 1,
+    }));
+  };
+
+  return (
+    <TabContext.Provider
+      value={{
+        tabEvents,
+        triggerTabPress,
+      }}
+    >
+      {children}
+    </TabContext.Provider>
+  );
+};
+
 export { useGlobalContext, GlobalProvider };
+
+// 自定义Hook用于访问Tab事件上下文
+export const useTabContext = () => {
+  return useContext(TabContext);
+};

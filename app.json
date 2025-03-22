@@ -3,7 +3,7 @@
     "name": "MarsX",
     "slug": "marsx",
     "scheme": "marsx",
-    "version": "3.6.1",
+    "version": "3.7.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mystseed.marsx",
-      "buildNumber": "3",
+      "buildNumber": "3.7.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }

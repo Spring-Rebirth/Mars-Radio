@@ -1,11 +1,12 @@
 import { View, Text, Image, TouchableWithoutFeedback } from "react-native";
-import { Tabs, useSegments } from "expo-router";
+import { Tabs, useSegments, usePathname } from "expo-router";
 import icons from "../../constants/icons";
 import { useWindowDimensions } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTabContext } from "../../context/GlobalProvider";
 
 function TabIcon({ name, icon, color, focused }) {
   const { width, height } = useWindowDimensions();
@@ -35,6 +36,8 @@ export default function TabsLayout() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const segments = useSegments();
+  const pathname = usePathname();
+  const { triggerTabPress } = useTabContext();
 
   useEffect(() => {
     const lockPortrait = async () => {
@@ -52,6 +55,17 @@ export default function TabsLayout() {
       lockPortrait();
     }
   }, [segments]);
+
+  // 处理Tab点击事件
+  const handleTabPress = useCallback((tabName) => {
+    // 检查是否当前已经在该Tab上
+    // 注意: usePathname() 返回的路径包含"/"前缀
+    const currentTab = pathname.split('/').pop();
+    if (currentTab === tabName) {
+      // 当前已经在该Tab上，触发点击事件
+      triggerTabPress(tabName + 'Tab');
+    }
+  }, [pathname, triggerTabPress]);
 
   return (
     <Tabs
@@ -82,7 +96,13 @@ export default function TabsLayout() {
             />
           ),
           tabBarButton: (props) => (
-            <TouchableWithoutFeedback {...props}>
+            <TouchableWithoutFeedback
+              {...props}
+              onPress={() => {
+                props.onPress();
+                handleTabPress('home');
+              }}
+            >
               <View {...props} />
             </TouchableWithoutFeedback>
           ),
@@ -102,7 +122,13 @@ export default function TabsLayout() {
             />
           ),
           tabBarButton: (props) => (
-            <TouchableWithoutFeedback {...props}>
+            <TouchableWithoutFeedback
+              {...props}
+              onPress={() => {
+                props.onPress();
+                handleTabPress('posts');
+              }}
+            >
               <View {...props} />
             </TouchableWithoutFeedback>
           ),

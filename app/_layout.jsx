@@ -1,8 +1,8 @@
 import "react-native-url-polyfill/auto";
 import React, { useEffect, useState, useRef } from "react";
-import { router, SplashScreen } from "expo-router";
+import { router, SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
-import { GlobalProvider } from "../context/GlobalProvider";
+import { GlobalProvider, TabProvider } from "../context/GlobalProvider";
 import * as Updates from "expo-updates";
 import AppContent from "../context/AppContent";
 import { I18nextProvider } from "react-i18next";
@@ -188,7 +188,9 @@ export default function RootLayout() {
         <RootSiblingParent>
           <I18nextProvider i18n={i18n}>
             <GlobalProvider>
-              <AppContent />
+              <TabProvider>
+                <AppContent />
+              </TabProvider>
             </GlobalProvider>
           </I18nextProvider>
         </RootSiblingParent>

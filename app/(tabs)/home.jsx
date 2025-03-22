@@ -9,7 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { images } from "../../constants";
 import SearchInput from "../../components/SearchInput";
 import Trending from "../../components/Trending";
@@ -18,17 +18,17 @@ import CustomButton from "../../components/CustomButton";
 import VideoCard from "../../components/VideoCard";
 import useGetData from "../../hooks/useGetData";
 import downIcon from "../../assets/icons/down.png";
-import { useGlobalContext } from "../../context/GlobalProvider";
+import { useGlobalContext, useTabContext } from "../../context/GlobalProvider";
 import { StatusBar } from "expo-status-bar";
 import { updateSavedVideo } from "../../lib/appwrite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { fetchAdminData } from "../../lib/appwrite";
 import VideoLoadingSkeleton from "../../components/loading-view/VideoLoadingSkeleton";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { deleteVideoDoc, deleteVideoFiles } from "../../lib/appwrite";
 import { updateSavedCounts, getVideoDetails } from "../../lib/appwrite";
 import star from "../../assets/menu/star-solid.png";
@@ -41,9 +41,11 @@ import { getPostsWithPagination } from "../../services/videoService";
 export default function Home() {
   const { t } = useTranslation();
   const bottomSheetRef = useRef(null);
+  const flatListRef = useRef(null);
   const [showControlMenu, setShowControlMenu] = useState(false);
   const insetTop = useSafeAreaInsets().top;
   const { user, setUser } = useGlobalContext();
+  const { tabEvents } = useTabContext();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -60,6 +62,23 @@ export default function Home() {
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
 
+  // 滚动到顶部方法
+  const scrollToTop = useCallback(() => {
+    console.log("滚动到顶部 - Home");
+    if (flatListRef.current) {
+      flatListRef.current.scrollToOffset({ offset: 0, animated: false });
+    }
+  }, [flatListRef]);
+
+  // 监听homeTab点击事件
+  useEffect(() => {
+    // 当homeTab事件计数器变化时，执行滚动到顶部
+    if (tabEvents.homeTab > 0) {
+      scrollToTop();
+    }
+  }, [tabEvents.homeTab, scrollToTop]);
+
+  // 添加admin数据
   useEffect(() => {
     const addAdminData = async () => {
       await fetchAdminData()
@@ -256,6 +275,7 @@ export default function Home() {
         className={`flex-1 bg-primary ${isFullscreen ? "w-full h-full" : "h-full"}`}
       >
         <FlatList
+          ref={flatListRef}
           contentContainerStyle={{ paddingBottom: 44 }}
           data={loading ? [] : data}
           keyExtractor={(item) => item.$id}

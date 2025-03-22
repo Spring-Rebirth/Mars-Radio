@@ -7,12 +7,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import PostItem from "../../components/post/PostItem";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { fetchPostsWithPagination } from "../../services/postsService";
 import Toast from "react-native-toast-message";
+import { useTabContext } from "../../context/GlobalProvider";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -22,6 +23,24 @@ export default function Posts() {
   const [refreshing, setRefreshing] = useState(false);
   const { t } = useTranslation();
   const limit = 10;
+  const flatListRef = useRef(null);
+  const { tabEvents } = useTabContext();
+
+  // 滚动到顶部方法
+  const scrollToTop = useCallback(() => {
+    console.log("滚动到顶部 - Posts");
+    if (flatListRef.current) {
+      flatListRef.current.scrollToOffset({ offset: 0, animated: false });
+    }
+  }, [flatListRef]);
+
+  // 监听postsTab点击事件
+  useEffect(() => {
+    // 当postsTab事件计数器变化时，执行滚动到顶部
+    if (tabEvents.postsTab > 0) {
+      scrollToTop();
+    }
+  }, [tabEvents.postsTab, scrollToTop]);
 
   const loadPosts = async (isLoadMore = false) => {
     const offset = isLoadMore ? posts.length : 0;
@@ -104,6 +123,7 @@ export default function Posts() {
         </View>
       ) : (
         <FlatList
+          ref={flatListRef}
           data={posts}
           keyExtractor={(item) => item.$id}
           renderItem={({ item }) => (
