@@ -8,11 +8,14 @@ export default StyleSheet.create({
     videoContainer: {
         position: "relative",
         width: "100%",
+        overflow: "hidden",
+        backgroundColor: "#F5F5F5",
     },
     videoLayer: {
         position: "relative",
         width: "100%",
         zIndex: 1,
+        backgroundColor: "#000",
     },
     controlsLayer: {
         position: "absolute",

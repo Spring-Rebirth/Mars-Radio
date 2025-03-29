@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
     View,
     TouchableOpacity,
@@ -59,31 +59,58 @@ const VideoPlayer = ({
     const portraitVideoHeight = (Dimensions.get("window").width * 16) / 9;
     const [selectedVideoHeight, setSelectedVideoHeight] = useState(landscapeVideoHeight);
     const totalDuration = videoPlayer.duration || 1;
+    const previousFullscreen = useRef(fullscreen);
+
+    // 检测视频比例并设置合适的高度
+    const checkVideoRatio = useCallback(async () => {
+        if (!videoPlayer) return;
+
+        try {
+            // 获取视频第一帧缩略图以确定视频真实尺寸
+            const thumbnails = await videoPlayer.generateThumbnailsAsync([0]);
+            if (thumbnails && thumbnails.length > 0) {
+                const { width, height } = thumbnails[0];
+                const ratio = width / height; // 计算宽高比
+                if (ratio < 1) {
+                    // 如果宽度小于高度，说明是竖屏视频
+                    setSelectedVideoHeight(portraitVideoHeight);
+                } else {
+                    // 横屏视频
+                    setSelectedVideoHeight(landscapeVideoHeight);
+                }
+            }
+        } catch (error) {
+            console.error('检测视频尺寸失败:', error);
+            // 默认使用横屏模式高度
+            setSelectedVideoHeight(landscapeVideoHeight);
+        }
+    }, [videoPlayer, portraitVideoHeight, landscapeVideoHeight]);
+
+    // 监听全屏状态变化，确保退出全屏时正确重置布局
+    useEffect(() => {
+        if (previousFullscreen.current && !fullscreen) {
+            // 从全屏退出到竖屏，重新计算视频尺寸
+            console.log("退出全屏，重新计算视频布局");
+            checkVideoRatio();
+
+            // 如果在iOS上，可能需要额外延迟以确保布局正确更新
+            if (Platform.OS === 'ios') {
+                const timer = setTimeout(() => {
+                    checkVideoRatio();
+                }, 100);
+                return () => clearTimeout(timer);
+            }
+        }
+
+        previousFullscreen.current = fullscreen;
+    }, [fullscreen, checkVideoRatio]);
 
     // 添加视频尺寸检测，模拟原有onReadyForDisplay功能
     useEffect(() => {
         if (status === 'readyToPlay') {
-            // 可以使用generateThumbnailsAsync获取一帧视频以检测尺寸比例
-            const checkVideoRatio = async () => {
-                try {
-                    // 获取视频第一帧缩略图以确定视频真实尺寸
-                    const thumbnails = await videoPlayer.generateThumbnailsAsync([0]);
-                    if (thumbnails && thumbnails.length > 0) {
-                        const { width, height } = thumbnails[0];
-                        const ratio = width / height; // 计算宽高比
-                        if (ratio < 1) {
-                            // 如果宽度小于高度，说明是竖屏视频
-                            setSelectedVideoHeight(portraitVideoHeight);
-                        }
-                    }
-                } catch (error) {
-                    console.error('检测视频尺寸失败:', error);
-                }
-            };
-
             checkVideoRatio();
         }
-    }, [status, portraitVideoHeight]);
+    }, [status, checkVideoRatio]);
 
     // 监听状态变化
     useEffect(() => {
@@ -137,16 +164,26 @@ const VideoPlayer = ({
         handleClickedVideo();
     };
 
+    // 自定义全屏切换处理
+    const handleToggleFullscreen = useCallback((e) => {
+        e.stopPropagation();
+        console.log("切换全屏状态:", !fullscreen);
+        toggleFullscreen();
+    }, [fullscreen, toggleFullscreen]);
+
     const videoHeight = fullscreen ? "100%" : selectedVideoHeight;
+
+    // 视频容器样式，仅在非全屏模式下应用顶部安全区域
+    const containerStyle = [
+        styles.videoContainer,
+        !fullscreen && { marginTop: safeAreaInset }
+    ];
 
     return (
         <TouchableWithoutFeedback onPress={onVideoPress}>
             <View
                 ref={videoContainerRef}
-                style={[
-                    styles.videoContainer,
-                    !fullscreen && { marginTop: safeAreaInset }
-                ]}
+                style={containerStyle}
             >
                 {/* 视频层 */}
                 <View style={[styles.videoLayer, { height: videoHeight }]}>
@@ -252,12 +289,7 @@ const VideoPlayer = ({
                                     }}
                                 />
 
-                                <TouchableOpacity
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        toggleFullscreen();
-                                    }}
-                                >
+                                <TouchableOpacity onPress={handleToggleFullscreen}>
                                     <Image
                                         source={fullscreen ? exitFullscreenIcon : fullscreenIcon}
                                         style={styles.fullscreenIcon}
