@@ -75,6 +75,31 @@ export default function PlayScreen() {
     bufferedPosition: videoPlayer.bufferedPosition
   });
 
+    // 添加视频尺寸检测，模拟原有onReadyForDisplay功能
+    useEffect(() => {
+        if (status === 'readyToPlay') {
+            // 可以使用generateThumbnailsAsync获取一帧视频以检测尺寸比例
+            const checkVideoRatio = async () => {
+                try {
+                    // 获取视频第一帧缩略图以确定视频真实尺寸
+                    const thumbnails = await videoPlayer.generateThumbnailsAsync([0]);
+                    if (thumbnails && thumbnails.length > 0) {
+                        const { width, height } = thumbnails[0];
+                        const ratio = width / height; // 计算宽高比
+                        if (ratio < 1) {
+                            // 如果宽度小于高度，说明是竖屏视频
+                            setSelectedVideoHeight(portraitVideoHeight);
+                        }
+                    }
+                } catch (error) {
+                    console.error('检测视频尺寸失败:', error);
+                }
+            };
+
+            checkVideoRatio();
+        }
+    }, [status, portraitVideoHeight]);
+
   const videoRef = useRef(null);
   const landscapeVideoHeight = (Dimensions.get("window").width * 9) / 16;
   const portraitVideoHeight = (Dimensions.get("window").width * 16) / 9;
@@ -98,6 +123,33 @@ export default function PlayScreen() {
       console.error('视频加载错误:', error);
     }
   }, [status, error]);
+
+    // 监听播放状态变化 - 模拟原来的onPlaybackStatusUpdate
+    useEffect(() => {
+        // 创建一个模拟playbackStatus对象，类似于expo-av提供的格式
+        const createPlaybackStatus = () => {
+            return {
+                isLoaded: status === 'readyToPlay',
+                isBuffering: status === 'loading',
+                isPlaying: isPlaying,
+                positionMillis: currentTime * 1000, // 转换为毫秒
+                durationMillis: totalDuration * 1000, // 转换为毫秒
+                shouldPlay: isPlaying,
+                rate: videoPlayer.playbackRate,
+                volume: videoPlayer.volume,
+                isMuted: videoPlayer.muted,
+                error: error,
+                didJustFinish: isEnded,
+            };
+        };
+
+        // 每当相关状态变化时，生成新的状态对象
+        const playbackStatus = createPlaybackStatus();
+
+        // 这里可以调用原来依赖playbackStatus的代码
+        // 如setPlaybackStatus(playbackStatus)
+
+    }, [status, isPlaying, currentTime, totalDuration, isEnded, error]);
 
   // 监听播放状态变化
   useEffect(() => {
