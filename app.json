@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mystseed.marsx",
-      "buildNumber": "3.7.0",
+      "buildNumber": "3.8.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -42,7 +42,7 @@
       "expo-secure-store",
       "expo-video"
     ],
-    "runtimeVersion": "2.0",
+    "runtimeVersion": "3.0",
     "extra": {
       "router": {
         "origin": false
