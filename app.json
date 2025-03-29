@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "MarsX",
-    "slug": "marsx",
-    "scheme": "marsx",
-    "version": "3.7.0",
+    "name": "Mars Radio",
+    "slug": "mars-radio",
+    "scheme": "mars-radio",
+    "version": "3.8.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
