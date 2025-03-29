@@ -51,7 +51,6 @@ export default function PlayScreen() {
     });
 
     const {
-        playing,
         setPlaying,
         loading,
         setLoading,
@@ -123,7 +122,6 @@ export default function PlayScreen() {
             console.error('视频加载错误:', error);
         }
     }, [status, error]);
-
 
     // 监听播放状态变化
     useEffect(() => {
@@ -494,6 +492,7 @@ export default function PlayScreen() {
                                     / {formatTime(totalDuration * 1000)}
                                 </Text>
                             </Text>
+
                             <Slider
                                 style={fullscreen ? styles.sliderFS : styles.slider}
                                 value={currentTime}
@@ -516,6 +515,7 @@ export default function PlayScreen() {
                                     showControlsWithTimer();
                                 }}
                             />
+
                             <TouchableOpacity onPress={toggleFullscreen}>
                                 <Image
                                     source={fullscreen ? exitFullscreenIcon : fullscreenIcon}
@@ -556,14 +556,14 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: "50%",
         left: "50%",
-        zIndex: 1, // 确保图标在最前面
+        zIndex: 1,
         transform: [{ translateX: -15 }, { translateY: -15 }],
     },
     replayIconContainerFS: {
         position: "absolute",
         top: "50%",
         left: "50%",
-        zIndex: 1, // 确保图标在最前面
+        zIndex: 1,
         transform: [{ translateX: -15 }, { translateY: -15 }],
     },
     replayIcon: {
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     fullscreenIcon: {
         width: 20,
         height: 20,
-        marginLeft: 10, // 添加适当的间距
+        marginLeft: 10,
     },
     exitFullscreenIcon: {
         width: 20,
@@ -582,12 +582,11 @@ const styles = StyleSheet.create({
     video: {
         width: "100%",
     },
-    // 增加一半的偏移量
     controlButton: {
-        position: "absolute", // 让按钮浮动在视频上
+        position: "absolute",
         top: "50%",
         left: "50%",
-        zIndex: 10, // 确保按钮在视频之上
+        zIndex: 10,
         transform: [{ translateX: -20 }, { translateY: -20 }],
         backgroundColor: "white",
         width: 40,
@@ -604,9 +603,9 @@ const styles = StyleSheet.create({
         position: "absolute",
         zIndex: 20,
         flexDirection: "row",
-        alignItems: "center", // 垂直居中
-        justifyContent: "center", // 水平居中
-        paddingHorizontal: 5, // 左右内边距
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: 5,
         gap: 5,
         borderRadius: 20,
         marginHorizontal: "2.5%",
@@ -616,29 +615,29 @@ const styles = StyleSheet.create({
         width: "78%",
         position: "absolute",
         marginHorizontal: "11%",
-        bottom: 10, // 距底部的距离
-        height: 40, // 固定高度
-        paddingHorizontal: 15, // 左右内边距
-        zIndex: 10, // 确保在视频上方
-        flexDirection: "row", // 水平布局
-        gap: 5, // 间距
+        bottom: 10,
+        height: 40,
+        paddingHorizontal: 15,
+        zIndex: 10,
+        flexDirection: "row",
+        gap: 5,
         borderRadius: 20,
-        alignItems: "center", // 垂直居中
-        justifyContent: "center", // 水平居中
+        alignItems: "center",
+        justifyContent: "center",
     },
     sliderFS: {
-        flex: 1, // 设置Slider的宽度
-        height: 40, // 设置Slider的高度
-        marginVertical: 10, // 可选，调整Slider的上下间距
+        flex: 1,
+        height: 40,
+        marginVertical: 10,
     },
     slider: {
-        flex: 1, // 设置Slider的宽度
-        height: 10, // 设置Slider的高度
-        marginVertical: 10, // 可选，调整Slider的上下间距
+        flex: 1,
+        height: 10,
+        marginVertical: 10,
     },
     trackStyle: {
-        height: 4, // 设置进度条的高度
-        borderRadius: 2, // 圆角效果
+        height: 4,
+        borderRadius: 2,
     },
     timeText: {
         color: "#fff",
