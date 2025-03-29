@@ -7,7 +7,6 @@ import CustomButton from '../../components/CustomButton'
 import { icons } from '../../constants'
 import { usePickFile } from '../../hooks/usePickFile'
 
-import { useEvent } from 'expo'
 import { VideoView, useVideoPlayer } from 'expo-video'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { useUploadFile } from '../../hooks/useUploadFile'
@@ -38,11 +37,7 @@ export default function Create() {
   const [videoRef, setVideoRef] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // 创建视频播放器实例（当视频被选择时）
-  const videoPlayer = videoFile?.uri ? useVideoPlayer(videoFile.uri) : null;
-
-  // 使用useEvent监听播放状态
-  const { isVideoPlaying } = useEvent(videoPlayer, 'playingChange', { isVideoPlaying: videoPlayer?.playing || false });
+  const videoPlayer = useVideoPlayer(videoFile?.uri);
 
   // 处理图片选择
   const handlePickImage = async () => {
@@ -199,7 +194,7 @@ export default function Create() {
   const togglePlayback = () => {
     if (!videoPlayer) return;
 
-    if (isVideoPlaying) {
+    if (isPlaying) {
       videoPlayer.pause();
     } else {
       videoPlayer.play();
@@ -257,7 +252,7 @@ export default function Create() {
 
             <VideoPlayButton
                 onPress={togglePlayback}
-                isPlaying={isVideoPlaying}
+                isPlaying={isPlaying}
             />
 
             <TouchableOpacity
