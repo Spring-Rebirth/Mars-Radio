@@ -6,7 +6,9 @@ import CustomForm from '../../components/CustomForm'
 import CustomButton from '../../components/CustomButton'
 import { icons } from '../../constants'
 import { usePickFile } from '../../hooks/usePickFile'
-import { ResizeMode, Video } from 'expo-av'
+
+import { useEvent } from 'expo'
+import { VideoView, useVideoPlayer } from 'expo-video'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { useUploadFile } from '../../hooks/useUploadFile'
 import { fetchFileUrl, uploadData } from '../../lib/appwrite'
@@ -35,6 +37,12 @@ export default function Create() {
   const { t } = useTranslation();
   const [videoRef, setVideoRef] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // 创建视频播放器实例（当视频被选择时）
+  const videoPlayer = videoFile?.uri ? useVideoPlayer(videoFile.uri) : null;
+
+  // 使用useEvent监听播放状态
+  const { isVideoPlaying } = useEvent(videoPlayer, 'playingChange', { isVideoPlaying: videoPlayer?.playing || false });
 
   // 处理图片选择
   const handlePickImage = async () => {
@@ -187,6 +195,18 @@ export default function Create() {
     }
   };
 
+  // 控制视频播放状态
+  const togglePlayback = () => {
+    if (!videoPlayer) return;
+
+    if (isVideoPlaying) {
+      videoPlayer.pause();
+    } else {
+      videoPlayer.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   return (
     <View className='bg-primary h-full px-4 ' style={{ marginTop: insetTop }}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
@@ -224,18 +244,20 @@ export default function Create() {
           </TouchableOpacity>
         ) : (
           <View className='w-full h-56 bg-[#1e1e2d] rounded-2xl mt-2 justify-center items-center relative'>
-            <Video
-              ref={video => setVideoRef(video)}
-              source={{ uri: videoFile?.uri }}
-              className='w-full h-full rounded-xl'
-              resizeMode={ResizeMode.COVER}
-              shouldPlay={isPlaying}
-              isLooping={true}
-            />
+              {videoPlayer && (
+                <VideoView
+                  ref={ref => setVideoRef(ref)}
+                  player={videoPlayer}
+                  className='w-full h-full rounded-xl'
+                  contentFit="cover"
+                  nativeControls={false}
+                  loop={true}
+                />
+              )}
 
             <VideoPlayButton
-              onPress={() => setIsPlaying(!isPlaying)}
-              isPlaying={isPlaying}
+                onPress={togglePlayback}
+                isPlaying={isVideoPlaying}
             />
 
             <TouchableOpacity

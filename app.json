@@ -39,7 +39,8 @@
       "expo-router",
       "react-native-edge-to-edge",
       "expo-font",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-video"
     ],
     "runtimeVersion": "2.0",
     "extra": {

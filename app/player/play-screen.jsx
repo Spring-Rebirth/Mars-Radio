@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
-import { Video, ResizeMode } from "expo-av";
+import { useEvent } from "expo";
+import { VideoView, useVideoPlayer } from "expo-video";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CommentInputBox from "../../components/comment/CommentInputBox";
 import CommentList from "../../components/comment/CommentList";
@@ -43,6 +44,12 @@ export default function PlayScreen() {
   const { $id: videoId, creator: videoCreator } = JSON.parse(post);
   const { $id: userId, avatar, username } = user;
 
+  // 创建视频播放器实例
+  const videoPlayer = useVideoPlayer(parsedVideoUrl, player => {
+    // 初始化播放器
+    player.play();
+  });
+
   const {
     playing,
     setPlaying,
@@ -56,7 +63,17 @@ export default function PlayScreen() {
     handleClickedVideo,
     showControlsWithTimer,
     hideControlsTimer,
-  } = useVideoControls(videoRef);
+  } = useVideoControls(videoPlayer);
+
+  // 使用useEvent钩子监听播放状态变化
+  const { isPlaying } = useEvent(videoPlayer, 'playingChange', { isPlaying: videoPlayer.playing });
+  const { status, error } = useEvent(videoPlayer, 'statusChange', { status: videoPlayer.status });
+
+  // 获取当前播放时间和总时长
+  const { currentTime, bufferedPosition } = useEvent(videoPlayer, 'timeUpdate', {
+    currentTime: videoPlayer.currentTime,
+    bufferedPosition: videoPlayer.bufferedPosition
+  });
 
   const videoRef = useRef(null);
   const landscapeVideoHeight = (Dimensions.get("window").width * 9) / 16;
@@ -65,29 +82,41 @@ export default function PlayScreen() {
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [commentsDoc, setCommentsDoc] = useComments(videoId, refreshFlag);
   const [fullscreen, setFullscreen] = useState(false);
-  const [playbackStatus, setPlaybackStatus] = useState({});
-  const currentProgress = playbackStatus.positionMillis || 0;
-  const totalDuration = playbackStatus.durationMillis || 1;
+  const totalDuration = videoPlayer.duration || 1;
 
   const [safeAreaInsets, setSafeAreaInsets] = useState({ top: 0, bottom: 0 });
   const insets = useSafeAreaInsets();
   const safeAreaInset = safeAreaInsets.top;
 
-  const handlePlaybackStatusUpdate = () => {
-    if (playbackStatus.isLoaded) {
-      setLoading(false);
-    } else {
+  // 监听状态变化
+  useEffect(() => {
+    if (status === 'loading') {
       setLoading(true);
+    } else if (status === 'readyToPlay') {
+      setLoading(false);
+    } else if (status === 'error') {
+      console.error('视频加载错误:', error);
     }
+  }, [status, error]);
 
-    if (playbackStatus.didJustFinish) {
+  // 监听播放状态变化
+  useEffect(() => {
+    setPlaying(isPlaying);
+  }, [isPlaying]);
+
+  // 监听播放结束事件
+  useEffect(() => {
+    const subscription = videoPlayer.addListener('playToEnd', () => {
       console.log("视频结束");
       setPlaying(false);
       setLoading(false);
       setIsEnded(true);
-    }
-    // 您可以在这里添加更多对 playbackStatus 的处理
-  };
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [videoPlayer]);
 
   const toggleFullscreen = async () => {
     try {
@@ -98,6 +127,9 @@ export default function PlayScreen() {
         );
         // 强制更新界面状态
         setFullscreen(false);
+        if (videoRef.current) {
+          videoRef.current.exitFullscreen();
+        }
         // iOS特定：确保视频容器样式更新
         await new Promise((resolve) => setTimeout(resolve, 100));
       } else {
@@ -106,6 +138,9 @@ export default function PlayScreen() {
           ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT
         );
         setFullscreen(true);
+        if (videoRef.current) {
+          videoRef.current.enterFullscreen();
+        }
       }
     } catch (error) {
       console.error("切换全屏失败:", error);
@@ -115,6 +150,9 @@ export default function PlayScreen() {
   };
 
   useEffect(() => {
+    // 设置播放器更新间隔
+    videoPlayer.timeUpdateEventInterval = 0.5; // 0.5秒更新一次
+
     return () => {
       const lockPortrait = async () => {
         try {
@@ -129,12 +167,6 @@ export default function PlayScreen() {
       lockPortrait();
     };
   }, []);
-
-  useEffect(() => {
-    if (playbackStatus) {
-      handlePlaybackStatusUpdate();
-    }
-  }, [playbackStatus]);
 
   useEffect(() => {
     // 初始化时仅设置一次
@@ -197,8 +229,8 @@ export default function PlayScreen() {
   };
 
   const changeVideoProgress = async (value) => {
-    if (videoRef.current != null && playbackStatus.isLoaded) {
-      await videoRef.current.setPositionAsync(value);
+    if (videoPlayer && status === 'readyToPlay') {
+      videoPlayer.currentTime = value;
     }
   };
 
@@ -231,25 +263,18 @@ export default function PlayScreen() {
         style={[!fullscreen && { marginTop: safeAreaInset }]}
       >
         <TouchableWithoutFeedback onPress={handleClickedVideo}>
-          <Video
+          <VideoView
             ref={videoRef}
-            source={{ uri: parsedVideoUrl }}
+            player={videoPlayer}
             style={[
               styles.video,
               { height: fullscreen ? "100%" : selectedVideoHeight },
             ]}
-            resizeMode={ResizeMode.CONTAIN}
-            useNativeControls={false}
-            shouldPlay={playing}
-            isLooping={false}
-            onReadyForDisplay={(status) => {
-              const { width, height } = status.naturalSize;
-              const ratio = width / height; // 计算宽高比
-              if (ratio < 1) {
-                setSelectedVideoHeight(portraitVideoHeight);
-              }
-            }}
-            onPlaybackStatusUpdate={(status) => setPlaybackStatus(() => status)}
+            contentFit="contain"
+            nativeControls={false}
+            allowsFullscreen={true}
+            onFullscreenEnter={() => setFullscreen(true)}
+            onFullscreenExit={() => setFullscreen(false)}
           />
         </TouchableWithoutFeedback>
 
@@ -266,7 +291,7 @@ export default function PlayScreen() {
 
         {isEnded && (
           <TouchableOpacity
-            onPress={() => replayVideo(videoRef)}
+            onPress={() => replayVideo(videoPlayer)}
             style={
               fullscreen ? styles.replayIconContainerFS : styles.replayIconContainer
             }
@@ -285,12 +310,16 @@ export default function PlayScreen() {
             <TouchableOpacity
               style={[styles.controlButton]}
               onPress={() => {
-                setPlaying((prev) => !prev);
+                if (isPlaying) {
+                  videoPlayer.pause();
+                } else {
+                  videoPlayer.play();
+                }
                 showControlsWithTimer();
               }}
             >
               <Image
-                source={playing ? pauseIcon : playbackIcon}
+                source={isPlaying ? pauseIcon : playbackIcon}
                 style={{ width: "100%", height: "100%" }}
                 resizeMode="contain"
               />
@@ -303,19 +332,19 @@ export default function PlayScreen() {
               ]}
             >
               <Text style={fullscreen ? styles.timeTextFS : styles.timeText}>
-                {formatTime(currentProgress)}
+                {formatTime(currentTime * 1000)}
                 <Text
                   style={
                     fullscreen ? styles.totalTimeTextFS : styles.totalTimeText
                   }
                 >
                   {" "}
-                  / {formatTime(totalDuration)}
+                  / {formatTime(totalDuration * 1000)}
                 </Text>
               </Text>
               <Slider
                 style={fullscreen ? styles.sliderFS : styles.slider}
-                value={currentProgress}
+                value={currentTime}
                 minimumValue={0}
                 maximumValue={totalDuration}
                 minimumTrackTintColor="#87CEEB"
@@ -332,7 +361,6 @@ export default function PlayScreen() {
                 }}
                 onValueChange={changeVideoProgress}
                 onSlidingComplete={() => {
-                  changeVideoProgress();
                   showControlsWithTimer();
                 }}
               />
@@ -360,25 +388,18 @@ export default function PlayScreen() {
         style={[!fullscreen && { marginTop: safeAreaInset }]}
       >
         <TouchableWithoutFeedback onPress={handleClickedVideo}>
-          <Video
+            <VideoView
             ref={videoRef}
-            source={{ uri: parsedVideoUrl }}
+              player={videoPlayer}
             style={[
               styles.video,
               { height: fullscreen ? "100%" : selectedVideoHeight },
             ]}
-            resizeMode={ResizeMode.CONTAIN}
-            useNativeControls={false}
-            shouldPlay={playing}
-            isLooping={false}
-            onReadyForDisplay={(status) => {
-              const { width, height } = status.naturalSize;
-              const ratio = width / height; // 计算宽高比
-              if (ratio < 1) {
-                setSelectedVideoHeight(portraitVideoHeight);
-              }
-            }}
-            onPlaybackStatusUpdate={(status) => setPlaybackStatus(() => status)}
+              contentFit="contain"
+              nativeControls={false}
+              allowsFullscreen={true}
+              onFullscreenEnter={() => setFullscreen(true)}
+              onFullscreenExit={() => setFullscreen(false)}
           />
         </TouchableWithoutFeedback>
 
@@ -395,7 +416,7 @@ export default function PlayScreen() {
 
         {isEnded && (
           <TouchableOpacity
-            onPress={() => replayVideo(videoRef)}
+              onPress={() => replayVideo(videoPlayer)}
             style={
               fullscreen ? styles.replayIconContainerFS : styles.replayIconContainer
             }
@@ -414,12 +435,16 @@ export default function PlayScreen() {
             <TouchableOpacity
               style={[styles.controlButton]}
               onPress={() => {
-                setPlaying((prev) => !prev);
+                if (isPlaying) {
+                  videoPlayer.pause();
+                } else {
+                  videoPlayer.play();
+                }
                 showControlsWithTimer();
               }}
             >
               <Image
-                source={playing ? pauseIcon : playbackIcon}
+                  source={isPlaying ? pauseIcon : playbackIcon}
                 style={{ width: "100%", height: "100%" }}
                 resizeMode="contain"
               />
@@ -432,19 +457,19 @@ export default function PlayScreen() {
               ]}
             >
               <Text style={fullscreen ? styles.timeTextFS : styles.timeText}>
-                {formatTime(currentProgress)}
+                  {formatTime(currentTime * 1000)}
                 <Text
                   style={
                     fullscreen ? styles.totalTimeTextFS : styles.totalTimeText
                   }
                 >
                   {" "}
-                  / {formatTime(totalDuration)}
+                    / {formatTime(totalDuration * 1000)}
                 </Text>
               </Text>
               <Slider
                 style={fullscreen ? styles.sliderFS : styles.slider}
-                value={currentProgress}
+                  value={currentTime}
                 minimumValue={0}
                 maximumValue={totalDuration}
                 minimumTrackTintColor="#87CEEB"
@@ -460,8 +485,7 @@ export default function PlayScreen() {
                   setShowControls(true);
                 }}
                 onValueChange={changeVideoProgress}
-                onSlidingComplete={() => {
-                  changeVideoProgress();
+                  onSlidingComplete={() => {
                   showControlsWithTimer();
                 }}
               />

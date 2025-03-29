@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-export default function useVideoControls(videoRef) {
+export default function useVideoControls(videoPlayer) {
   const [playing, setPlaying] = useState(true);
   const [loading, setLoading] = useState(true);
   const [isEnded, setIsEnded] = useState(false);
@@ -23,10 +23,13 @@ export default function useVideoControls(videoRef) {
     }, 5000);
   };
 
-  const replayVideo = async (videoRef) => {
-    if (videoRef.current) {
+  const replayVideo = async (videoPlayer) => {
+    if (videoPlayer) {
       try {
-        await videoRef.current.replayAsync();
+        // 使用 expo-video 的 seekTo 和 play 方法
+        videoPlayer.currentTime = 0;
+        videoPlayer.play();
+
         setIsEnded(false);
         setLoading(false);
         setPlaying(true);
