@@ -215,7 +215,13 @@ export default function RootLayout() {
                                             <Drawer.Screen
                                                 name="(tabs)"
                                                 options={{
-                                                    drawerLabel: t("Home")
+                                                    drawerItemStyle: { display: 'none' }
+                                                }}
+                                            />
+                                            <Drawer.Screen
+                                                name="settings"
+                                                options={{
+                                                    drawerLabel: t("Settings")
                                                 }}
                                             />
                                             <Drawer.Screen name="(auth)/sign-in" options={{ drawerItemStyle: { display: 'none' } }} />
