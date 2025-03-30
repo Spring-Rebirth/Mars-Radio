@@ -3,7 +3,7 @@
     "name": "Mars Radio",
     "slug": "mars-radio",
     "scheme": "mars-radio",
-    "version": "3.8.2",
+    "version": "3.8.3",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mystseed.marsradio",
-      "buildNumber": "3.8.0",
+      "buildNumber": "3.8.3",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
