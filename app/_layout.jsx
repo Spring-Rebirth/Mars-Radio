@@ -211,8 +211,8 @@ export default function RootLayout() {
                                                 name="(tabs)"
                                                 options={{
                                                     drawerLabel: t("Home"),
-                                                    drawerIcon: () => (
-                                                        <Ionicons name="home-outline" size={24} color="#808080" />
+                                                    drawerIcon: ({ color }) => (
+                                                        <Ionicons name="home-outline" size={24} color={color} />
                                                     ),
                                                     headerShown: false
                                                 }}
@@ -222,8 +222,8 @@ export default function RootLayout() {
                                                 name="settings/index"
                                                 options={{
                                                     drawerLabel: t("Settings"),
-                                                    drawerIcon: () => (
-                                                        <Ionicons name="settings-outline" size={24} color="#808080" />
+                                                    drawerIcon: ({ color }) => (
+                                                        <Ionicons name="settings-outline" size={24} color={color} />
                                                     )
                                                 }}
                                             />
