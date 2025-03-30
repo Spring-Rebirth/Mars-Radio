@@ -289,14 +289,15 @@ export default function Home() {
                     <Pressable
                       onPress={() => navigation.openDrawer()}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                      className="mr-3"
+                      className="mr-3 ml-1"
                     >
-                      <Ionicons name="menu-outline" size={28} color="#808080" />
+                      <Image
+                        source={{ uri: user?.avatar }}
+                        className="w-8 h-8 rounded-full"
+                        resizeMode="cover"
+                      />
                     </Pressable>
-                    <View className="ml-4">
-                      <Text className="text-[#808080] text-lg">
-                        {t("Welcome Back")}
-                      </Text>
+                    <View className="ml-2">
                       <Text className="text-[#FF6B6B] text-2xl font-psemibold ">
                         {user?.username}
                       </Text>

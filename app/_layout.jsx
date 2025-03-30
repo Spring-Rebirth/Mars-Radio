@@ -22,6 +22,7 @@ import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CustomDrawerContent from "../components/drawer/CustomDrawerContent";
 import DrawerNavigationProvider from "../context/drawerNavigationContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const originalWarn = console.warn;
 console.warn = (message) => {
@@ -209,7 +210,10 @@ export default function RootLayout() {
                                             <Drawer.Screen
                                                 name="settings/index"
                                                 options={{
-                                                    drawerLabel: t("Settings")
+                                                    drawerLabel: t("Settings"),
+                                                    drawerIcon: () => (
+                                                        <Ionicons name="settings-outline" size={24} color="#808080" />
+                                                    )
                                                 }}
                                             />
                                             <Drawer.Screen name="index" options={{ drawerItemStyle: { display: 'none' } }} />
