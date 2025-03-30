@@ -17,6 +17,10 @@ import { fetchAdminData } from "../lib/appwrite";
 import { useAdminStore } from "../store/adminStore";
 import Toast from "react-native-toast-message";
 import AppInitializer from "../components/AppInitializer";
+import { Drawer } from "expo-router/drawer";
+import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import CustomDrawerContent from "../components/drawer/CustomDrawerContent";
 
 const originalWarn = console.warn;
 console.warn = (message) => {
@@ -188,20 +192,46 @@ export default function RootLayout() {
                     <GlobalProvider>
                         <TabProvider>
                             <AppInitializer>
-                                <Stack>
-                                    <Stack.Screen name="index" options={{ headerShown: false }} />
-                                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                                    <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
-                                    <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
-                                    <Stack.Screen name="(auth)/pw-reset" options={{ headerShown: false }} />
-                                    <Stack.Screen name='(auth)/user-info' options={{ headerShown: false }} />
-                                    <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
-                                    <Stack.Screen name='player/play-screen' options={{ headerShown: false }} />
-                                    <Stack.Screen name='notifications/notice-screen' options={{ headerShown: false }} />
-                                    <Stack.Screen name='view-user/index' options={{ headerShown: false }} />
-                                    <Stack.Screen name='screens/post-details' options={{ headerShown: false }} />
-                                    <Stack.Screen name='screens/create-post' options={{ headerShown: false }} />
-                                </Stack>
+                                <GestureHandlerRootView style={{ flex: 1 }}>
+                                    <Drawer
+                                        screenOptions={{
+                                            drawerContent: (props) => <CustomDrawerContent {...props} />,
+                                            gestureEnabled: true,
+                                            swipeEdgeWidth: 70,
+                                            gestureHandlerProps: {
+                                                hitSlop: { left: 0, right: -20, top: 0, bottom: 0 }
+                                            },
+                                            drawerItemStyle: {
+                                                display: 'none'
+                                            }
+                                        }}
+                                    >
+                                        <Drawer.Screen
+                                            name="index"
+                                            options={{
+                                                headerShown: false,
+                                                drawerLabel: "首页"
+                                            }}
+                                        />
+                                        <Drawer.Screen
+                                            name="(tabs)"
+                                            options={{
+                                                headerShown: false,
+                                                drawerLabel: "标签页"
+                                            }}
+                                        />
+                                        <Drawer.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
+                                        <Drawer.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
+                                        <Drawer.Screen name="(auth)/pw-reset" options={{ headerShown: false }} />
+                                        <Drawer.Screen name='(auth)/user-info' options={{ headerShown: false }} />
+                                        <Drawer.Screen name="search/[query]" options={{ headerShown: false }} />
+                                        <Drawer.Screen name='player/play-screen' options={{ headerShown: false }} />
+                                        <Drawer.Screen name='notifications/notice-screen' options={{ headerShown: false }} />
+                                        <Drawer.Screen name='view-user/index' options={{ headerShown: false }} />
+                                        <Drawer.Screen name='screens/post-details' options={{ headerShown: false }} />
+                                        <Drawer.Screen name='screens/create-post' options={{ headerShown: false }} />
+                                    </Drawer>
+                                </GestureHandlerRootView>
                             </AppInitializer>
                         </TabProvider>
                     </GlobalProvider>
