@@ -35,7 +35,6 @@ import { getVideoDetails } from "../../lib/appwrite";
 import trash from "../../assets/menu/trash-solid.png";
 import closeIcon from "../../assets/icons/close.png";
 import { deleteVideoDoc, deleteVideoFiles } from "../../lib/appwrite";
-import Drawer from "../(drawer)/Drawer";
 import backIcon from "../../assets/icons/left-arrow.png";
 import arrowRightIcon from "../../assets/icons/arrow-one.png";
 import { Animated } from "react-native";
@@ -204,93 +203,6 @@ export default function Profile() {
         simultaneousHandlers={flatListRef}
       >
         <Animated.View style={{ flex: 1 }}>
-          <Drawer
-            isVisible={isDrawerVisible}
-            onClose={() => setIsDrawerVisible(false)}
-            switchLangResult={switchLangResult}
-          >
-            {/* 这里可以添加 Drawer 的内容 */}
-            <View>
-              <Text style={{ fontSize: 18, marginBottom: 10 }}>
-                {t("Setting")}
-              </Text>
-
-              <View style={styles.drawerContent}>
-                {viewLevel === 1 ? (
-                  // 一级视图
-                  <View className="w-full items-center space-y-3">
-                    <TouchableOpacity
-                      onPress={goToNextLevel}
-                      className="w-full h-10 flex-row items-center justify-between pr-2"
-                    >
-                      <Text>{t("Language")}</Text>
-                      <Image
-                        source={arrowRightIcon}
-                        className="w-4 h-4"
-                        resizeMode={"contain"}
-                      />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={handleSignOut}
-                      className="w-full h-10 flex-row items-center justify-between pr-2"
-                    >
-                      <Text>{t("Sign Out")}</Text>
-                      <Image
-                        source={arrowRightIcon}
-                        className="w-4 h-4"
-                        resizeMode={"contain"}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => setIsImageModalVisible(true)}
-                      className="w-full h-10 flex-row items-center justify-between pr-2"
-                    >
-                      <Text>{t("Support Us")}</Text>
-                      <Image
-                        source={arrowRightIcon}
-                        className="w-4 h-4"
-                        resizeMode={"contain"}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  // 二级视图
-                  <View className="items-center">
-                    <TouchableOpacity
-                      onPress={goToPreviousLevel}
-                      className="absolute top-0 left-0.5 w-full h-8 justify-center items-start"
-                    >
-                      <Image
-                        source={backIcon}
-                        resizeMode={"contain"}
-                        className={"w-5 h-5"}
-                      />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Switch Language</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        changeLanguage("en");
-                      }}
-                    >
-                      <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center">
-                        <Text>English</Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        changeLanguage("zh");
-                      }}
-                    >
-                      <View className="bg-[#D3D3D3] w-36 h-8 items-center justify-center mt-2">
-                        <Text>中文</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            </View>
-          </Drawer>
           <View style={{ marginTop: 28 }}>
             <FlatList
               ref={flatListRef}
