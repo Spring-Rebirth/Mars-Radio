@@ -6,6 +6,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { config, databases } from '../../services/postsService';
 import { useTranslation } from 'react-i18next';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 function NoticeScreen() {
   const { data } = useLocalSearchParams();
@@ -62,6 +64,16 @@ function NoticeScreen() {
 
   return (
     <SafeAreaView>
+      {/* 返回按钮和标题 */}
+      <TouchableOpacity onPress={() => router.back()}
+        className='absolute top-16 left-5 z-10'
+      >
+        <Ionicons name="arrow-back" size={24} color="black" />
+      </TouchableOpacity>
+      <View className='items-center mt-3'>
+        <Text className='text-2xl font-bold'>{t('Notifications')}</Text>
+      </View>
+
       <NoticeItem
         title={
           notificationsData?.title
