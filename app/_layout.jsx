@@ -209,13 +209,13 @@ export default function RootLayout() {
                                             <Drawer.Screen
                                                 name="index"
                                                 options={{
-                                                    drawerLabel: "首页"
+                                                    drawerItemStyle: { display: 'none' }
                                                 }}
                                             />
                                             <Drawer.Screen
                                                 name="(tabs)"
                                                 options={{
-                                                    drawerLabel: "标签页"
+                                                    drawerLabel: t("Home")
                                                 }}
                                             />
                                             <Drawer.Screen name="(auth)/sign-in" options={{ drawerItemStyle: { display: 'none' } }} />

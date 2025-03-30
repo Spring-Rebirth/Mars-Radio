@@ -213,17 +213,7 @@ export default function Profile() {
               ListHeaderComponent={() => {
                 return (
                   <View className="mb-2 px-4 relative">
-                    <View className="flex-row items-center justify-between">
-                      <TouchableOpacity
-                        onPress={() => setIsDrawerVisible(true)}
-                        className="w-6 h-6"
-                      >
-                        <Image
-                          source={settingIcon}
-                          className="w-6 h-6"
-                          resizeMode="contain"
-                        />
-                      </TouchableOpacity>
+                    <View className="items-end">
                       <TouchableOpacity
                         onPress={() => {
                           router.navigate("/notifications/notice-screen");
