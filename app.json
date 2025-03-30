@@ -3,7 +3,7 @@
     "name": "Mars Radio",
     "slug": "mars-radio",
     "scheme": "mars-radio",
-    "version": "3.8.0",
+    "version": "3.8.2",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
