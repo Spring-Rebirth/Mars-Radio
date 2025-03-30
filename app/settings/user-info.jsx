@@ -20,9 +20,10 @@ import CustomButton from "../../components/CustomButton";
 import { updateUserInfo } from "../../services/userService";
 import Toast from "react-native-toast-message";
 import backArrowIcon from "../../assets/icons/back-arrow.png";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 
 const UserInfo = () => {
+  const router = useRouter();
   const { t } = useTranslation();
   const { user, setUser } = useGlobalContext();
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -119,7 +120,7 @@ const UserInfo = () => {
       >
         <View className="flex-row items-center space-x-1">
           <TouchableOpacity
-            onPress={() => router.navigate('/settings')}
+            onPress={() => router.back()}
             className="w-12 h-12 justify-center items-center -ml-2"
           >
             <Image source={backArrowIcon} style={{ width: 25, height: 25 }} />

@@ -219,7 +219,7 @@ export default function RootLayout() {
                                             />
 
                                             <Drawer.Screen
-                                                name="settings/index"
+                                                name="settings"
                                                 options={{
                                                     drawerLabel: t("Settings"),
                                                     drawerIcon: ({ color }) => (
@@ -231,7 +231,7 @@ export default function RootLayout() {
                                             <Drawer.Screen name="(auth)/sign-in" options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name="(auth)/sign-up" options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name="(auth)/pw-reset" options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name='(auth)/user-info' options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name="settings/user-info" options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name="search/[query]" options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name='player/play-screen' options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name='notifications/notice-screen' options={{ drawerItemStyle: { display: 'none' } }} />
