@@ -7,7 +7,7 @@ import * as Updates from "expo-updates";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { View, Text, Platform, Alert } from "react-native";
+import { View, Text, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { useTranslation } from "react-i18next";
 import useNotificationStore from "../store/notificationStore";
