@@ -1,27 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     Image,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { useDrawerNavigation } from '../../context/drawerNavigationContext';
 import { useGlobalContext } from '../../context/GlobalProvider';
+import { useTranslation } from 'react-i18next';
+import LoadingModal from '../modal/LoadingModal';
 
 export default function CustomDrawerContent(props) {
     const { menuItems } = useDrawerNavigation();
     const { user, handleLogout } = useGlobalContext();
+    const [isLoading, setIsLoading] = useState(false);
+    const { t } = useTranslation();
 
     // 处理退出登录
     const onLogout = () => {
-        props.navigation.closeDrawer();
-        // 延迟执行退出操作，确保抽屉关闭后再执行
-        setTimeout(() => {
-            handleLogout();
-        }, 300);
+        // 确认提示框
+        Alert.alert(t('logout.title'), t('logout.message'), [
+            { text: t('Cancel'), style: 'cancel' },
+            {
+                text: t('Confirm'), onPress: async () => {
+                    // 执行退出登录时显示加载视图modal
+                    setIsLoading(true);
+                    await handleLogout();
+                    setIsLoading(false);
+                }
+            },
+        ]);
     };
 
     return (
@@ -31,6 +43,7 @@ export default function CustomDrawerContent(props) {
             contentContainerStyle={{ paddingHorizontal: 0 }}
             bounces={false}
         >
+            <LoadingModal isVisible={isLoading} loadingText={t('logout.loading')} />
             {/* 用户信息区域 */}
             <View style={styles.userSection}>
                 <Image
@@ -72,7 +85,7 @@ export default function CustomDrawerContent(props) {
                         onPress={onLogout}
                     >
                         <Ionicons name="log-out-outline" size={24} color="#FF4444" />
-                        <Text style={styles.logoutText}>退出登录</Text>
+                        <Text style={styles.logoutText}>{t('Logout')}</Text>
                     </TouchableOpacity>
                 </View>
             )}

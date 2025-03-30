@@ -143,5 +143,10 @@
     "Verify Email": "验证邮箱",
     "Verification Successful": "验证成功",
     "Auto-redirect to homepage after 2 seconds": "2秒后自动跳转到主页",
-    "welcome_description": "创意与创新的交汇：与 MarsX 一起开启无限探索之旅"
+    "welcome_description": "创意与创新的交汇：与 MarsX 一起开启无限探索之旅",
+    "logout": {
+        "title": "退出登录",
+        "message": "确定要退出登录吗",
+        "loading": "正在退出···"
+    }
 }
