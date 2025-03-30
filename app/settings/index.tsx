@@ -170,14 +170,6 @@ export default function Settings() {
                         title={t('Security')}
                         onPress={() => Alert.alert(t('Security'), t('Security settings coming soon'))}
                     />
-
-                    {user && (
-                        <SettingItem
-                            icon="log-out-outline"
-                            title={t('Sign Out')}
-                            onPress={handleLogout}
-                        />
-                    )}
                 </View>
 
                 <View style={styles.settingGroup}>
