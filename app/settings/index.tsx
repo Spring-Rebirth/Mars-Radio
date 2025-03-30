@@ -82,11 +82,11 @@ export default function Settings() {
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
             <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => router.navigate('/(tabs)/home')}
-                >
-                    <Ionicons name="arrow-back" size={24} color="#333" />
-                </TouchableOpacity>
+                style={styles.backButton}
+                onPress={() => router.back()}
+            >
+                <Ionicons name="arrow-back" size={24} color="#333" />
+            </TouchableOpacity>
             <View style={styles.header}>
 
                 <Text style={styles.headerTitle}>{t('Settings')}</Text>
@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         left: 16,
         top: 44,
+        zIndex: 1000,
     },
     headerTitle: {
         fontSize: 18,
