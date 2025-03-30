@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useGlobalContext } from '../../context/GlobalProvider';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type SettingItemProps = {
@@ -54,9 +54,10 @@ const SettingItem: React.FC<SettingItemProps> = ({
 };
 
 export default function Settings() {
+    const router = useRouter();
     const insets = useSafeAreaInsets();
     const { t, i18n } = useTranslation();
-    const { user, handleLogout } = useGlobalContext();
+    const { user } = useGlobalContext();
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 

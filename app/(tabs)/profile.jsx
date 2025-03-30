@@ -8,7 +8,6 @@ import {
   RefreshControl,
   Alert,
   Pressable,
-  StyleSheet,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import useGetData from "../../hooks/useGetData";
@@ -17,13 +16,11 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 import EmptyState from "../../components/EmptyState";
 import CustomButton from "../../components/CustomButton";
 import VideoCard from "../../components/VideoCard";
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { getCurrentUser } from "../../lib/appwrite";
-import settingIcon from "../../assets/menu/setting.png";
 import { useTranslation } from "react-i18next";
 import notifyIcon from "../../assets/menu/notify.png";
-import editIcon from "../../assets/icons/edit.png";
 import { useAuth } from "@clerk/clerk-expo";
 import {
   GestureHandlerRootView,
@@ -35,10 +32,7 @@ import { getVideoDetails } from "../../lib/appwrite";
 import trash from "../../assets/menu/trash-solid.png";
 import closeIcon from "../../assets/icons/close.png";
 import { deleteVideoDoc, deleteVideoFiles } from "../../lib/appwrite";
-import backIcon from "../../assets/icons/left-arrow.png";
-import arrowRightIcon from "../../assets/icons/arrow-one.png";
 import { Animated } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import ImageModal from "../../components/modal/ImageModal";
 
 export default function Profile() {
@@ -47,17 +41,16 @@ export default function Profile() {
   const [userPostsData, setUserPostsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
-  const { user, setUser, setIsLoggedIn, handleLogout } = useGlobalContext();
+  const { user, setUser } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const bottomSheetRef = useRef(null);
   const flatListRef = useRef(null);
   const [showControlMenu, setShowControlMenu] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-  const [viewLevel, setViewLevel] = useState(1); // 控制当前视图层级
 
   const translateX = useRef(new Animated.Value(0)).current;
 
@@ -65,8 +58,6 @@ export default function Profile() {
     [{ nativeEvent: { translationX: translateX } }],
     { useNativeDriver: false }
   );
-
-  const [switchLangResult, setSwitchLangResult] = useState("");
 
   const onHandlerStateChange = (event) => {
     if (event.nativeEvent.translationX > 50) {
@@ -95,54 +86,6 @@ export default function Profile() {
       bottomSheetRef.current?.close();
     }
   }, [showControlMenu]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      goToPreviousLevel();
-
-      return () => {
-        bottomSheetRef.current?.close();
-      };
-    }, [])
-  );
-
-  const changeLanguage = async (lang) => {
-    try {
-      await i18n.changeLanguage(lang);
-      await AsyncStorage.setItem("language", lang);
-      const newLangText = lang === "en" ? "English" : "中文";
-      setSwitchLangResult(t("Selected language") + " " + newLangText);
-    } catch (error) {
-      setSwitchLangResult(t("Failed to switch language"));
-      console.error("Failed to switch language:", error);
-    } finally {
-      setSwitchLangResult("");
-    }
-  };
-
-  const goToNextLevel = () => {
-    setViewLevel(2); // 切换到二级视图
-  };
-
-  const goToPreviousLevel = () => {
-    setViewLevel(1); // 切换回一级视图
-  };
-
-  const handleSignOut = async () => {
-    try {
-      setIsTransitioning(true); // 设置跳转状态，防止渲染未准备好的页面
-
-      await handleLogout();
-
-      // 更新状态
-      setUser(null);
-      setIsLoggedIn(false);
-    } catch (error) {
-      console.error("Sign out failed:", error);
-      Alert.alert("Error", "Failed to sign out. Please try again.");
-      setIsTransitioning(false); // 如果出错，重置跳转状态
-    }
-  };
 
   const handleDelete = async () => {
     setShowControlMenu(false);
@@ -182,14 +125,6 @@ export default function Profile() {
 
     setRefreshing(false);
   };
-
-  if (isTransitioning) {
-    return (
-      <View className="flex-1 justify-center items-center bg-primary">
-        <ActivityIndicator size="large" color="#000" />
-      </View>
-    );
-  }
 
   return (
     <GestureHandlerRootView
@@ -241,19 +176,6 @@ export default function Profile() {
                       <Text className="text-[#999999] text-base font-psemibold">
                         {"#" + user?.email.split("@")[0]}
                       </Text>
-
-                      <TouchableOpacity
-                        onPress={() => {
-                          router.navigate("/user-info");
-                        }}
-                        className="w-10 h-10 justify-center items-center"
-                      >
-                        <Image
-                          source={editIcon}
-                          className="w-6 h-6"
-                          resizeMode="contain"
-                        />
-                      </TouchableOpacity>
                     </View>
                   </View>
                 );
@@ -343,20 +265,4 @@ export default function Profile() {
   );
 }
 
-const styles = StyleSheet.create({
-  drawerContent: {
-    position: "relative",
-    backgroundColor: "white",
-    paddingVertical: 15,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
-    marginTop: 50,
-    textAlign: "center",
-  },
-});
+
