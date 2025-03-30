@@ -1,7 +1,6 @@
 // cSpell:word appwrite
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { getCurrentUser } from '../lib/appwrite';
-import { syncDataToBackend } from '../lib/appwrite';
 import { useUser, useClerk } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
@@ -22,7 +21,6 @@ function GlobalProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const playbackDataRef = useRef({});
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -60,20 +58,6 @@ function GlobalProvider({ children }) {
     fetchUser();
   }, [isLoaded, clerkUser]);
 
-  const updatePlaybackData = async (video_ID, count) => {
-    playbackDataRef.current[video_ID] = {
-      count,
-      lastPlaybackTime: Date.now(),
-      synced: false,
-    };
-
-    try {
-      await syncDataToBackend(playbackDataRef);
-    } catch (error) {
-      console.error('同步播放数据失败:', error);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await signOut();
@@ -93,8 +77,6 @@ function GlobalProvider({ children }) {
       isLoggedIn,
       setIsLoggedIn,
       isLoading,
-      playbackDataRef,
-      updatePlaybackData,
       handleLogout
     }}>
       {children}

@@ -1,12 +1,13 @@
 // cSpell:ignore Pressable
 import { View, Text, Image, TouchableOpacity, Pressable, Alert, ActivityIndicator, Dimensions } from 'react-native'
-import { useEffect, useState, useContext } from 'react'
+import { useEffect, useState } from 'react'
 import { icons } from '../constants'
-import { GlobalContext, useGlobalContext } from '../context/GlobalProvider'
+import { useGlobalContext } from '../context/GlobalProvider'
 import { StatusBar } from 'expo-status-bar';
 import { formatNumberWithUnits, getRelativeTime } from '../utils/numberFormatter';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next'
+import usePlaybackStore from '../store/playbackStore';
 
 export default function VideoCard({
   post,
@@ -20,7 +21,8 @@ export default function VideoCard({
 
   const { user } = useGlobalContext();
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { updatePlaybackData, playbackDataRef } = useContext(GlobalContext);
+  const updatePlaybackData = usePlaybackStore(state => state.updatePlaybackData);
+  const playbackData = usePlaybackStore(state => state.playbackData);
   const [playCount, setPlayCount] = useState(post.played_counts || 0);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function VideoCard({
     const currentTime = Date.now();
     const cooldownPeriod = 5 * 60 * 1000; // 5分钟
 
-    const lastPlaybackTime = playbackDataRef.current[$id]?.lastPlaybackTime || 0;
+    const lastPlaybackTime = playbackData[$id]?.lastPlaybackTime || 0;
 
     if (currentTime - lastPlaybackTime > cooldownPeriod) {
       // 冷却时间已过，递增播放次数

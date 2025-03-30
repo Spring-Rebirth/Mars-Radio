@@ -13,7 +13,7 @@
     "@gorhom/bottom-sheet": "^5.0.6",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/slider": "4.5.5",
-    "@react-navigation/drawer": "^7.0.0",
+    "@react-navigation/drawer": "^7.3.2",
     "@react-navigation/native": "^7.0.0",
     "expo": "~52.0.41",
     "expo-auth-session": "~6.0.3",

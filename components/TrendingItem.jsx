@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import {
   View,
   Image,
@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { GlobalContext, useGlobalContext } from "../context/GlobalProvider";
+import { useGlobalContext } from "../context/GlobalProvider";
 import { updateSavedCounts } from "../lib/appwrite";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import Toast from "react-native-root-toast";
 import star from "../assets/menu/star-solid.png";
 import starTwo from "../assets/menu/star2.png";
+import usePlaybackStore from "../store/playbackStore";
 
 export default function TrendingItem({ activeItem, item }) {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -23,7 +24,8 @@ export default function TrendingItem({ activeItem, item }) {
   const { played_counts, $id } = item;
   const [isSaved, setIsSaved] = useState(user?.favorite.includes($id));
   const [playCount, setPlayCount] = useState(played_counts || 0);
-  const { updatePlaybackData, playbackDataRef } = useContext(GlobalContext);
+  const updatePlaybackData = usePlaybackStore(state => state.updatePlaybackData);
+  const playbackData = usePlaybackStore(state => state.playbackData);
   const { t } = useTranslation();
 
   const zoomIn = {
@@ -80,7 +82,7 @@ export default function TrendingItem({ activeItem, item }) {
     const currentTime = Date.now();
     const cooldownPeriod = 5 * 60 * 1000; // 5分钟
 
-    const lastPlaybackTime = playbackDataRef.current[$id]?.lastPlaybackTime || 0;
+    const lastPlaybackTime = playbackData[$id]?.lastPlaybackTime || 0;
 
     if (currentTime - lastPlaybackTime > cooldownPeriod) {
       // 冷却时间已过，递增播放次数
