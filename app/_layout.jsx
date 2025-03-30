@@ -7,19 +7,17 @@ import * as Updates from "expo-updates";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { View, Text, Platform } from "react-native";
+import { View, Text, Platform, Alert } from "react-native";
 import * as Notifications from "expo-notifications";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { useTranslation } from "react-i18next";
 import useNotificationStore from "../store/notificationStore";
-import { ClerkProvider, ClerkLoaded, useUser } from "@clerk/clerk-expo";
+import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { tokenCache } from "../lib/clerk/auth";
 import { fetchAdminData } from "../lib/appwrite";
 import { useAdminStore } from "../store/adminStore";
 import Toast from "react-native-toast-message";
-import usePlaybackStore from "../store/playbackStore";
-import useUserTokenStore from "../store/userTokenStore";
-import { useGlobalContext } from "../context/GlobalProvider";
+import AppInitializer from "../components/AppInitializer";
 
 const originalWarn = console.warn;
 console.warn = (message) => {
@@ -47,39 +45,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
-const AppContentWithStack = () => {
-  const { user } = useGlobalContext();
-  const loadPlaybackData = usePlaybackStore((state) => state.loadPlaybackData);
-  const updateUserPushToken = useUserTokenStore((state) => state.updateUserPushToken);
-
-  useEffect(() => {
-    if (user !== null) {
-      updateUserPushToken(user);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    loadPlaybackData();
-  }, []);
-
-  return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)/pw-reset" options={{ headerShown: false }} />
-      <Stack.Screen name='(auth)/user-info' options={{ headerShown: false }} />
-      <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
-      <Stack.Screen name='player/play-screen' options={{ headerShown: false }} />
-      <Stack.Screen name='notifications/notice-screen' options={{ headerShown: false }} />
-      <Stack.Screen name='view-user/index' options={{ headerShown: false }} />
-      <Stack.Screen name='screens/post-details' options={{ headerShown: false }} />
-      <Stack.Screen name='screens/create-post' options={{ headerShown: false }} />
-    </Stack>
-  );
-};
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
@@ -224,7 +189,22 @@ export default function RootLayout() {
           <I18nextProvider i18n={i18n}>
             <GlobalProvider>
               <TabProvider>
-                <AppContentWithStack />
+                <AppInitializer>
+                  <Stack>
+                    <Stack.Screen name="index" options={{ headerShown: false }} />
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
+                    <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
+                    <Stack.Screen name="(auth)/pw-reset" options={{ headerShown: false }} />
+                    <Stack.Screen name='(auth)/user-info' options={{ headerShown: false }} />
+                    <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
+                    <Stack.Screen name='player/play-screen' options={{ headerShown: false }} />
+                    <Stack.Screen name='notifications/notice-screen' options={{ headerShown: false }} />
+                    <Stack.Screen name='view-user/index' options={{ headerShown: false }} />
+                    <Stack.Screen name='screens/post-details' options={{ headerShown: false }} />
+                    <Stack.Screen name='screens/create-post' options={{ headerShown: false }} />
+                  </Stack>
+                </AppInitializer>
               </TabProvider>
             </GlobalProvider>
           </I18nextProvider>
