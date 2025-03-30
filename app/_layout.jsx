@@ -219,7 +219,7 @@ export default function RootLayout() {
                                                 }}
                                             />
                                             <Drawer.Screen
-                                                name="settings"
+                                                name="settings/index"
                                                 options={{
                                                     drawerLabel: t("Settings")
                                                 }}

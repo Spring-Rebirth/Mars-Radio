@@ -13,7 +13,7 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { useGlobalContext } from '../context/GlobalProvider';
+import { useGlobalContext } from '../../context/GlobalProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -98,7 +98,7 @@ export default function Settings() {
                     <Image
                         source={user?.profileImage
                             ? { uri: user.profileImage }
-                            : require('../assets/images/default-avatar.png')
+                            : require('../../assets/images/default-avatar.png')
                         }
                         style={styles.profileImage}
                     />
