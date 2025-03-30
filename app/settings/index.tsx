@@ -192,7 +192,7 @@ export default function Settings() {
                     <SettingItem
                         icon="help-circle-outline"
                         title={t('Help & Support')}
-                        onPress={() => Alert.alert(t('Help & Support'), t('Contact us at support@marsradio.com'))}
+                        onPress={() => Alert.alert(t('Help & Support'), t('Contact us at cjunwei6249@gmail.com'))}
                     />
                 </View>
             </ScrollView>
