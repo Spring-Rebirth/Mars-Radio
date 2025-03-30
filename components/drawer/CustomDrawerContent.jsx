@@ -5,17 +5,13 @@ import {
     StyleSheet,
     Image,
     TouchableOpacity,
-    ScrollView,
 } from 'react-native';
-import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { useRouter } from 'expo-router';
+import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { useDrawerNavigation } from '../../context/drawerNavigationContext';
 import { useGlobalContext } from '../../context/GlobalProvider';
-import { images } from '../../constants';
 
-const CustomDrawerContent = (props) => {
-    const router = useRouter();
+export default function CustomDrawerContent(props) {
     const { menuItems } = useDrawerNavigation();
     const { user, handleLogout } = useGlobalContext();
 
@@ -38,18 +34,16 @@ const CustomDrawerContent = (props) => {
             {/* 用户信息区域 */}
             <View style={styles.userSection}>
                 <Image
-                    source={user?.profileImage ? { uri: user.profileImage } : images.defaultAvatar || { uri: 'https://placekitten.com/200/200' }}
+                    source={{ uri: user?.avatar }}
                     style={styles.avatar}
                 />
                 <Text style={styles.username}>{user?.username || '游客'}</Text>
                 {user?.email && <Text style={styles.email}>{user.email}</Text>}
             </View>
 
-            {/* 分割线 */}
-            <View style={styles.divider} />
-
             {/* 菜单项 */}
-            <ScrollView
+            <DrawerItemList
+                {...props}
                 style={styles.menuSection}
                 directionalLockEnabled={true}
                 horizontal={false}
@@ -60,7 +54,7 @@ const CustomDrawerContent = (props) => {
                         key={index}
                         style={styles.menuItem}
                         onPress={() => {
-                            router.push(item.route);
+                            props.navigation.navigate(item.route);
                             props.navigation.closeDrawer();
                         }}
                     >
@@ -68,7 +62,7 @@ const CustomDrawerContent = (props) => {
                         <Text style={styles.menuItemText}>{item.label}</Text>
                     </TouchableOpacity>
                 ))}
-            </ScrollView>
+            </DrawerItemList>
 
             {/* 底部区域 */}
             {user && (
@@ -153,5 +147,3 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins-Medium',
     },
 });
-
-export default CustomDrawerContent; 

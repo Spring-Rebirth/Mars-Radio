@@ -197,8 +197,8 @@ export default function RootLayout() {
                                 <AppInitializer>
                                     <GestureHandlerRootView style={{ flex: 1 }}>
                                         <Drawer
+                                            drawerContent={CustomDrawerContent}
                                             screenOptions={{
-                                                drawerContent: (props) => <CustomDrawerContent {...props} />,
                                                 gestureEnabled: true,
                                                 swipeEdgeWidth: 70,
                                                 gestureHandlerProps: {
