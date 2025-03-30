@@ -21,6 +21,7 @@ import { Drawer } from "expo-router/drawer";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CustomDrawerContent from "../components/drawer/CustomDrawerContent";
+import DrawerNavigationProvider from "../context/drawerNavigationContext";
 
 const originalWarn = console.warn;
 console.warn = (message) => {
@@ -191,48 +192,46 @@ export default function RootLayout() {
                 <I18nextProvider i18n={i18n}>
                     <GlobalProvider>
                         <TabProvider>
-                            <AppInitializer>
-                                <GestureHandlerRootView style={{ flex: 1 }}>
-                                    <Drawer
-                                        screenOptions={{
-                                            drawerContent: (props) => <CustomDrawerContent {...props} />,
-                                            gestureEnabled: true,
-                                            swipeEdgeWidth: 70,
-                                            gestureHandlerProps: {
-                                                hitSlop: { left: 0, right: -20, top: 0, bottom: 0 }
-                                            },
-                                            drawerItemStyle: {
-                                                display: 'none'
-                                            }
-                                        }}
-                                    >
-                                        <Drawer.Screen
-                                            name="index"
-                                            options={{
-                                                headerShown: false,
-                                                drawerLabel: "首页"
+                            <DrawerNavigationProvider>
+                                <AppInitializer>
+                                    <GestureHandlerRootView style={{ flex: 1 }}>
+                                        <Drawer
+                                            screenOptions={{
+                                                drawerContent: (props) => <CustomDrawerContent {...props} />,
+                                                gestureEnabled: true,
+                                                swipeEdgeWidth: 70,
+                                                gestureHandlerProps: {
+                                                    hitSlop: { left: 0, right: -20, top: 0, bottom: 0 }
+                                                },
+                                                headerShown: false
                                             }}
-                                        />
-                                        <Drawer.Screen
-                                            name="(tabs)"
-                                            options={{
-                                                headerShown: false,
-                                                drawerLabel: "标签页"
-                                            }}
-                                        />
-                                        <Drawer.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
-                                        <Drawer.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
-                                        <Drawer.Screen name="(auth)/pw-reset" options={{ headerShown: false }} />
-                                        <Drawer.Screen name='(auth)/user-info' options={{ headerShown: false }} />
-                                        <Drawer.Screen name="search/[query]" options={{ headerShown: false }} />
-                                        <Drawer.Screen name='player/play-screen' options={{ headerShown: false }} />
-                                        <Drawer.Screen name='notifications/notice-screen' options={{ headerShown: false }} />
-                                        <Drawer.Screen name='view-user/index' options={{ headerShown: false }} />
-                                        <Drawer.Screen name='screens/post-details' options={{ headerShown: false }} />
-                                        <Drawer.Screen name='screens/create-post' options={{ headerShown: false }} />
-                                    </Drawer>
-                                </GestureHandlerRootView>
-                            </AppInitializer>
+                                        >
+                                            <Drawer.Screen
+                                                name="index"
+                                                options={{
+                                                    drawerLabel: "首页"
+                                                }}
+                                            />
+                                            <Drawer.Screen
+                                                name="(tabs)"
+                                                options={{
+                                                    drawerLabel: "标签页"
+                                                }}
+                                            />
+                                            <Drawer.Screen name="(auth)/sign-in" options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name="(auth)/sign-up" options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name="(auth)/pw-reset" options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name='(auth)/user-info' options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name="search/[query]" options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name='player/play-screen' options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name='notifications/notice-screen' options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name='view-user/index' options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name='screens/post-details' options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name='screens/create-post' options={{ drawerItemStyle: { display: 'none' } }} />
+                                        </Drawer>
+                                    </GestureHandlerRootView>
+                                </AppInitializer>
+                            </DrawerNavigationProvider>
                         </TabProvider>
                     </GlobalProvider>
                 </I18nextProvider>

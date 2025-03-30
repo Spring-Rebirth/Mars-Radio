@@ -10,32 +10,23 @@ import {
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useDrawerNavigation } from '../../context/drawerNavigationContext';
+import { useGlobalContext } from '../../context/GlobalProvider';
+import { images } from '../../constants';
 
 const CustomDrawerContent = (props) => {
     const router = useRouter();
+    const { menuItems } = useDrawerNavigation();
+    const { user, handleLogout } = useGlobalContext();
 
-    const menuItems = [
-        {
-            icon: 'home-outline',
-            label: '首页',
-            route: '/',
-        },
-        {
-            icon: 'apps-outline',
-            label: '标签页',
-            route: '/(tabs)',
-        },
-        {
-            icon: 'person-outline',
-            label: '个人资料',
-            route: '/(tabs)/profile',
-        },
-        {
-            icon: 'settings-outline',
-            label: '设置',
-            route: '/(tabs)/settings',
-        },
-    ];
+    // 处理退出登录
+    const onLogout = () => {
+        props.navigation.closeDrawer();
+        // 延迟执行退出操作，确保抽屉关闭后再执行
+        setTimeout(() => {
+            handleLogout();
+        }, 300);
+    };
 
     return (
         <DrawerContentScrollView
@@ -47,11 +38,11 @@ const CustomDrawerContent = (props) => {
             {/* 用户信息区域 */}
             <View style={styles.userSection}>
                 <Image
-                    source={{ uri: 'https://placekitten.com/200/200' }}
+                    source={user?.profileImage ? { uri: user.profileImage } : images.defaultAvatar || { uri: 'https://placekitten.com/200/200' }}
                     style={styles.avatar}
                 />
-                <Text style={styles.username}>用户名</Text>
-                <Text style={styles.email}>user@example.com</Text>
+                <Text style={styles.username}>{user?.username || '游客'}</Text>
+                {user?.email && <Text style={styles.email}>{user.email}</Text>}
             </View>
 
             {/* 分割线 */}
@@ -80,12 +71,17 @@ const CustomDrawerContent = (props) => {
             </ScrollView>
 
             {/* 底部区域 */}
-            <View style={styles.bottomSection}>
-                <TouchableOpacity style={styles.logoutButton}>
-                    <Ionicons name="log-out-outline" size={24} color="#FF4444" />
-                    <Text style={styles.logoutText}>退出登录</Text>
-                </TouchableOpacity>
-            </View>
+            {user && (
+                <View style={styles.bottomSection}>
+                    <TouchableOpacity
+                        style={styles.logoutButton}
+                        onPress={onLogout}
+                    >
+                        <Ionicons name="log-out-outline" size={24} color="#FF4444" />
+                        <Text style={styles.logoutText}>退出登录</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </DrawerContentScrollView>
     );
 };

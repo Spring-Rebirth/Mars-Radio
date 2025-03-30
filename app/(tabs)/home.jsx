@@ -28,7 +28,7 @@ import VideoLoadingSkeleton from "../../components/loading-view/VideoLoadingSkel
 import { router, usePathname } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { deleteVideoDoc, deleteVideoFiles } from "../../lib/appwrite";
 import { updateSavedCounts, getVideoDetails } from "../../lib/appwrite";
 import star from "../../assets/menu/star-solid.png";
@@ -37,9 +37,11 @@ import trash from "../../assets/menu/trash-solid.png";
 import Toast from "react-native-root-toast";
 import closeIcon from "../../assets/icons/close.png";
 import { getPostsWithPagination } from "../../services/videoService";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Home() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const bottomSheetRef = useRef(null);
   const flatListRef = useRef(null);
   const [showControlMenu, setShowControlMenu] = useState(false);
@@ -283,13 +285,22 @@ export default function Home() {
             return (
               <View className="my-6 px-4">
                 <View className="flex-row justify-between items-center mt-4 h-[60px]">
-                  <View>
-                    <Text className="text-[#808080] text-lg">
-                      {t("Welcome Back")}
-                    </Text>
-                    <Text className="text-[#FF6B6B] text-2xl font-psemibold ">
-                      {user?.username}
-                    </Text>
+                  <View className="flex-row items-center">
+                    <Pressable
+                      onPress={() => navigation.openDrawer()}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      className="mr-3"
+                    >
+                      <Ionicons name="menu-outline" size={28} color="#808080" />
+                    </Pressable>
+                    <View>
+                      <Text className="text-[#808080] text-lg">
+                        {t("Welcome Back")}
+                      </Text>
+                      <Text className="text-[#FF6B6B] text-2xl font-psemibold ">
+                        {user?.username}
+                      </Text>
+                    </View>
                   </View>
                   <Image
                     source={images.logoSmall}
