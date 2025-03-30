@@ -105,7 +105,7 @@ export default function Settings() {
                     {user && (
                         <TouchableOpacity
                             style={styles.editProfileButton}
-                            onPress={() => router.push('/(tabs)/profile')}
+                            onPress={() => router.push('/(auth)/user-info')}
                         >
                             <Text style={styles.editProfileButtonText}>{t('Edit Profile')}</Text>
                         </TouchableOpacity>
