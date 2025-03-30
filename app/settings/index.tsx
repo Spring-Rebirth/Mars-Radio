@@ -96,10 +96,7 @@ export default function Settings() {
                 {/* 用户信息部分 */}
                 <View style={styles.profileSection}>
                     <Image
-                        source={user?.profileImage
-                            ? { uri: user.profileImage }
-                            : require('../../assets/images/default-avatar.png')
-                        }
+                        source={{ uri: user?.avatar }}
                         style={styles.profileImage}
                     />
                     <Text style={styles.profileName}>{user?.username || t('Guest')}</Text>

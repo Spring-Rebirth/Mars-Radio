@@ -293,7 +293,7 @@ export default function Home() {
                     >
                       <Ionicons name="menu-outline" size={28} color="#808080" />
                     </Pressable>
-                    <View>
+                    <View className="ml-4">
                       <Text className="text-[#808080] text-lg">
                         {t("Welcome Back")}
                       </Text>
