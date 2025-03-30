@@ -207,23 +207,13 @@ export default function RootLayout() {
                                             }}
                                         >
                                             <Drawer.Screen
-                                                name="index"
-                                                options={{
-                                                    drawerItemStyle: { display: 'none' }
-                                                }}
-                                            />
-                                            <Drawer.Screen
-                                                name="(tabs)"
-                                                options={{
-                                                    drawerItemStyle: { display: 'none' }
-                                                }}
-                                            />
-                                            <Drawer.Screen
                                                 name="settings/index"
                                                 options={{
                                                     drawerLabel: t("Settings")
                                                 }}
                                             />
+                                            <Drawer.Screen name="index" options={{ drawerItemStyle: { display: 'none' } }} />
+                                            <Drawer.Screen name="(tabs)" options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name="(auth)/sign-in" options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name="(auth)/sign-up" options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name="(auth)/pw-reset" options={{ drawerItemStyle: { display: 'none' } }} />
