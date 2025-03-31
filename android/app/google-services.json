@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "740747891627",
+    "project_id": "marsx-d9b1e",
+    "storage_bucket": "marsx-d9b1e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740747891627:android:f87dc9fb8ccbe5ff9338ee",
+        "android_client_info": {
+          "package_name": "com.mystseed.marsx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApyRU-2Zf7Nh0QV0jre48ht3rpgaMJwXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

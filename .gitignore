@@ -36,6 +36,6 @@ yarn-error.*
 
 .VSCodeCounter
 
-# native code directories
-ios/
-android/
+# native code directories build
+ios/build/
+android/app/build/
