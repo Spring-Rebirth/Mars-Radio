@@ -3,7 +3,7 @@
     "name": "Mars Radio",
     "slug": "marsx",
     "scheme": "marsx",
-    "version": "3.9.1",
+    "version": "4.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mystseed.marsx",
-      "buildNumber": "3.9.1",
+      "buildNumber": "4.0.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -42,7 +42,7 @@
       "expo-secure-store",
       "expo-video"
     ],
-    "runtimeVersion": "3.0",
+    "runtimeVersion": "4.0",
     "extra": {
       "router": {
         "origin": false
