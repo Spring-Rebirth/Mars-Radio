@@ -199,7 +199,7 @@ export default function RootLayout() {
                                         <Drawer
                                             drawerContent={CustomDrawerContent}
                                             screenOptions={{
-                                                gestureEnabled: true,
+                                                gestureEnabled: false,
                                                 swipeEdgeWidth: 70,
                                                 gestureHandlerProps: {
                                                     hitSlop: { left: 0, right: -20, top: 0, bottom: 0 }
@@ -210,6 +210,7 @@ export default function RootLayout() {
                                             <Drawer.Screen
                                                 name="(tabs)"
                                                 options={{
+                                                    gestureEnabled: true,
                                                     drawerLabel: t("Home"),
                                                     drawerIcon: ({ color }) => (
                                                         <Ionicons name="home-outline" size={24} color={color} />
@@ -217,7 +218,6 @@ export default function RootLayout() {
                                                     headerShown: false
                                                 }}
                                             />
-
                                             <Drawer.Screen
                                                 name="settings"
                                                 options={{
