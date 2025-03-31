@@ -19,7 +19,7 @@ import CustomModal from "../../components/modal/CustomModal";
 import CustomButton from "../../components/CustomButton";
 import { updateUserInfo } from "../../services/userService";
 import Toast from "react-native-toast-message";
-import backArrowIcon from "../../assets/icons/back-arrow.png";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 const UserInfo = () => {
@@ -118,16 +118,17 @@ const UserInfo = () => {
         className="px-5"
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        <View className="flex-row items-center space-x-1">
+        <View className="-mx-5 flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="w-12 h-12 justify-center items-center -ml-2"
+            className="w-6"
           >
-            <Image source={backArrowIcon} style={{ width: 25, height: 25 }} />
+            <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
-          <Text className="text-xl font-JakartaBold my-5">
+          <Text className="text-lg font-psemibold flex-1 text-center text-gray-800">
             {t("Edit Profile")}
           </Text>
+          <View className="w-6" />
         </View>
 
         <View className="flex relative items-center justify-center my-5">

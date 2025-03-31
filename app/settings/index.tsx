@@ -66,7 +66,8 @@ export default function Settings() {
     };
 
     const toggleDarkMode = () => {
-        setDarkModeEnabled(previous => !previous);
+        // setDarkModeEnabled(previous => !previous);
+        Alert.alert(t('Dark Mode'), t('Dark mode settings coming soon'))
     };
 
     const changeLanguage = async (lang: string) => {
@@ -82,16 +83,17 @@ export default function Settings() {
 
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
-            <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => router.back()}
-            >
-                <Ionicons name="arrow-back" size={24} color="#333" />
-            </TouchableOpacity>
-            <View style={styles.header}>
-
-                <Text style={styles.headerTitle}>{t('Settings')}</Text>
-                <View style={{ width: 24 }} />
+            <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
+                <TouchableOpacity
+                    onPress={() => router.back()}
+                    className="w-6"
+                >
+                    <Ionicons name="arrow-back" size={24} color="#333" />
+                </TouchableOpacity>
+                <Text className="text-lg font-psemibold flex-1 text-center text-gray-800">
+                    {t('Settings')}
+                </Text>
+                <View className="w-6" />
             </View>
 
             <ScrollView style={styles.scrollView}>
@@ -136,14 +138,7 @@ export default function Settings() {
                         icon="moon-outline"
                         title={t('Dark Mode')}
                         subtitle={t('Change app appearance')}
-                        rightElement={
-                            <Switch
-                                value={darkModeEnabled}
-                                onValueChange={toggleDarkMode}
-                                trackColor={{ false: '#D9D9D9', true: '#FFB300' }}
-                                thumbColor={darkModeEnabled ? '#FFA001' : '#f4f3f4'}
-                            />
-                        }
+                        onPress={toggleDarkMode}
                     />
 
                     <SettingItem
@@ -179,7 +174,7 @@ export default function Settings() {
                     <SettingItem
                         icon="information-circle-outline"
                         title={t('About App')}
-                        subtitle={t('Version 1.0.0')}
+                        subtitle={t('Version 4.0.0')}
                         onPress={() => Alert.alert(t('About App'), t('Mars Radio - Your Galactic Audio Platform'))}
                     />
 
@@ -200,29 +195,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-    },
-    header: {
-        position: 'relative',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#E0E0E0',
-    },
-    backButton: {
-        padding: 8,
-        position: 'absolute',
-        left: 16,
-        top: 44,
-        zIndex: 1000,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        fontFamily: 'Poppins-SemiBold',
-        color: '#333',
-        marginBottom: 16,
-        marginTop: 4,
     },
     scrollView: {
         flex: 1,
