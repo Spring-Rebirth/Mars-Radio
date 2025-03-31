@@ -1,9 +1,9 @@
 {
   "expo": {
     "name": "Mars Radio",
-    "slug": "mars-radio",
-    "scheme": "mars-radio",
-    "version": "3.9.0",
+    "slug": "marsx",
+    "scheme": "marsx",
+    "version": "3.9.1",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,8 +18,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mystseed.marsradio",
-      "buildNumber": "3.9.0",
+      "bundleIdentifier": "com.mystseed.marsx",
+      "buildNumber": "3.9.1",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -29,7 +29,7 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mystseed.marsradio",
+      "package": "com.mystseed.marsx",
       "googleServicesFile": "./google-services.json"
     },
     "web": {
