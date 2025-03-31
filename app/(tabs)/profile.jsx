@@ -1,21 +1,21 @@
 import {
   View,
   Text,
-  FlatList,
   Image,
   ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
   Alert,
   Pressable,
+  ImageBackground,
+  Dimensions,
+  StyleSheet,
+  Share,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import useGetData from "../../hooks/useGetData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGlobalContext } from "../../context/GlobalProvider";
-import EmptyState from "../../components/EmptyState";
-import CustomButton from "../../components/CustomButton";
-import VideoCard from "../../components/VideoCard";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { getCurrentUser } from "../../lib/appwrite";
@@ -26,14 +26,16 @@ import {
   GestureHandlerRootView,
   PanGestureHandler,
 } from "react-native-gesture-handler";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import Toast from "react-native-root-toast";
-import { getVideoDetails } from "../../lib/appwrite";
-import trash from "../../assets/menu/trash-solid.png";
-import closeIcon from "../../assets/icons/close.png";
-import { deleteVideoDoc, deleteVideoFiles } from "../../lib/appwrite";
 import { Animated } from "react-native";
 import ImageModal from "../../components/modal/ImageModal";
+import { Ionicons } from '@expo/vector-icons';
+import Swiper from 'react-native-swiper';
+import UserTab from "../../components/UserTab";
+import SavedTab from "../../components/SavedTab";
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+
+const { width } = Dimensions.get('window');
 
 export default function Profile() {
   const insetTop = useSafeAreaInsets().top;
@@ -43,14 +45,11 @@ export default function Profile() {
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
   const { user, setUser } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const { t } = useTranslation();
-  const bottomSheetRef = useRef(null);
-  const flatListRef = useRef(null);
-  const [showControlMenu, setShowControlMenu] = useState(false);
-  const [selectedVideoId, setSelectedVideoId] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const navigation = useNavigation();
 
   const translateX = useRef(new Animated.Value(0)).current;
 
@@ -79,38 +78,6 @@ export default function Profile() {
     }
   }, [user?.$id, user?.avatar]);
 
-  useEffect(() => {
-    if (showControlMenu) {
-      bottomSheetRef.current?.expand();
-    } else {
-      bottomSheetRef.current?.close();
-    }
-  }, [showControlMenu]);
-
-  const handleDelete = async () => {
-    setShowControlMenu(false);
-    try {
-      const videoDetails = await getVideoDetails(selectedVideoId);
-      const { image_ID, video_ID } = videoDetails;
-      if (image_ID && video_ID) {
-        await Promise.all([
-          deleteVideoDoc(selectedVideoId),
-          deleteVideoFiles(image_ID),
-          deleteVideoFiles(video_ID),
-        ]);
-        Toast.show("Delete Success", {
-          duration: Toast.durations.SHORT,
-          position: Toast.positions.CENTER,
-        });
-        handleRefresh && handleRefresh();
-      } else {
-        Alert.alert("Delete Failed, File ID not found");
-      }
-    } catch (error) {
-      console.error("删除出错:", error);
-    }
-  };
-
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchUserPosts(user?.$id);
@@ -126,6 +93,32 @@ export default function Profile() {
     setRefreshing(false);
   };
 
+  // 添加分享个人主页的函数
+  const shareProfile = async () => {
+    try {
+      const result = await Share.share({
+        message: `查看${user?.username || '用户'}的个人主页 | Mars Radio`,
+        url: `https://mars-radio.app/user/${user?.$id}`,
+        title: `${user?.username || '用户'}的个人主页`,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // 分享成功并且有活动类型
+          console.log('Shared with activity type of: ', result.activityType);
+        } else {
+          // 分享成功
+          console.log('Shared successfully');
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // 用户取消分享
+        console.log('Share dismissed');
+      }
+    } catch (error) {
+      Alert.alert('分享失败', error.message);
+    }
+  };
+
   return (
     <GestureHandlerRootView
       className="bg-primary h-full"
@@ -135,125 +128,126 @@ export default function Profile() {
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
         activeOffsetX={[-10, 10]} // 仅响应水平滑动
-        simultaneousHandlers={flatListRef}
       >
         <Animated.View style={{ flex: 1 }}>
-          <View style={{ marginTop: 28 }}>
-            <FlatList
-              ref={flatListRef}
-              directionalLockEnabled={true}
-              data={loading ? [] : userPostsData}
-              // item 是 data 数组中的每一项
-              keyExtractor={(item) => item?.$id}
-              contentContainerStyle={{ paddingBottom: 44 }}
-              ListHeaderComponent={() => {
-                return (
-                  <View className="mb-2 px-4 relative">
-                    <View className="items-end">
-                      <TouchableOpacity
-                        onPress={() => {
-                          router.navigate("/notifications/notice-screen");
-                        }}
-                      >
-                        <Image
-                          source={notifyIcon}
-                          className="w-6 h-6"
-                          resizeMode="contain"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                    <View className="justify-between items-center mt-3">
-                      <View className="w-[56px] h-[56px] border-2 border-secondary rounded-full overflow-hidden justify-center">
-                        <Image
-                          source={{ uri: user?.avatar }}
-                          className="w-full h-full"
-                          resizeMode="cover"
-                        />
-                      </View>
-
-                      <Text className="text-black text-xl font-psemibold mt-2.5">
-                        {user?.username}
-                      </Text>
-                      <Text className="text-[#999999] text-base font-psemibold">
-                        {"#" + user?.email.split("@")[0]}
-                      </Text>
-                    </View>
-                  </View>
-                );
+          {/* 个人资料头部 */}
+          <View className="relative">
+            {/* 背景部分 */}
+            <LinearGradient
+              colors={['#FFB800', '#FF6B6B', '#FFA001']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{
+                height: 120,
+                width: width,
+                position: 'absolute',
+                top: 0,
+                borderBottomLeftRadius: 25,
+                borderBottomRightRadius: 25,
               }}
-              // renderItem 接受一个对象参数，通常解构为 { item, index, separators }
-              renderItem={({ item }) => {
-                return (
-                  <VideoCard
-                    post={item}
-                    onMenuPress={(videoId) => {
-                      setSelectedVideoId(videoId);
-                      setShowControlMenu((prev) => !prev);
-                    }}
-                    handleRefresh={handleRefresh}
-                  />
-                );
-              }}
-              ListEmptyComponent={() => {
-                return loading ? (
-                  <View className="flex-1 justify-center items-center bg-primary">
-                    <ActivityIndicator size="large" color="#000" />
-                    <Text className="mt-[10] text-black text-xl">
-                      {t("Loading, please wait...")}
-                    </Text>
-                  </View>
-                ) : (
-                  <View>
-                    <EmptyState />
-                    <CustomButton
-                      title={t("Create Video")}
-                      textStyle={"text-black"}
-                      style={"h-16 my-5 mx-4"}
-                      onPress={() => router.push("/create")}
-                    />
-                  </View>
-                );
-              }}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={handleRefresh}
-                />
-              }
             />
+
+            {/* 顶部工具栏 */}
+            <View className="flex-row justify-between items-center px-4 pt-2">
+              <TouchableOpacity
+                onPress={() => navigation.openDrawer()}
+                className="w-10 h-10 bg-white/20 rounded-full items-center justify-center"
+              >
+                <Ionicons name="menu-outline" size={22} color="#fff" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={shareProfile}
+                className="w-10 h-10 bg-white/20 rounded-full items-center justify-center"
+              >
+                <Ionicons name="share-social-outline" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+
+            {/* 个人信息卡片 */}
+            <View className="mx-4 bg-white rounded-2xl p-5 mt-4 shadow-md">
+              <View className="flex-row">
+                {/* 头像 */}
+                <View className="w-[80px] h-[80px] border-2 border-secondary rounded-full overflow-hidden mr-4">
+                  <Image
+                    source={{ uri: user?.avatar }}
+                    className="w-full h-full"
+                    resizeMode="cover"
+                  />
+                </View>
+
+                {/* 用户信息和统计 */}
+                <View className="flex-1 justify-center">
+                  <Text className="text-black text-xl font-psemibold">
+                    {user?.username}
+                  </Text>
+                  <Text className="text-[#999999] text-sm font-pregular">
+                    {"#" + user?.email?.split("@")[0]}
+                  </Text>
+
+                  {/* 统计数据 */}
+                  <View className="flex-row mt-3 justify-between pr-4">
+                    <View className="items-center">
+                      <Text className="text-black font-psemibold">{userPostsData?.length || 0}</Text>
+                      <Text className="text-gray-500 text-xs">{t('Videos')}</Text>
+                    </View>
+                    <View className="items-center">
+                      <Text className="text-black font-psemibold">{user?.favorite?.length || 0}</Text>
+                      <Text className="text-gray-500 text-xs">{t('Saved')}</Text>
+                    </View>
+                    <View className="items-center">
+                      <Text className="text-black font-psemibold">0</Text>
+                      <Text className="text-gray-500 text-xs">{t('Following')}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* 标签页导航 */}
+            <View className="flex-row border-b border-gray-200 mx-4 mt-4">
+              <TouchableOpacity
+                className={`flex-1 pb-2 ${activeTab === 0 ? 'border-b-2 border-secondary' : ''}`}
+                onPress={() => setActiveTab(0)}
+              >
+                <Text className={`text-center font-psemibold ${activeTab === 0 ? 'text-black' : 'text-gray-500'}`}>
+                  {t('My Videos')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className={`flex-1 pb-2 ${activeTab === 1 ? 'border-b-2 border-secondary' : ''}`}
+                onPress={() => setActiveTab(1)}
+              >
+                <Text className={`text-center font-psemibold ${activeTab === 1 ? 'text-black' : 'text-gray-500'}`}>
+                  {t('Saved')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* 内容区域 */}
+          <View className="flex-1 mt-2">
+            <Swiper
+              index={activeTab}
+              onIndexChanged={(index) => setActiveTab(index)}
+              loop={false}
+              showsPagination={false}
+              scrollEnabled={true}
+            >
+              {/* 我的视频 */}
+              <UserTab
+                userPostsData={userPostsData}
+                loading={loading}
+                fetchUserPosts={fetchUserPosts}
+                userId={user?.$id}
+              />
+
+              {/* 收藏视频 */}
+              <SavedTab />
+            </Swiper>
           </View>
         </Animated.View>
       </PanGestureHandler>
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={[275]}
-        enablePanDownToClose={true}
-        onClose={() => setShowControlMenu(false)}
-      >
-        <BottomSheetView>
-          <View className="relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto">
-            <Pressable
-              onPress={() => setShowControlMenu(false)}
-              className="z-20 items-end"
-            >
-              <Image
-                source={closeIcon}
-                className="w-6 h-6"
-                resizeMode="contain"
-              />
-            </Pressable>
-
-            <Pressable
-              onPress={handleDelete}
-              className="w-full h-12 flex-row items-center"
-            >
-              <Image source={trash} className="w-6 h-6 mr-8" />
-              <Text className="text-black text-lg">{t("Delete video")}</Text>
-            </Pressable>
-          </View>
-        </BottomSheetView>
-      </BottomSheet>
 
       <ImageModal
         isVisible={isImageModalVisible}
@@ -261,7 +255,7 @@ export default function Profile() {
         setIsVisible={setIsImageModalVisible}
       />
 
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
     </GestureHandlerRootView>
   );
 }

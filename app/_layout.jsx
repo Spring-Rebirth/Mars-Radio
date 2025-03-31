@@ -147,7 +147,7 @@ export default function RootLayout() {
                 console.log(response);
                 setTimeout(() => {
                     router.push({
-                        pathname: "/notifications/notice-screen",
+                        pathname: "/(tabs)/notice-screen",
                         params: {
                             data: JSON.stringify(response.notification.request.content),
                         },
@@ -234,7 +234,6 @@ export default function RootLayout() {
                                             <Drawer.Screen name="settings/user-info" options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name="search/[query]" options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name='player/play-screen' options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name='notifications/notice-screen' options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name='view-user/index' options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name='screens/post-details' options={{ drawerItemStyle: { display: 'none' } }} />
                                             <Drawer.Screen name='screens/create-post' options={{ drawerItemStyle: { display: 'none' } }} />

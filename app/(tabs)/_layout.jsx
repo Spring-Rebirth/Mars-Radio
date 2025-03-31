@@ -156,14 +156,14 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="saved"
+        name="notice"
         options={{
-          title: t("Saved"),
+          title: t("Notifications"),
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              name={t("Saved")}
-              icon={icons.bookmark}
+              name={t("Notifications")}
+              icon={require("../../assets/menu/notify.png")}
               color={color}
               focused={focused}
             />
