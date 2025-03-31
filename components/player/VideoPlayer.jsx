@@ -20,6 +20,8 @@ import pauseIcon from "../../assets/icons/pause.png";
 import fullscreenIcon from "../../assets/icons/fullscreen.png";
 import exitFullscreenIcon from "../../assets/icons/exit-fullscreen.png";
 import styles from "../../styles/player/styles";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 const VideoPlayer = ({
     videoPlayer,
@@ -53,6 +55,7 @@ const VideoPlayer = ({
         bufferedPosition: videoPlayer.bufferedPosition
     });
 
+    const router = useRouter();
     const videoRef = useRef(null);
     const videoContainerRef = useRef(null);
     const landscapeVideoHeight = (Dimensions.get("window").width * 9) / 16;
@@ -229,6 +232,14 @@ const VideoPlayer = ({
 
                     {showControls && !isEnded && (
                         <>
+                            {/* 返回按钮 */}
+                            <TouchableOpacity
+                                onPress={() => router.back()}
+                                className="absolute top-4 left-4 z-10 p-2"
+                            >
+                                <Ionicons name="arrow-back" size={24} color="white" />
+                            </TouchableOpacity>
+
                             {/* 播放/暂停按钮 */}
                             <TouchableOpacity
                                 style={[styles.controlButton]}
