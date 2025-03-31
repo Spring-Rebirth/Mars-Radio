@@ -8,8 +8,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "updates": {
-      "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/6b5d4a34-bfab-4bd4-bee9-8483c1128e5d"
+      "fallbackToCacheTimeout": 0
     },
     "splash": {
       "image": "./assets/splash.png",
@@ -48,7 +47,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "6b5d4a34-bfab-4bd4-bee9-8483c1128e5d"
+        "projectId": "a8640a18-c37e-4c8b-8b18-48f78543849d"
       }
     },
     "owner": "myst-seed"
