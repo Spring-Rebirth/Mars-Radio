@@ -141,6 +141,7 @@ export default function Profile() {
           <View style={{ marginTop: 28 }}>
             <FlatList
               ref={flatListRef}
+              directionalLockEnabled={true}
               data={loading ? [] : userPostsData}
               // item 是 data 数组中的每一项
               keyExtractor={(item) => item?.$id}

@@ -35,7 +35,7 @@ export default function Trending({ video, loading }) {
       viewabilityConfig={viewabilityConfig}
       showsHorizontalScrollIndicator={false}
       decelerationRate="fast"
-      directionalLockEnabled={false}
+        directionalLockEnabled={true}
     />
   )
 }

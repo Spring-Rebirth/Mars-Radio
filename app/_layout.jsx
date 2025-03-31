@@ -200,7 +200,7 @@ export default function RootLayout() {
                                             drawerContent={CustomDrawerContent}
                                             screenOptions={{
                                                 gestureEnabled: false,
-                                                swipeEdgeWidth: 70,
+                                                swipeEdgeWidth: 120,
                                                 gestureHandlerProps: {
                                                     hitSlop: { left: 0, right: -20, top: 0, bottom: 0 }
                                                 },

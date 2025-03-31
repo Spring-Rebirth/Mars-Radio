@@ -125,6 +125,7 @@ export default function Posts() {
         <FlatList
           ref={flatListRef}
           data={posts}
+            directionalLockEnabled={true}
           keyExtractor={(item) => item.$id}
           renderItem={({ item }) => (
             <Pressable

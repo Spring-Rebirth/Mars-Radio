@@ -278,6 +278,7 @@ export default function Home() {
       >
         <FlatList
           ref={flatListRef}
+          directionalLockEnabled={true}
           contentContainerStyle={{ paddingBottom: 44 }}
           data={loading ? [] : data}
           keyExtractor={(item) => item.$id}

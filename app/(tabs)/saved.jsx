@@ -113,6 +113,7 @@ export default function Saved() {
     >
       <FlatList
         data={loading ? [] : savedPostsData}
+        directionalLockEnabled={true}
         // item 是 data 数组中的每一项
         keyExtractor={(item) => item.$id}
         contentContainerStyle={{ paddingBottom: 44 }}
