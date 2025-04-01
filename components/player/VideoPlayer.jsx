@@ -68,6 +68,13 @@ const VideoPlayer = ({
         if (!videoPlayer) return;
 
         try {
+            // 确保视频已加载并准备好
+            if (status !== 'readyToPlay') {
+                // 如果视频还没加载完成，使用默认高度并稍后再尝试
+                setSelectedVideoHeight(landscapeVideoHeight); // 使用默认值
+                return;
+            }
+
             // 获取视频第一帧缩略图以确定视频真实尺寸
             const thumbnails = await videoPlayer.generateThumbnailsAsync([0]);
             if (thumbnails && thumbnails.length > 0) {
@@ -82,7 +89,7 @@ const VideoPlayer = ({
                 }
             }
         } catch (error) {
-            console.error('检测视频尺寸失败:', error);
+            console.warn('检测视频尺寸失败:', error);
             // 默认使用横屏模式高度
             setSelectedVideoHeight(landscapeVideoHeight);
         }
