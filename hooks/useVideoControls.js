@@ -1,25 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export default function useVideoControls(videoPlayer) {
+export default function useVideoControls() {
   const [playing, setPlaying] = useState(true);
   const [loading, setLoading] = useState(true);
   const [isEnded, setIsEnded] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const hideControlsTimer = useRef(null);
-  const isInitialized = useRef(false);
-
-  // 初始化时显示控件，5秒后自动隐藏
-  useEffect(() => {
-    if (!isInitialized.current && videoPlayer) {
-      console.log("视频控件初始化");
-      isInitialized.current = true;
-      showControlsWithTimer();
-    }
-
-    return () => {
-      cleanupTimer();
-    };
-  }, [videoPlayer]);
 
   const cleanupTimer = useCallback(() => {
     console.log("清理定时器");

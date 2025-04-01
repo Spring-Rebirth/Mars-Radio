@@ -31,7 +31,6 @@ const VideoPlayer = ({
     safeAreaInset
 }) => {
     const {
-        playing,
         setPlaying,
         loading,
         setLoading,
@@ -43,7 +42,7 @@ const VideoPlayer = ({
         handleClickedVideo,
         showControlsWithTimer,
         hideControlsTimer,
-    } = useVideoControls(videoPlayer);
+    } = useVideoControls();
 
     // 使用useEvent钩子监听播放状态变化
     const { isPlaying } = useEvent(videoPlayer, 'playingChange', { isPlaying: videoPlayer.playing });
@@ -117,7 +116,7 @@ const VideoPlayer = ({
 
     // 监听状态变化
     useEffect(() => {
-        if (status === 'loading') {
+        if (status === 'loading' || status === 'idle') {
             setLoading(true);
         } else if (status === 'readyToPlay') {
             setLoading(false);
@@ -207,7 +206,7 @@ const VideoPlayer = ({
                     {loading && (
                         <ActivityIndicator
                             size="large"
-                            color="#000"
+                            color="#fff"
                             style={[
                                 styles.activityIndicator,
                                 { top: "50%", transform: [{ translateX: -20 }, { translateY: -20 }] },
