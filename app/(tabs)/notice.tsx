@@ -21,7 +21,6 @@ import { images } from '../../constants';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import useNotificationStore from '../../store/notificationStore';
-import { useGlobalContext } from '../../context/GlobalProvider';
 import {
     NotificationType,
     NotificationData,
@@ -54,13 +53,13 @@ function NoticeScreen(): JSX.Element {
     const [notificationStats, setNotificationStats] = useState<NotificationStats>({
         total: 1,
         unread: 0,
-        today: 0
+        today: 0,
+        weekly: 0
     });
     const { t } = useTranslation();
     const insetTop = useSafeAreaInsets().top;
     const fadeAnim = useRef<Animated.Value>(new Animated.Value(0)).current;
     const { notification, setNotification, clearNotification } = useNotificationStore();
-    const { user } = useGlobalContext();
 
     // 加载动画
     useEffect(() => {
@@ -160,11 +159,16 @@ function NoticeScreen(): JSX.Element {
         const now = new Date();
         const todayStart = new Date(now.setHours(0, 0, 0, 0));
 
+        // 计算一周前的日期
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
         // 计算统计数据
         const stats: NotificationStats = {
             total: notificationsList.length,
             unread: notificationsList.filter(n => !n.read).length,
-            today: notificationsList.filter(n => new Date(n.createdAt) >= todayStart).length
+            today: notificationsList.filter(n => new Date(n.createdAt) >= todayStart).length,
+            weekly: notificationsList.filter(n => new Date(n.createdAt) >= oneWeekAgo).length
         };
 
         setNotificationStats(stats);
@@ -362,16 +366,14 @@ function NoticeScreen(): JSX.Element {
                                 {t('Today')}
                             </Text>
                         </View>
-                        {user && (
-                            <View className="items-center">
-                                <Text className="text-white font-psemibold text-base">
-                                    {user.username?.charAt(0) || '?'}
-                                </Text>
-                                <Text className="text-white/80 text-xs">
-                                    {t('My Account')}
-                                </Text>
-                            </View>
-                        )}
+                        <View className="items-center">
+                            <Text className="text-white font-psemibold text-base">
+                                {notificationStats.weekly}
+                            </Text>
+                            <Text className="text-white/80 text-xs">
+                                {t('Weekly')}
+                            </Text>
+                        </View>
                     </View>
                 </LinearGradient>
 

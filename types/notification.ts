@@ -25,6 +25,7 @@ export interface NotificationStats {
     total: number;
     unread: number;
     today: number;
+    weekly: number;
 }
 
 // 解析的URL参数接口
