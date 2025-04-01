@@ -199,18 +199,26 @@ export default function RootLayout() {
                                         <Drawer
                                             drawerContent={CustomDrawerContent}
                                             screenOptions={{
-                                                gestureEnabled: false,
+                                                configureGestureHandler: (gesture) => {
+                                                    gesture.enabled(false);
+                                                    return gesture;
+                                                },
                                                 swipeEdgeWidth: 120,
                                                 gestureHandlerProps: {
                                                     hitSlop: { left: 0, right: -20, top: 0, bottom: 0 }
                                                 },
-                                                headerShown: false
+                                                headerShown: false,
+                                                // 默认禁用所有屏幕的手势
+                                                gestureEnabled: false
                                             }}
                                         >
                                             <Drawer.Screen
                                                 name="(tabs)"
                                                 options={{
-                                                    gestureEnabled: true,
+                                                    configureGestureHandler: (gesture) => {
+                                                        gesture.enabled(true);
+                                                        return gesture;
+                                                    },
                                                     drawerLabel: t("Home"),
                                                     drawerIcon: ({ color }) => (
                                                         <Ionicons name="home-outline" size={24} color={color} />
