@@ -37,14 +37,6 @@ export default function DrawerLayout() {
                     ),
                 }}
             />
-            <Drawer.Screen
-                name="settings/user-info"
-                options={{
-                    drawerItemStyle: {
-                        display: 'none',
-                    },
-                }}
-            />
         </Drawer>
     );
 }
