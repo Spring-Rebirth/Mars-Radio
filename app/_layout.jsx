@@ -2,7 +2,7 @@ import "react-native-url-polyfill/auto";
 import React, { useEffect, useState, useRef } from "react";
 import { router, SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
-import { GlobalProvider, TabProvider } from "../context/GlobalProvider";
+import CombinedProvider from "../context/CombinedProvider";
 import * as Updates from "expo-updates";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
@@ -17,12 +17,8 @@ import { fetchAdminData } from "../lib/appwrite";
 import { useAdminStore } from "../store/adminStore";
 import Toast from "react-native-toast-message";
 import AppInitializer from "../components/AppInitializer";
-import { Drawer } from "expo-router/drawer";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import CustomDrawerContent from "../components/drawer/CustomDrawerContent";
-import DrawerNavigationProvider from "../context/drawerNavigationContext";
-import { Ionicons } from "@expo/vector-icons";
 
 const originalWarn = console.warn;
 console.warn = (message) => {
@@ -191,29 +187,25 @@ export default function RootLayout() {
         <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
             <ClerkLoaded>
                 <I18nextProvider i18n={i18n}>
-                    <GlobalProvider>
-                        <TabProvider>
-                            <DrawerNavigationProvider>
-                                <AppInitializer>
-                                    <GestureHandlerRootView style={{ flex: 1 }}>
-                                        <Stack>
-                                            {/* 不需要 Drawer 的路由 */}
-                                            <Stack.Screen name="index" options={{ headerShown: false }} />
-                                            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                                            <Stack.Screen name="player" options={{ headerShown: false }} />
-                                            <Stack.Screen name="screens" options={{ headerShown: false }} />
+                    <CombinedProvider>
+                        <AppInitializer>
+                            <GestureHandlerRootView style={{ flex: 1 }}>
+                                <Stack>
+                                    {/* 不需要 Drawer 的路由 */}
+                                    <Stack.Screen name="index" options={{ headerShown: false }} />
+                                    <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                                    <Stack.Screen name="player" options={{ headerShown: false }} />
+                                    <Stack.Screen name="screens" options={{ headerShown: false }} />
 
-                                            {/* 包含 Drawer 的路由组 */}
-                                            <Stack.Screen
-                                                name="(drawer)"
-                                                options={{ headerShown: false }}
-                                            />
-                                        </Stack>
-                                    </GestureHandlerRootView>
-                                </AppInitializer>
-                            </DrawerNavigationProvider>
-                        </TabProvider>
-                    </GlobalProvider>
+                                    {/* 包含 Drawer 的路由组 */}
+                                    <Stack.Screen
+                                        name="(drawer)"
+                                        options={{ headerShown: false }}
+                                    />
+                                </Stack>
+                            </GestureHandlerRootView>
+                        </AppInitializer>
+                    </CombinedProvider>
                 </I18nextProvider>
             </ClerkLoaded>
             <Toast />
