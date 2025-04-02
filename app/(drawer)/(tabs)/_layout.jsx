@@ -1,12 +1,12 @@
 import { View, Text, Image, TouchableWithoutFeedback } from "react-native";
 import { Tabs, useSegments, usePathname } from "expo-router";
-import icons from "../../constants/icons";
+import icons from "../../../constants/icons";
 import { useWindowDimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useEffect, useCallback } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTabContext } from "../../context/GlobalProvider";
+import { useTabContext } from "../../../context/GlobalProvider";
 
 function TabIcon({ name, icon, color, focused }) {
   const { width, height } = useWindowDimensions();
@@ -116,7 +116,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               name={t("Posts")}
-              icon={require("../../assets/icons/post/post-icon.png")}
+              icon={require("../../../assets/icons/post/post-icon.png")}
               color={color}
               focused={focused}
             />
@@ -163,7 +163,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               name={t("Notifications")}
-              icon={require("../../assets/menu/notify.png")}
+              icon={require("../../../assets/menu/notify.png")}
               color={color}
               focused={focused}
             />

@@ -2,36 +2,29 @@ import {
   View,
   Text,
   Image,
-  ActivityIndicator,
   TouchableOpacity,
-  RefreshControl,
   Alert,
-  Pressable,
-  ImageBackground,
   Dimensions,
-  StyleSheet,
   Share,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
-import useGetData from "../../hooks/useGetData";
+import useGetData from "../../../hooks/useGetData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import { router } from "expo-router";
+import { useGlobalContext } from "../../../context/GlobalProvider";
 import { StatusBar } from "expo-status-bar";
-import { getCurrentUser } from "../../lib/appwrite";
+import { getCurrentUser } from "../../../lib/appwrite";
 import { useTranslation } from "react-i18next";
-import notifyIcon from "../../assets/menu/notify.png";
 import { useAuth } from "@clerk/clerk-expo";
 import {
   GestureHandlerRootView,
   PanGestureHandler,
 } from "react-native-gesture-handler";
 import { Animated } from "react-native";
-import ImageModal from "../../components/modal/ImageModal";
+import ImageModal from "../../../components/modal/ImageModal";
 import { Ionicons } from '@expo/vector-icons';
 import Swiper from 'react-native-swiper';
-import UserTab from "../../components/UserTab";
-import SavedTab from "../../components/SavedTab";
+import UserTab from "../../../components/UserTab";
+import SavedTab from "../../../components/SavedTab";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
@@ -251,7 +244,7 @@ export default function Profile() {
 
       <ImageModal
         isVisible={isImageModalVisible}
-        imageSource={require("../../assets/images/ali-pay.jpg")}
+        imageSource={require("../../../assets/images/ali-pay.jpg")}
         setIsVisible={setIsImageModalVisible}
       />
 

@@ -9,13 +9,11 @@ import {
 } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
-import { useDrawerNavigation } from '../../context/drawerNavigationContext';
 import { useGlobalContext } from '../../context/GlobalProvider';
 import { useTranslation } from 'react-i18next';
 import LoadingModal from '../modal/LoadingModal';
 
 export default function CustomDrawerContent(props) {
-    const { menuItems } = useDrawerNavigation();
     const { user, handleLogout } = useGlobalContext();
     const [isLoading, setIsLoading] = useState(false);
     const { t } = useTranslation();
@@ -61,21 +59,7 @@ export default function CustomDrawerContent(props) {
                 directionalLockEnabled={true}
                 horizontal={false}
                 showsVerticalScrollIndicator={false}
-            >
-                {menuItems.map((item, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        style={styles.menuItem}
-                        onPress={() => {
-                            props.navigation.navigate(item.route);
-                            props.navigation.closeDrawer();
-                        }}
-                    >
-                        <Ionicons name={item.icon} size={24} color="#333" />
-                        <Text style={styles.menuItemText}>{item.label}</Text>
-                    </TouchableOpacity>
-                ))}
-            </DrawerItemList>
+            />
 
             {/* 底部区域 */}
             {user && (
@@ -129,12 +113,6 @@ const styles = StyleSheet.create({
     menuSection: {
         flex: 1,
         paddingTop: 10,
-    },
-    menuItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 15,
-        paddingLeft: 20,
     },
     menuItemText: {
         marginLeft: 15,

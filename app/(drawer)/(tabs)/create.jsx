@@ -2,25 +2,25 @@
 import { useState } from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import CustomForm from '../../components/CustomForm'
-import CustomButton from '../../components/CustomButton'
-import { icons } from '../../constants'
-import { usePickFile } from '../../hooks/usePickFile'
+import CustomForm from '../../../components/CustomForm'
+import CustomButton from '../../../components/CustomButton'
+import { icons } from '../../../constants'
+import { usePickFile } from '../../../hooks/usePickFile'
 
 import { VideoView, useVideoPlayer } from 'expo-video'
-import { useGlobalContext } from '../../context/GlobalProvider'
-import { useUploadFile } from '../../hooks/useUploadFile'
-import { fetchFileUrl, uploadData } from '../../lib/appwrite'
+import { useGlobalContext } from '../../../context/GlobalProvider'
+import { useUploadFile } from '../../../hooks/useUploadFile'
+import { fetchFileUrl, uploadData } from '../../../lib/appwrite'
 import { StatusBar } from 'expo-status-bar'
-import { images } from '../../constants'
-import closeY from '../../assets/icons/close.png'
+import { images } from '../../../constants'
+import closeY from '../../../assets/icons/close.png'
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import * as FileSystem from 'expo-file-system';
 import * as Progress from 'react-native-progress';
 import mime from 'mime';
 import { useTranslation } from "react-i18next";
 import Toast from 'react-native-root-toast';
-import VideoPlayButton from '../../components/VideoPlayButton';
+import VideoPlayButton from '../../../components/VideoPlayButton';
 
 export default function Create() {
   const insetTop = useSafeAreaInsets().top;
@@ -239,20 +239,20 @@ export default function Create() {
           </TouchableOpacity>
         ) : (
           <View className='w-full h-56 bg-[#1e1e2d] rounded-2xl mt-2 justify-center items-center relative'>
-              {videoPlayer && (
-                <VideoView
-                  ref={ref => setVideoRef(ref)}
-                  player={videoPlayer}
-                  className='w-full h-full rounded-xl'
-                  contentFit="cover"
-                  nativeControls={false}
-                  loop={true}
-                />
-              )}
+            {videoPlayer && (
+              <VideoView
+                ref={ref => setVideoRef(ref)}
+                player={videoPlayer}
+                className='w-full h-full rounded-xl'
+                contentFit="cover"
+                nativeControls={false}
+                loop={true}
+              />
+            )}
 
             <VideoPlayButton
-                onPress={togglePlayback}
-                isPlaying={isPlaying}
+              onPress={togglePlayback}
+              isPlaying={isPlaying}
             />
 
             <TouchableOpacity

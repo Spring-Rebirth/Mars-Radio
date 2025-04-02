@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useCallback, useRef } from "react";
-import PostItem from "../../components/post/PostItem";
+import PostItem from "../../../components/post/PostItem";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { fetchPostsWithPagination } from "../../services/postsService";
+import { fetchPostsWithPagination } from "../../../services/postsService";
 import Toast from "react-native-toast-message";
-import { useTabContext } from "../../context/GlobalProvider";
+import { useTabContext } from "../../../context/GlobalProvider";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -125,7 +125,7 @@ export default function Posts() {
         <FlatList
           ref={flatListRef}
           data={posts}
-            directionalLockEnabled={true}
+          directionalLockEnabled={true}
           keyExtractor={(item) => item.$id}
           renderItem={({ item }) => (
             <Pressable
@@ -158,7 +158,7 @@ export default function Posts() {
         className="absolute bottom-5 right-5 bg-sky-500 w-14 h-14 rounded-full justify-center items-center"
       >
         <Image
-          source={require("../../assets/icons/post/plus.png")}
+          source={require("../../../assets/icons/post/plus.png")}
           className="w-8 h-8"
         />
       </Pressable>

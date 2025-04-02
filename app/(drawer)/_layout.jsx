@@ -9,7 +9,7 @@ export default function DrawerLayout() {
 
     return (
         <Drawer
-            drawerContent={CustomDrawerContent}
+            drawerContent={(props) => <CustomDrawerContent {...props} />}
             screenOptions={{
                 configureGestureHandler: (gesture) => {
                     gesture.enabled(false);
