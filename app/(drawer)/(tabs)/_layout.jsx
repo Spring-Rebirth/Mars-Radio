@@ -158,11 +158,11 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="notice"
         options={{
-          title: t("Notifications"),
+          title: t("Notice"),
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              name={t("Notifications")}
+              name={t("Notice")}
               icon={require("../../../assets/menu/notify.png")}
               color={color}
               focused={focused}

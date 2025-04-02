@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TapGestureHandler, State } from 'react-native-gesture-handler';
 
 type SettingItemProps = {
     icon: string;
@@ -34,23 +35,30 @@ const SettingItem: React.FC<SettingItemProps> = ({
     onPress,
     rightElement
 }) => {
+    const onHandlerStateChange = ({ nativeEvent }: any) => {
+        if (onPress && nativeEvent.state === State.ACTIVE) {
+            onPress();
+        }
+    };
+
     return (
-        <TouchableOpacity
-            style={styles.settingItem}
-            onPress={onPress}
-            disabled={!onPress}
+        <TapGestureHandler
+            enabled={!!onPress}
+            onHandlerStateChange={onHandlerStateChange}
         >
-            <View style={styles.settingIconContainer}>
-                <Ionicons name={icon as any} size={24} color="#FF6B6B" />
+            <View style={styles.settingItem}>
+                <View style={styles.settingIconContainer}>
+                    <Ionicons name={icon as any} size={24} color="#FF6B6B" />
+                </View>
+                <View style={styles.settingContent}>
+                    <Text style={styles.settingTitle}>{title}</Text>
+                    {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
+                </View>
+                {rightElement || (
+                    <Ionicons name="chevron-forward" size={20} color="#999" />
+                )}
             </View>
-            <View style={styles.settingContent}>
-                <Text style={styles.settingTitle}>{title}</Text>
-                {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
-            </View>
-            {rightElement || (
-                <Ionicons name="chevron-forward" size={20} color="#999" />
-            )}
-        </TouchableOpacity>
+        </TapGestureHandler>
     );
 };
 

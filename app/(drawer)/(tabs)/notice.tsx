@@ -320,16 +320,16 @@ function NoticeScreen(): JSX.Element {
                         </Text>
                         <View className="flex-row">
                             <TouchableOpacity
-                                onPress={markAllAsRead}
-                                className="mr-4 bg-white/20 rounded-full p-2"
-                            >
-                                <Ionicons name="checkmark-done-outline" size={20} color="#fff" />
-                            </TouchableOpacity>
-                            <TouchableOpacity
                                 onPress={sendTestNotification}
                                 className="mr-4 bg-white/20 rounded-full p-2"
                             >
                                 <Ionicons name="notifications-outline" size={20} color="#fff" />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={markAllAsRead}
+                                className="mr-4 bg-white/20 rounded-full p-2"
+                            >
+                                <Ionicons name="checkmark-done-outline" size={20} color="#fff" />
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={clearAllNotifications}

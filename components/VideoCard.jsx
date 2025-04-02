@@ -8,6 +8,7 @@ import { formatNumberWithUnits, getRelativeTime } from '../utils/numberFormatter
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next'
 import usePlaybackStore from '../store/playbackStore';
+import { TapGestureHandler, State } from 'react-native-gesture-handler';
 
 export default function VideoCard({
   post,
@@ -65,62 +66,77 @@ export default function VideoCard({
       {isFullscreen && <StatusBar hidden />}
 
       {/* 视频视图 */}
-      <TouchableOpacity
-        className='w-full justify-center items-center relative overflow-hidden mb-2.5' // 添加 overflow-hidden
-        style={{ height: thumbnailHeight }}
-        activeOpacity={1}
-        onPress={handlePlay}
-      >
+      <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
+        if (nativeEvent.state === State.ACTIVE) {
+          handlePlay();
+        }
+      }}>
+        <View
+          className='w-full justify-center items-center relative overflow-hidden mb-2.5'
+          style={{ height: thumbnailHeight }}
+        >
+          <Image
+            source={{ uri: thumbnail }}
+            className='w-full h-full'
+            resizeMode={'cover'}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => {
+              setImageLoaded(false);
+              console.log("Failed to load image.");
+            }}
+          />
 
-        <Image
-          source={{ uri: thumbnail }}
-          className='w-full h-full'
-          resizeMode={'cover'}
-          onLoad={() => setImageLoaded(true)}
-          onError={() => {
-            setImageLoaded(false);
-            console.log("Failed to load image.");
-          }}
-        />
-
-        {!imageLoaded && (
-          <ActivityIndicator size="large" color="#000" style={{
-            position: 'absolute', top: '50%', left: '50%', transform: [{ translateX: -20 }, { translateY: -20 }]
-          }} />
-        )}
-
-      </TouchableOpacity>
+          {!imageLoaded && (
+            <ActivityIndicator size="large" color="#000" style={{
+              position: 'absolute', top: '50%', left: '50%', transform: [{ translateX: -20 }, { translateY: -20 }]
+            }} />
+          )}
+        </View>
+      </TapGestureHandler>
 
       {/* 信息视图 */}
       <View className='flex-row mx-2 bg-primary'>
-        <TouchableOpacity onPress={() => {
-          router.push({ pathname: 'view-user', params: { creatorId, accountId } });
+        <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            router.push({ pathname: 'view-user', params: { creatorId, accountId } });
+          }
         }}>
-          <Image
-            source={{ uri: avatar }}
-            className='w-[36px] h-[36px] border border-secondary rounded-full ml-2 mt-0.5'
-          />
-        </TouchableOpacity>
+          <View>
+            <Image
+              source={{ uri: avatar }}
+              className='w-[36px] h-[36px] border border-secondary rounded-full ml-2 mt-0.5'
+            />
+          </View>
+        </TapGestureHandler>
 
-        <TouchableOpacity
-          onPress={handlePlay}
-          className='gap-y-1 justify-center flex-1 ml-5'
-        >
-          <Text className='text-black font-psemibold text-sm' numberOfLines={2}>
-            {title}
-          </Text>
-          <Text className='text-[#808080] font-pregular text-xs' numberOfLines={2}>
-            {username}  ·  {formatNumberWithUnits(playCount, t)} {t("views")}  ·  {getRelativeTime($createdAt, t)}
-          </Text>
-        </TouchableOpacity>
+        <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            handlePlay();
+          }
+        }}>
+          <View className='gap-y-1 justify-center flex-1 ml-5'>
+            <Text className='text-black font-psemibold text-sm' numberOfLines={2}>
+              {title}
+            </Text>
+            <Text className='text-[#808080] font-pregular text-xs' numberOfLines={2}>
+              {username}  ·  {formatNumberWithUnits(playCount, t)} {t("views")}  ·  {getRelativeTime($createdAt, t)}
+            </Text>
+          </View>
+        </TapGestureHandler>
 
-        <TouchableOpacity onPress={() => onMenuPress($id)}>
-          <Image
-            source={icons.menu}
-            className='w-5 h-5 mr-2 ml-3'
-            resizeMode='contain'
-          />
-        </TouchableOpacity>
+        <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            onMenuPress($id);
+          }
+        }}>
+          <View>
+            <Image
+              source={icons.menu}
+              className='w-5 h-5 mr-2 ml-3'
+              resizeMode='contain'
+            />
+          </View>
+        </TapGestureHandler>
       </View>
 
     </View >
