@@ -196,56 +196,19 @@ export default function RootLayout() {
                             <DrawerNavigationProvider>
                                 <AppInitializer>
                                     <GestureHandlerRootView style={{ flex: 1 }}>
-                                        <Drawer
-                                            drawerContent={CustomDrawerContent}
-                                            screenOptions={{
-                                                configureGestureHandler: (gesture) => {
-                                                    gesture.enabled(false);
-                                                    return gesture;
-                                                },
-                                                swipeEdgeWidth: 120,
-                                                gestureHandlerProps: {
-                                                    hitSlop: { left: 0, right: -20, top: 0, bottom: 0 }
-                                                },
-                                                headerShown: false,
-                                                // 默认禁用所有屏幕的手势
-                                                gestureEnabled: false
-                                            }}
-                                        >
-                                            <Drawer.Screen
-                                                name="(tabs)"
-                                                options={{
-                                                    configureGestureHandler: (gesture) => {
-                                                        gesture.enabled(true);
-                                                        return gesture;
-                                                    },
-                                                    drawerLabel: t("Home"),
-                                                    drawerIcon: ({ color }) => (
-                                                        <Ionicons name="home-outline" size={24} color={color} />
-                                                    ),
-                                                    headerShown: false
-                                                }}
+                                        <Stack>
+                                            {/* 不需要 Drawer 的路由 */}
+                                            <Stack.Screen name="index" options={{ headerShown: false }} />
+                                            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                                            <Stack.Screen name="player" options={{ headerShown: false }} />
+                                            <Stack.Screen name="screens" options={{ headerShown: false }} />
+
+                                            {/* 包含 Drawer 的路由组 */}
+                                            <Stack.Screen
+                                                name="(drawer)"
+                                                options={{ headerShown: false }}
                                             />
-                                            <Drawer.Screen
-                                                name="settings"
-                                                options={{
-                                                    drawerLabel: t("Settings"),
-                                                    drawerIcon: ({ color }) => (
-                                                        <Ionicons name="settings-outline" size={24} color={color} />
-                                                    )
-                                                }}
-                                            />
-                                            <Drawer.Screen name="index" options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name="(auth)/sign-in" options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name="(auth)/sign-up" options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name="(auth)/pw-reset" options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name="settings/user-info" options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name="search/[query]" options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name='player/play-screen' options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name='view-user/index' options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name='screens/post-details' options={{ drawerItemStyle: { display: 'none' } }} />
-                                            <Drawer.Screen name='screens/create-post' options={{ drawerItemStyle: { display: 'none' } }} />
-                                        </Drawer>
+                                        </Stack>
                                     </GestureHandlerRootView>
                                 </AppInitializer>
                             </DrawerNavigationProvider>
