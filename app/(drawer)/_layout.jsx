@@ -12,40 +12,39 @@ export default function DrawerLayout() {
             drawerContent={(props) => <CustomDrawerContent {...props} />}
             screenOptions={{
                 configureGestureHandler: (gesture) => {
-                    gesture.enabled(false);
+                    gesture.enabled(true);
                     return gesture;
                 },
                 swipeEdgeWidth: 120,
-                gestureHandlerProps: {
-                    hitSlop: { left: 0, right: -20, top: 0, bottom: 0 }
-                },
                 headerShown: false,
-                gestureEnabled: false
             }}
         >
             <Drawer.Screen
                 name="(tabs)"
                 options={{
-                    configureGestureHandler: (gesture) => {
-                        gesture.enabled(true);
-                        return gesture;
-                    },
                     drawerLabel: t("Home"),
                     drawerIcon: ({ color }) => (
                         <Ionicons name="home-outline" size={24} color={color} />
                     ),
-                    headerShown: false
                 }}
             />
             <Drawer.Screen
-                name="settings"
+                name="settings/index"
                 options={{
                     drawerLabel: t("Settings"),
                     drawerIcon: ({ color }) => (
                         <Ionicons name="settings-outline" size={24} color={color} />
-                    )
+                    ),
+                }}
+            />
+            <Drawer.Screen
+                name="settings/user-info"
+                options={{
+                    drawerItemStyle: {
+                        display: 'none',
+                    },
                 }}
             />
         </Drawer>
     );
-} 
+}

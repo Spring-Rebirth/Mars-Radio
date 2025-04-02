@@ -13,9 +13,10 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { useGlobalContext } from '../../context/GlobalProvider';
+import { useGlobalContext } from '../../../context/GlobalProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type SettingItemProps = {
@@ -55,6 +56,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
 
 export default function Settings() {
     const router = useRouter();
+    const navigation = useNavigation();
     const insets = useSafeAreaInsets();
     const { t, i18n } = useTranslation();
     const { user } = useGlobalContext();
@@ -85,10 +87,10 @@ export default function Settings() {
         <View style={[styles.container, { paddingTop: insets.top }]}>
             <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
                 <TouchableOpacity
-                    onPress={() => router.back()}
+                    onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
                     className="w-6"
                 >
-                    <Ionicons name="arrow-back" size={24} color="#333" />
+                    <Ionicons name="menu-outline" size={24} color="#333" />
                 </TouchableOpacity>
                 <Text className="text-lg font-psemibold flex-1 text-center text-gray-800">
                     {t('Settings')}

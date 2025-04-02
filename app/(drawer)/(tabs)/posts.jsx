@@ -131,7 +131,7 @@ export default function Posts() {
             <Pressable
               onPress={() => {
                 router.push({
-                  pathname: "screens/post-details",
+                  pathname: "screens/post-detail",
                   params: { post: JSON.stringify(item) },
                 });
               }}

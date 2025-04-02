@@ -8,16 +8,16 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CustomInputBox from "../../components/CustomInputBox";
+import CustomInputBox from "../../../components/CustomInputBox";
 import * as ImagePicker from "expo-image-picker";
-import { fetchFileUrl, updateAvatar } from "../../lib/appwrite";
-import { createFile } from "../../lib/appwrite";
-import { useGlobalContext } from "../../context/GlobalProvider";
+import { fetchFileUrl, updateAvatar } from "../../../lib/appwrite";
+import { createFile } from "../../../lib/appwrite";
+import { useGlobalContext } from "../../../context/GlobalProvider";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import CustomModal from "../../components/modal/CustomModal";
-import CustomButton from "../../components/CustomButton";
-import { updateUserInfo } from "../../services/userService";
+import CustomModal from "../../../components/modal/CustomModal";
+import CustomButton from "../../../components/CustomButton";
+import { updateUserInfo } from "../../../services/userService";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -143,7 +143,7 @@ const UserInfo = () => {
             <TouchableOpacity onPress={handleAvatarUpload}>
               <View className="relative border-4 border-gray-400 rounded-full p-1">
                 <Image
-                  source={require("../../assets/icons/change-avatar.png")}
+                  source={require("../../../assets/icons/change-avatar.png")}
                   className="w-10 h-10 absolute top-1/2 left-1/2 -mt-4 -ml-4 z-20"
                   resizeMode={"contain"}
                 />
@@ -175,7 +175,7 @@ const UserInfo = () => {
                 className="absolute right-7 bottom-[20] w-10 h-10 justify-center items-center"
               >
                 <Image
-                  source={require("../../assets/icons/pen.png")}
+                  source={require("../../../assets/icons/pen.png")}
                   style={{ width: 25, height: 25 }}
                 />
               </TouchableOpacity>

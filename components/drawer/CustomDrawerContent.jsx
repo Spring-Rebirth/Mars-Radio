@@ -17,7 +17,6 @@ export default function CustomDrawerContent(props) {
     const { user, handleLogout } = useGlobalContext();
     const [isLoading, setIsLoading] = useState(false);
     const { t } = useTranslation();
-
     // 处理退出登录
     const onLogout = () => {
         // 确认提示框
