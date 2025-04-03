@@ -1,5 +1,5 @@
 //cSpell:words psemibold appwrite
-import { View, Text, FlatList, Image, ActivityIndicator, RefreshControl } from 'react-native'
+import { View, Text, FlatList, Image, ActivityIndicator, RefreshControl, Pressable } from 'react-native'
 import { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { images } from '../../constants'
@@ -11,6 +11,7 @@ import useGetData from '../../hooks/useGetData'
 import { useLocalSearchParams, router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { useGlobalContext } from '../../context/GlobalProvider'
+import { Ionicons } from '@expo/vector-icons'
 
 export default function Search() {
   const { user } = useGlobalContext();
@@ -42,7 +43,12 @@ export default function Search() {
 
   return (
     <SafeAreaView className='bg-primary h-full'>
-
+      {/* 返回按钮 */}
+      <Pressable onPress={() => router.back()}
+        className='ml-4 mt-4'
+      >
+        <Ionicons name='arrow-back' size={24} color='black' />
+      </Pressable>
       <FlatList
         data={loading ? [] : queryData}
         // item 是 data 数组中的每一项

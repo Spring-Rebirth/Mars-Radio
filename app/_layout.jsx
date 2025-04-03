@@ -196,7 +196,8 @@ export default function RootLayout() {
                                     <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                                     <Stack.Screen name="player" options={{ headerShown: false }} />
                                     <Stack.Screen name="screens" options={{ headerShown: false }} />
-
+                                    <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
+                                    <Stack.Screen name="view-user/index" options={{ headerShown: false }} />
                                     {/* 包含 Drawer 的路由组 */}
                                     <Stack.Screen
                                         name="(drawer)"
