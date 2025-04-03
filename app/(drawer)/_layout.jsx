@@ -31,7 +31,7 @@ export default function DrawerLayout() {
                 }}
             />
             <Drawer.Screen
-                name="settings/index"
+                name="settings"
                 options={{
                     drawerLabel: t("Settings"),
                     drawerIcon: ({ color }) => (
