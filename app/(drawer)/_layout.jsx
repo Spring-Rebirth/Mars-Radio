@@ -19,15 +19,10 @@ export default function DrawerLayout() {
             drawerContent={(props) => <CustomDrawerContent {...props} />}
             screenOptions={{
                 configureGestureHandler: (gesture) => {
-                    // 如果是home或profile路由，禁用手势
-                    if (isHomeOrProfile) {
-                        gesture.enabled(false);
-                    } else {
-                        gesture.enabled(true);
-                    }
+                    gesture.enabled(true);
                     return gesture;
                 },
-                swipeEdgeWidth: screenWidth / 2,
+                swipeEdgeWidth: isHomeOrProfile ? screenWidth / 2 : 0,
                 headerShown: false,
             }}
         >
