@@ -42,7 +42,7 @@ export default function Trending({ video, loading }) {
                 showsVerticalScrollIndicator={false}
                 decelerationRate="fast"
                 directionalLockEnabled={true}
-                contentContainerStyle={{ paddingBottom: 20 }}
+                contentContainerStyle={{ paddingBottom: 80 }}
                 ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
             />
         )
