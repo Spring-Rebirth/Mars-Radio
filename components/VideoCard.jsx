@@ -1,5 +1,5 @@
 // cSpell:ignore Pressable
-import { View, Text, Image, TouchableOpacity, Pressable, Alert, ActivityIndicator, Dimensions } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Pressable, Alert, ActivityIndicator, Dimensions, ImageBackground } from 'react-native'
 import { useEffect, useState } from 'react'
 import { icons } from '../constants'
 import { useGlobalContext } from '../context/GlobalProvider'
@@ -9,6 +9,8 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next'
 import usePlaybackStore from '../store/playbackStore';
 import { TapGestureHandler, State } from 'react-native-gesture-handler';
+import * as Animatable from "react-native-animatable";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function VideoCard({
   post,
@@ -61,84 +63,92 @@ export default function VideoCard({
   };
 
   return (
-    <View className={`relative bg-primary ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-7'}`}>
+    <Animatable.View
+      className={`relative bg-primary mx-4 ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-7'}`}
+    >
       {/* 在全屏模式下隐藏状态栏 */}
       {isFullscreen && <StatusBar hidden />}
 
       {/* 视频视图 */}
-      <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
-        if (nativeEvent.state === State.ACTIVE) {
-          handlePlay();
-        }
-      }}>
-        <View
-          className='w-full justify-center items-center relative overflow-hidden mb-2.5'
-          style={{ height: thumbnailHeight }}
+      <Pressable
+        onPress={handlePlay}
+        className="relative justify-center items-center w-full rounded-[16px] overflow-hidden shadow-md"
+        style={{ height: thumbnailHeight }}
+      >
+        {/* 渐变背景 */}
+        <LinearGradient
+          colors={["#FFA500", "#FF69B4"]}
+          className="absolute w-full h-full rounded-[16px]"
+        />
+
+        {/* 图片容器 */}
+        <ImageBackground
+          source={{ uri: thumbnail }}
+          className="w-full h-full"
+          resizeMode="cover"
+          onLoad={() => setImageLoaded(true)}
+          onError={() => {
+            setImageLoaded(false);
+            console.log("Failed to load image.");
+          }}
         >
-          <Image
-            source={{ uri: thumbnail }}
-            className='w-full h-full'
-            resizeMode={'cover'}
-            onLoad={() => setImageLoaded(true)}
-            onError={() => {
-              setImageLoaded(false);
-              console.log("Failed to load image.");
-            }}
+          {/* 底部渐变覆盖层 */}
+          <LinearGradient
+            colors={["transparent", "rgba(0, 0, 0, 0.7)"]}
+            className="absolute bottom-0 w-full h-[40%]"
           />
 
-          {!imageLoaded && (
-            <ActivityIndicator size="large" color="#000" style={{
-              position: 'absolute', top: '50%', left: '50%', transform: [{ translateX: -20 }, { translateY: -20 }]
-            }} />
-          )}
-        </View>
-      </TapGestureHandler>
-
-      {/* 信息视图 */}
-      <View className='flex-row mx-2 bg-primary'>
-        <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
-          if (nativeEvent.state === State.ACTIVE) {
-            router.push({ pathname: 'view-user', params: { creatorId, accountId } });
-          }
-        }}>
-          <View>
-            <Image
-              source={{ uri: avatar }}
-              className='w-[36px] h-[36px] border border-secondary rounded-full ml-2 mt-0.5'
-            />
-          </View>
-        </TapGestureHandler>
-
-        <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
-          if (nativeEvent.state === State.ACTIVE) {
-            handlePlay();
-          }
-        }}>
-          <View className='gap-y-1 justify-center flex-1 ml-5'>
-            <Text className='text-black font-psemibold text-sm' numberOfLines={2}>
+          {/* 标题和视频信息 */}
+          <View className="absolute bottom-3 left-3">
+            <Text className="text-white font-psemibold text-base" numberOfLines={1}>
               {title}
             </Text>
-            <Text className='text-[#808080] font-pregular text-xs' numberOfLines={2}>
-              {username}  ·  {formatNumberWithUnits(playCount, t)} {t("views")}  ·  {getRelativeTime($createdAt, t)}
-            </Text>
+            <View className="flex-row items-center">
+              <Text className="text-gray-200 text-xs">
+                {username} · {formatNumberWithUnits(playCount, t)} {t("views")} · {getRelativeTime($createdAt, t)}
+              </Text>
+            </View>
           </View>
-        </TapGestureHandler>
 
-        <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
-          if (nativeEvent.state === State.ACTIVE) {
-            onMenuPress($id);
-          }
-        }}>
-          <View>
-            <Image
-              source={icons.menu}
-              className='w-5 h-5 mr-2 ml-3'
-              resizeMode='contain'
-            />
-          </View>
-        </TapGestureHandler>
-      </View>
+          {/* 右上角操作按钮 */}
+          <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
+            if (nativeEvent.state === State.ACTIVE) {
+              onMenuPress($id);
+            }
+          }}>
+            <View className="absolute top-3 right-3 bg-[rgba(255,255,255,0.2)] p-2 rounded-full">
+              <Image
+                source={icons.menu}
+                className="w-5 h-5"
+                resizeMode="contain"
+              />
+            </View>
+          </TapGestureHandler>
+        </ImageBackground>
 
-    </View >
+        {/* 加载动画 */}
+        {!imageLoaded && (
+          <ActivityIndicator
+            size="large"
+            color="#fff"
+            className="absolute"
+          />
+        )}
+      </Pressable>
+
+      {/* 用户头像 - 移到Pressable外部，防止点击事件冲突 */}
+      <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
+        if (nativeEvent.state === State.ACTIVE) {
+          router.push({ pathname: 'view-user', params: { creatorId, accountId } });
+        }
+      }}>
+        <View className="absolute top-3 left-3 z-10">
+          <Image
+            source={{ uri: avatar }}
+            className="w-[36px] h-[36px] border-2 border-white rounded-full"
+          />
+        </View>
+      </TapGestureHandler>
+    </Animatable.View>
   )
 }
