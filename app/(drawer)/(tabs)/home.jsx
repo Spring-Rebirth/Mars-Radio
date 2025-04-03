@@ -8,6 +8,7 @@ import {
   Pressable,
   Alert,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { images } from "../../../constants";
@@ -25,10 +26,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { fetchAdminData } from "../../../lib/appwrite";
 import VideoLoadingSkeleton from "../../../components/loading-view/VideoLoadingSkeleton";
-import { router, usePathname } from "expo-router";
+import { router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { deleteVideoDoc, deleteVideoFiles } from "../../../lib/appwrite";
 import { updateSavedCounts, getVideoDetails } from "../../../lib/appwrite";
 import star from "../../../assets/menu/star-solid.png";
@@ -37,6 +38,7 @@ import trash from "../../../assets/menu/trash-solid.png";
 import Toast from "react-native-root-toast";
 import closeIcon from "../../../assets/icons/close.png";
 import { getPostsWithPagination } from "../../../services/videoService";
+import Swiper from 'react-native-swiper';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -62,6 +64,9 @@ export default function Home() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const swiperRef = useRef(null);
+  const prevActiveTabRef = useRef(0);
 
   // 滚动到顶部方法
   const scrollToTop = useCallback(() => {
@@ -267,6 +272,15 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    if (prevActiveTabRef.current !== activeTab) {
+      prevActiveTabRef.current = activeTab;
+      if (swiperRef.current && swiperRef.current.scrollTo) {
+        swiperRef.current.scrollTo(activeTab, true);
+      }
+    }
+  }, [activeTab]);
+
   return (
     <GestureHandlerRootView
       className="bg-primary h-full"
@@ -275,132 +289,154 @@ export default function Home() {
       <View
         className={`flex-1 bg-primary ${isFullscreen ? "w-full h-full" : "h-full"}`}
       >
-        <FlatList
-          ref={flatListRef}
-          directionalLockEnabled={true}
-          contentContainerStyle={{ paddingBottom: 44 }}
-          data={loading ? [] : data}
-          keyExtractor={(item) => item.$id}
-          ListHeaderComponent={() => {
-            return (
-              <View className="my-6 px-4">
-                <View className="flex-row justify-between items-center mt-4 h-[60px]">
-                  <View className="flex-row items-center">
-                    <Pressable
-                      onPress={() => navigation.openDrawer()}
-                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                      className="mr-3 ml-1"
-                    >
-                      <Image
-                        source={{ uri: user?.avatar }}
-                        className="w-8 h-8 rounded-full"
-                        resizeMode="cover"
-                      />
-                    </Pressable>
-                    <View className="ml-2">
-                      <Text className="text-[#FF6B6B] text-2xl font-psemibold ">
-                        {user?.username}
-                      </Text>
-                    </View>
-                  </View>
-                  <Image
-                    source={images.logoSmall}
-                    className="w-9 h-10"
-                    resizeMode="contain"
-                  />
-                </View>
-
-                <SearchInput containerStyle={"mt-6"} />
-
-                <View className="mt-8">
-                  <Text className=" mb-8 font-psemibold text-lg text-[#FFB300] text-center">
-                    {t("Top  Hits")}
-                  </Text>
-                  {/* 头部视频 */}
-                  {popularData.length === 0 && !loading ? (
-                    <View className="items-center">
-                      <Image
-                        source={images.empty}
-                        className="w-[75px] h-[60px]"
-                        resizeMode="contain"
-                      />
-                      <Text className="text-sky-300 text-center font-psemibold">
-                        {t("Play the video to help it")} {"\n"}
-                        {t("become a popular one !")}
-                      </Text>
-                    </View>
-                  ) : (
-                    <Trending video={popularData} loading={loading} />
-                  )}
-                </View>
-                <View className="flex-row items-center justify-center mt-10 mb-4">
-                  <Image
-                    source={downIcon}
-                    resizeMode="contain"
-                    className="w-6 h-6"
-                  />
-                  <Text className="text-[#FFB300]  font-psemibold text-lg text-center mx-12">
-                    {t("Latest")}
-                  </Text>
-                  <Image
-                    source={downIcon}
-                    resizeMode="contain"
-                    className="w-6 h-6"
-                  />
-                </View>
+        <View className="my-6 px-4">
+          <View className="flex-row justify-between items-center mt-4 h-[60px]">
+            <View className="flex-row items-center">
+              <Pressable
+                onPress={() => navigation.openDrawer()}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                className="mr-3 ml-1"
+              >
+                <Image
+                  source={{ uri: user?.avatar }}
+                  className="w-8 h-8 rounded-full"
+                  resizeMode="cover"
+                />
+              </Pressable>
+              <View className="ml-2">
+                <Text className="text-[#FF6B6B] text-2xl font-psemibold ">
+                  {user?.username}
+                </Text>
               </View>
-            );
-          }}
-          renderItem={({ item }) => {
-            return (
-              <VideoCard
-                post={item}
-                handleRefresh={handleRefresh}
-                isFullscreen={isFullscreen}
-                adminList={adminList}
-                toggleFullscreen={toggleFullscreen}
-                setShowControlMenu={setShowControlMenu}
-                setIsVideoCreator={setIsVideoCreator}
-                onMenuPress={(videoId) => {
-                  setSelectedVideoId(videoId);
-                  setIsSaved(user?.favorite.includes(videoId));
-                  setShowControlMenu((prev) => !prev);
+            </View>
+            <Image
+              source={images.logoSmall}
+              className="w-9 h-10"
+              resizeMode="contain"
+            />
+          </View>
+
+          <SearchInput containerStyle={"mt-6"} />
+
+          {/* 标签页导航 */}
+          <View className="flex-row border-b border-gray-200 mx-4 mt-8">
+            <TouchableOpacity
+              className={`flex-1 pb-2 ${activeTab === 0 ? 'border-b-2 border-secondary' : ''}`}
+              onPress={() => {
+                setActiveTab(0);
+              }}
+            >
+              <Text className={`text-center font-psemibold ${activeTab === 0 ? 'text-[#FFB300]' : 'text-gray-500'}`}>
+                {t("Top Hits")}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className={`flex-1 pb-2 ${activeTab === 1 ? 'border-b-2 border-secondary' : ''}`}
+              onPress={() => {
+                setActiveTab(1);
+              }}
+            >
+              <Text className={`text-center font-psemibold ${activeTab === 1 ? 'text-[#FFB300]' : 'text-gray-500'}`}>
+                {t("Latest")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* 内容区域 */}
+        <View className="flex-1">
+          <Swiper
+            ref={swiperRef}
+            index={activeTab}
+            onIndexChanged={(index) => {
+              if (index !== activeTab) {
+                setActiveTab(index);
+              }
+            }}
+            loop={false}
+            showsPagination={false}
+            scrollEnabled={false} // 禁用滑动手势
+          >
+            {/* 热门视频标签页 */}
+            <View className="flex-1 px-4">
+              {popularData.length === 0 && !loading ? (
+                <View className="items-center">
+                  <Image
+                    source={images.empty}
+                    className="w-[75px] h-[60px]"
+                    resizeMode="contain"
+                  />
+                  <Text className="text-sky-300 text-center font-psemibold">
+                    {t("Play the video to help it")} {"\n"}
+                    {t("become a popular one !")}
+                  </Text>
+                </View>
+              ) : (
+                <Trending video={popularData} loading={loading} />
+              )}
+            </View>
+
+            {/* 最新视频标签页 */}
+            <View className="flex-1">
+              <FlatList
+                ref={flatListRef}
+                directionalLockEnabled={true}
+                contentContainerStyle={{ paddingBottom: 44 }}
+                data={loading ? [] : data}
+                keyExtractor={(item) => item.$id}
+                renderItem={({ item }) => {
+                  return (
+                    <VideoCard
+                      post={item}
+                      handleRefresh={handleRefresh}
+                      isFullscreen={isFullscreen}
+                      adminList={adminList}
+                      toggleFullscreen={toggleFullscreen}
+                      setShowControlMenu={setShowControlMenu}
+                      setIsVideoCreator={setIsVideoCreator}
+                      onMenuPress={(videoId) => {
+                        setSelectedVideoId(videoId);
+                        setIsSaved(user?.favorite.includes(videoId));
+                        setShowControlMenu((prev) => !prev);
+                      }}
+                    />
+                  );
+                }}
+                ListEmptyComponent={() => {
+                  return loading ? (
+                    <>
+                      <VideoLoadingSkeleton />
+                      <VideoLoadingSkeleton />
+                      <VideoLoadingSkeleton />
+                    </>
+                  ) : (
+                    <View>
+                      <EmptyState />
+                      <CustomButton
+                        title={"Create Video"}
+                        textStyle={"text-black"}
+                        style={"h-16 my-5 mx-4"}
+                        onPress={() => router.push("/create")}
+                      />
+                    </View>
+                  );
+                }}
+                refreshControl={
+                  <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                }
+                onEndReached={loadPosts}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={() => {
+                  return isLoadingMore ? (
+                    <View className="items-center justify-center my-4">
+                      <ActivityIndicator size="large" color="#FFB300" />
+                    </View>
+                  ) : null;
                 }}
               />
-            );
-          }}
-          ListEmptyComponent={() => {
-            return loading ? (
-              <>
-                <VideoLoadingSkeleton />
-                <VideoLoadingSkeleton />
-                <VideoLoadingSkeleton />
-              </>
-            ) : (
-              <View>
-                <EmptyState />
-                <CustomButton
-                  title={"Create Video"}
-                  textStyle={"text-black"}
-                  style={"h-16 my-5 mx-4"}
-                  onPress={() => router.push("/create")}
-                />
-              </View>
-            );
-          }}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }
-          onEndReached={loadPosts}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={() => {
-            return isLoadingMore ? (
-              <View className="items-center justify-center my-4">
-                <ActivityIndicator size="large" color="#FFB300" />
-              </View>
-            ) : null;
-          }}
-        />
+            </View>
+          </Swiper>
+        </View>
       </View>
 
       {/* 视频弹出菜单 */}

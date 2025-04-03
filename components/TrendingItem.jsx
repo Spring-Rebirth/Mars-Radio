@@ -1,11 +1,13 @@
 import { useState } from "react";
 import {
   View,
+  Text,
   Image,
   Pressable,
   ImageBackground,
   ActivityIndicator,
   Alert,
+  Dimensions,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { useGlobalContext } from "../context/GlobalProvider";
@@ -18,10 +20,13 @@ import star from "../assets/menu/star-solid.png";
 import starTwo from "../assets/menu/star2.png";
 import usePlaybackStore from "../store/playbackStore";
 
+const { width } = Dimensions.get('window');
+const cardWidth = width - 32; // 左右边距16px
+
 export default function TrendingItem({ activeItem, item }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const { user, setUser } = useGlobalContext();
-  const { played_counts, $id } = item;
+  const { played_counts, $id, title } = item;
   const [isSaved, setIsSaved] = useState(user?.favorite.includes($id));
   const [playCount, setPlayCount] = useState(played_counts || 0);
   const updatePlaybackData = usePlaybackStore(state => state.updatePlaybackData);
@@ -30,10 +35,10 @@ export default function TrendingItem({ activeItem, item }) {
 
   const zoomIn = {
     0: { scale: 1 },
-    1: { scale: 1 },
+    1: { scale: 1.02 },
   };
   const zoomOut = {
-    0: { scale: 1 },
+    0: { scale: 1.02 },
     1: { scale: 1 },
   };
 
@@ -105,56 +110,65 @@ export default function TrendingItem({ activeItem, item }) {
 
   return (
     <Animatable.View
-      animation={activeItem.$id === item.$id ? zoomIn : zoomOut}
+      animation={activeItem && activeItem.$id === item.$id ? zoomIn : zoomOut}
       duration={500}
-      className="mr-4 relative rounded-4 overflow-hidden"
+      className="mx-4 relative rounded-[16px] overflow-hidden"
     >
       <Pressable
-        onPress={handleAddSaved}
-        className="absolute z-10 top-3 right-3"
-      >
-        {/* 星标图标（右上角） */}
-        <View className="absolute top-2.5 right-2.5 bg-[rgba(255,255,255,0.1)] p-1.25 rounded-[12px]">
-          <Image source={isSaved ? star : starTwo} className="w-6 h-6" />
-        </View>
-      </Pressable>
-
-      <Pressable
         onPress={handlePlay}
-        className="relative justify-center items-center w-[290px] h-[332px] rounded-[24px] overflow-hidden"
+        className="relative justify-center items-center w-full rounded-[16px] overflow-hidden shadow-md"
+        style={{ height: 180 }}
       >
         {/* 渐变背景 */}
         <LinearGradient
           colors={["#FFA500", "#FF69B4"]}
-          className="absolute w-full h-full rounded-[24px]"
+          className="absolute w-full h-full rounded-[16px]"
         />
 
         {/* 图片容器 */}
-        <View className="w-full h-[50%] bg-[#2C3E5C]">
-          <ImageBackground
-            source={{ uri: item.thumbnail }}
-            className="w-full h-full"
-            resizeMode="cover"
-            onLoad={() => setImageLoaded(true)}
-            onError={() => {
-              setImageLoaded(false);
-              console.log("Failed to load image.");
-            }}
+        <ImageBackground
+          source={{ uri: item.thumbnail }}
+          className="w-full h-full"
+          resizeMode="cover"
+          onLoad={() => setImageLoaded(true)}
+          onError={() => {
+            setImageLoaded(false);
+            console.log("Failed to load image.");
+          }}
+        >
+          {/* 底部渐变覆盖层 */}
+          <LinearGradient
+            colors={["transparent", "rgba(0, 0, 0, 0.7)"]}
+            className="absolute bottom-0 w-full h-[40%]"
           />
-        </View>
 
-        {/* 底部渐变覆盖层 */}
-        <LinearGradient
-          colors={["transparent", "rgba(0, 0, 0, 0.5)"]}
-          className="absolute bottom-0 w-full h-[40%] rounded-b-[24px]"
-        />
+          {/* 标题 */}
+          {title && (
+            <View className="absolute bottom-3 left-3">
+              <Text className="text-white font-psemibold text-base" numberOfLines={1}>
+                {title}
+              </Text>
+              <Text className="text-gray-200 text-xs">
+                {t("Played")}: {playCount}
+              </Text>
+            </View>
+          )}
+
+          {/* 收藏按钮 */}
+          <Pressable
+            onPress={handleAddSaved}
+            className="absolute top-3 right-3 bg-[rgba(255,255,255,0.2)] p-2 rounded-full"
+          >
+            <Image source={isSaved ? star : starTwo} className="w-5 h-5" />
+          </Pressable>
+        </ImageBackground>
 
         {/* 加载动画 */}
         {!imageLoaded && (
           <ActivityIndicator
             size="large"
-            color="#000"
-            className="absolute top-1/2 left-1/2 -translate-x-5 -translate-y-5"
+            color="#fff"
+            className="absolute"
           />
         )}
       </Pressable>
