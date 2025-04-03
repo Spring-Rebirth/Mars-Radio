@@ -15,7 +15,6 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { images } from "../../../constants";
 import SearchInput from "../../../components/SearchInput";
 import Trending from "../../../components/Trending";
-import TrendingItem from "../../../components/TrendingItem";
 import EmptyState from "../../../components/EmptyState";
 import CustomButton from "../../../components/CustomButton";
 import VideoCard from "../../../components/VideoCard";
