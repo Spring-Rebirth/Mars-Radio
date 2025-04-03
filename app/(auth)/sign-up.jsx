@@ -206,7 +206,7 @@ export default function SignUp() {
                     className="w-9 h-10"
                   />
                   <Text className="text-black text-4xl font-semibold">
-                    MarsX
+                    Mars Radio
                   </Text>
                 </View>
 

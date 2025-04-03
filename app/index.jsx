@@ -102,7 +102,7 @@ export default function Welcome() {
               resizeMode="contain"
               className="w-9 h-10"
             />
-            <Text className="text-black text-4xl font-semibold">MarsX</Text>
+            <Text className="text-black text-4xl font-semibold">Mars Radio</Text>
           </View>
           <View className="w-80 h-48 rounded-2xl overflow-hidden my-8">
             <Image
@@ -115,7 +115,7 @@ export default function Welcome() {
             <Text className="text-black text-3xl font-bold text-center">
               Discover Endless{"\n"}
               Possibilities with{" "}
-              <Text className="text-secondary-200">MarsX</Text>
+              <Text className="text-secondary-200">Mars Radio</Text>
             </Text>
             <Image
               source={images.path}

@@ -135,7 +135,9 @@ export default function SignIn() {
                   resizeMode="contain"
                   className="w-9 h-10"
                 />
-                <Text className="text-black text-4xl font-semibold">MarsX</Text>
+                <Text className="text-black text-4xl font-semibold">
+                  Mars Radio
+                </Text>
               </View>
 
               <Text className="text-black text-2xl font-psemibold mt-6">
