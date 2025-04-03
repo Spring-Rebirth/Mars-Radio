@@ -11,6 +11,7 @@ import usePlaybackStore from '../store/playbackStore';
 import { TapGestureHandler, State } from 'react-native-gesture-handler';
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function VideoCard({
   post,
@@ -184,11 +185,7 @@ export default function VideoCard({
         maxDurationMs={300} // 限制最大点击时间
       >
         <View className="absolute top-3 right-3 z-10 bg-[rgba(255,255,255,0.2)] p-2 rounded-full">
-          <Image
-            source={icons.menu}
-            className="w-5 h-5"
-            resizeMode="contain"
-          />
+          <Ionicons name="ellipsis-vertical" size={20} color="#FFFFFF" />
         </View>
       </TapGestureHandler>
     </Animatable.View>
