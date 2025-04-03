@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -33,6 +33,10 @@ export default function TrendingItem({ activeItem, item }) {
   const playbackData = usePlaybackStore(state => state.playbackData);
   const { t } = useTranslation();
 
+  // 用于跟踪触摸事件的状态
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const isTouchMovedRef = useRef(false);
+
   const zoomIn = {
     0: { scale: 1 },
     1: { scale: 1.02 },
@@ -42,7 +46,10 @@ export default function TrendingItem({ activeItem, item }) {
     1: { scale: 1 },
   };
 
-  const handleAddSaved = async () => {
+  const handleAddSaved = async (e) => {
+    // 阻止事件冒泡，避免触发卡片点击
+    e.stopPropagation();
+
     try {
       let isIncrement;
 
@@ -84,6 +91,11 @@ export default function TrendingItem({ activeItem, item }) {
   };
 
   const handlePlay = async () => {
+    // 如果检测到滑动，不触发播放
+    if (isTouchMovedRef.current) {
+      return;
+    }
+
     const currentTime = Date.now();
     const cooldownPeriod = 5 * 60 * 1000; // 5分钟
 
@@ -108,6 +120,28 @@ export default function TrendingItem({ activeItem, item }) {
     });
   };
 
+  // 记录触摸开始位置
+  const handleTouchStart = (event) => {
+    const { pageX, pageY } = event.nativeEvent;
+    touchStartRef.current = { x: pageX, y: pageY };
+    isTouchMovedRef.current = false;
+  };
+
+  // 判断是否滑动
+  const handleTouchMove = (event) => {
+    const { pageX, pageY } = event.nativeEvent;
+    const { x, y } = touchStartRef.current;
+
+    // 计算移动距离
+    const deltaX = Math.abs(pageX - x);
+    const deltaY = Math.abs(pageY - y);
+
+    // 如果移动距离超过阈值，判定为滑动
+    if (deltaX > 5 || deltaY > 5) {
+      isTouchMovedRef.current = true;
+    }
+  };
+
   return (
     <Animatable.View
       animation={activeItem && activeItem.$id === item.$id ? zoomIn : zoomOut}
@@ -116,6 +150,9 @@ export default function TrendingItem({ activeItem, item }) {
     >
       <Pressable
         onPress={handlePlay}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        delayPressIn={50}
         className="relative justify-center items-center w-full rounded-[16px] overflow-hidden shadow-md"
         style={{ height: 180 }}
       >
@@ -158,6 +195,7 @@ export default function TrendingItem({ activeItem, item }) {
           <Pressable
             onPress={handleAddSaved}
             className="absolute top-3 right-3 bg-[rgba(255,255,255,0.2)] p-2 rounded-full"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Image source={isSaved ? star : starTwo} className="w-5 h-5" />
           </Pressable>

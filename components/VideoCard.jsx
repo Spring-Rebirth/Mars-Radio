@@ -1,6 +1,6 @@
 // cSpell:ignore Pressable
 import { View, Text, Image, TouchableOpacity, Pressable, Alert, ActivityIndicator, Dimensions, ImageBackground } from 'react-native'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { icons } from '../constants'
 import { useGlobalContext } from '../context/GlobalProvider'
 import { StatusBar } from 'expo-status-bar';
@@ -28,6 +28,10 @@ export default function VideoCard({
   const playbackData = usePlaybackStore(state => state.playbackData);
   const [playCount, setPlayCount] = useState(post.played_counts || 0);
 
+  // 用于跟踪触摸事件的状态
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const isTouchMovedRef = useRef(false);
+
   useEffect(() => {
     if (setIsVideoCreator) {
       if (accountId === user?.accountId) {
@@ -38,6 +42,11 @@ export default function VideoCard({
 
   // cSpell:words cooldown
   const handlePlay = async () => {
+    // 如果检测到移动，则不触发播放
+    if (isTouchMovedRef.current) {
+      return;
+    }
+
     const currentTime = Date.now();
     const cooldownPeriod = 5 * 60 * 1000; // 5分钟
 
@@ -62,6 +71,28 @@ export default function VideoCard({
     });
   };
 
+  // 记录触摸开始位置
+  const handleTouchStart = (event) => {
+    const { pageX, pageY } = event.nativeEvent;
+    touchStartRef.current = { x: pageX, y: pageY };
+    isTouchMovedRef.current = false;
+  };
+
+  // 判断是否滑动
+  const handleTouchMove = (event) => {
+    const { pageX, pageY } = event.nativeEvent;
+    const { x, y } = touchStartRef.current;
+
+    // 计算移动距离
+    const deltaX = Math.abs(pageX - x);
+    const deltaY = Math.abs(pageY - y);
+
+    // 如果移动距离超过阈值，判定为滑动
+    if (deltaX > 5 || deltaY > 5) {
+      isTouchMovedRef.current = true;
+    }
+  };
+
   return (
     <Animatable.View
       className={`relative bg-primary mx-4 ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-7'}`}
@@ -72,6 +103,9 @@ export default function VideoCard({
       {/* 视频视图 */}
       <Pressable
         onPress={handlePlay}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        delayPressIn={50}
         className="relative justify-center items-center w-full rounded-[16px] overflow-hidden shadow-md"
         style={{ height: thumbnailHeight }}
       >
@@ -122,11 +156,15 @@ export default function VideoCard({
       </Pressable>
 
       {/* 用户头像 - 移到Pressable外部，防止点击事件冲突 */}
-      <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
-        if (nativeEvent.state === State.ACTIVE) {
-          router.push({ pathname: 'view-user', params: { creatorId, accountId } });
-        }
-      }}>
+      <TapGestureHandler
+        onHandlerStateChange={({ nativeEvent }) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            router.push({ pathname: 'view-user', params: { creatorId, accountId } });
+          }
+        }}
+        maxDist={10} // 限制最大移动距离，超过则不触发
+        maxDurationMs={300} // 限制最大点击时间
+      >
         <View className="absolute top-3 left-3 z-10">
           <Image
             source={{ uri: avatar }}
@@ -136,11 +174,15 @@ export default function VideoCard({
       </TapGestureHandler>
 
       {/* 右上角操作按钮 - 移到Pressable外部，防止点击事件冲突 */}
-      <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
-        if (nativeEvent.state === State.ACTIVE) {
-          onMenuPress($id);
-        }
-      }}>
+      <TapGestureHandler
+        onHandlerStateChange={({ nativeEvent }) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            onMenuPress($id);
+          }
+        }}
+        maxDist={10} // 限制最大移动距离，超过则不触发
+        maxDurationMs={300} // 限制最大点击时间
+      >
         <View className="absolute top-3 right-3 z-10 bg-[rgba(255,255,255,0.2)] p-2 rounded-full">
           <Image
             source={icons.menu}
