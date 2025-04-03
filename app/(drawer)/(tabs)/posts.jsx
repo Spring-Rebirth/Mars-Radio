@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { fetchPostsWithPagination } from "../../../services/postsService";
 import Toast from "react-native-toast-message";
 import { useTabContext } from "../../../context/GlobalProvider";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -109,17 +110,24 @@ export default function Posts() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#fafafa]">
-      <View className="p-5 bg-white border-b border-gray-300 mb-3">
-        <Text className="text-2xl font-bold text-gray-800 text-center">
-          {t("Featured Posts")}
-        </Text>
-      </View>
+    <SafeAreaView className="flex-1 bg-[#f8f9fa]">
+      {/* 标题栏 */}
+      <LinearGradient
+        colors={['#FFB800', '#FF6B6B', '#FFA001']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+      >
+        <View className="py-5 px-4">
+          <Text className="text-2xl font-bold text-white text-center">
+            {t("Featured Posts")}
+          </Text>
+        </View>
+      </LinearGradient>
 
       {initialLoading ? (
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#0ea5e9" />
-          <Text className="mt-2 text-gray-600">{t("Loading")}</Text>
+          <ActivityIndicator size="large" color="#FF6B6B" />
+          <Text className="mt-3 text-gray-600 font-medium">{t("Loading posts...")}</Text>
         </View>
       ) : (
         <FlatList
@@ -135,33 +143,69 @@ export default function Posts() {
                   params: { post: JSON.stringify(item) },
                 });
               }}
+              className="mx-4"
             >
               <PostItem {...item} />
             </Pressable>
           )}
-          contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
+            contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
           onRefresh={onRefresh}
           refreshing={refreshing}
           onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={() => {
-            return loadingMore ? (
-              <View className="items-center justify-center my-4">
-                <ActivityIndicator size="large" color="#FFB300" />
+            onEndReachedThreshold={0.3}
+            ListEmptyComponent={() => (
+              <View className="flex-1 justify-center items-center py-10">
+                <Image
+                  source={require("../../../assets/images/empty.png")}
+                  className="w-20 h-20 opacity-50 mb-4"
+                />
+                <Text className="text-gray-400 text-lg">{t("No posts yet")}</Text>
               </View>
-            ) : null;
+            )}
+          ListFooterComponent={() => {
+            if (loadingMore) {
+              return (
+                <View className="items-center justify-center my-6">
+                  <ActivityIndicator size="small" color="#FF6B6B" />
+                </View>
+              );
+            } else if (!hasMore && posts.length > 0) {
+              return (
+                <View className="items-center justify-center my-6">
+                  <Text className="text-gray-400">{t("No more posts")}</Text>
+                </View>
+              );
+            }
+            return null;
           }}
         />
       )}
-      <Pressable
-        onPress={() => router.push("screens/create-post")}
-        className="absolute bottom-5 right-5 bg-sky-500 w-14 h-14 rounded-full justify-center items-center"
+
+      {/* 创建按钮 */}
+      <LinearGradient
+        colors={['#3498db', '#8e44ad']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        className="absolute bottom-6 right-6 w-14 h-14 rounded-full justify-center items-center shadow-lg"
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 5,
+          elevation: 6
+        }}
       >
-        <Image
-          source={require("../../../assets/icons/post/plus.png")}
-          className="w-8 h-8"
-        />
-      </Pressable>
+        <Pressable
+          onPress={() => router.push("screens/create-post")}
+          className="w-full h-full rounded-full justify-center items-center"
+        >
+          <Image
+            source={require("../../../assets/icons/post/plus.png")}
+            className="w-8 h-8"
+            style={{ tintColor: 'white' }}
+          />
+        </Pressable>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
