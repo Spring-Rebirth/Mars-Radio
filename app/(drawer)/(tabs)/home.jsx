@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
   TouchableOpacity,
+  Animated,
 } from "react-native";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { images } from "../../../constants";
@@ -39,6 +40,7 @@ import Toast from "react-native-root-toast";
 import closeIcon from "../../../assets/icons/close.png";
 import { getPostsWithPagination } from "../../../services/videoService";
 import Swiper from 'react-native-swiper';
+import icons from "../../../constants/icons";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -67,6 +69,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState(0);
   const swiperRef = useRef(null);
   const prevActiveTabRef = useRef(0);
+  const [showSearch, setShowSearch] = useState(false);
+  const searchAnimatedValue = useRef(new Animated.Value(0)).current;
 
   // 滚动到顶部方法
   const scrollToTop = useCallback(() => {
@@ -281,6 +285,18 @@ export default function Home() {
     }
   }, [activeTab]);
 
+  // 控制搜索框的显示/隐藏
+  const toggleSearchBar = () => {
+    const toValue = showSearch ? 0 : 1;
+    Animated.spring(searchAnimatedValue, {
+      toValue,
+      useNativeDriver: false,
+      friction: 8,
+      tension: 40
+    }).start();
+    setShowSearch(!showSearch);
+  };
+
   return (
     <GestureHandlerRootView
       className="bg-primary h-full"
@@ -289,54 +305,96 @@ export default function Home() {
       <View
         className={`flex-1 bg-primary ${isFullscreen ? "w-full h-full" : "h-full"}`}
       >
-        <View className="my-6 px-4">
-          <View className="flex-row justify-between items-center mt-4 h-[60px]">
-            <View className="flex-row items-center">
-              <Pressable
-                onPress={() => navigation.openDrawer()}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                className="mr-3 ml-1"
-              >
-                <Image
-                  source={{ uri: user?.avatar }}
-                  className="w-8 h-8 rounded-full"
-                  resizeMode="cover"
-                />
-              </Pressable>
-              <View className="ml-2">
-                <Text className="text-[#FF6B6B] text-2xl font-psemibold ">
-                  {user?.username}
-                </Text>
-              </View>
-            </View>
+        {/* 更现代的头部设计 */}
+        <View className="px-4 pt-2">
+          {/* 顶部栏 */}
+          <View className="flex-row justify-between items-center h-[50px]">
+            {/* 左侧用户头像 */}
+            <TouchableOpacity
+              onPress={() => navigation.openDrawer()}
+              className="w-10 h-10 rounded-full justify-center items-center overflow-hidden"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.1,
+                shadowRadius: 1.5,
+                elevation: 2
+              }}
+            >
+              <Image
+                source={{ uri: user?.avatar }}
+                className="w-10 h-10"
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
+
+            {/* 中间Logo */}
             <Image
               source={images.logoSmall}
               className="w-9 h-10"
               resizeMode="contain"
             />
+
+            {/* 右侧搜索按钮 */}
+            <TouchableOpacity
+              onPress={toggleSearchBar}
+              className="w-10 h-10 bg-white rounded-full justify-center items-center"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.1,
+                shadowRadius: 1.5,
+                elevation: 2
+              }}
+            >
+              <Image
+                source={icons.search}
+                className="w-5 h-5"
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
           </View>
 
-          <SearchInput containerStyle={"mt-6"} />
+          {/* 搜索栏 - 使用动画控制显示/隐藏 */}
+          <Animated.View
+            style={{
+              maxHeight: searchAnimatedValue.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 80]
+              }),
+              opacity: searchAnimatedValue,
+              transform: [{
+                translateY: searchAnimatedValue.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-10, 0]
+                })
+              }],
+              marginTop: 8,
+              overflow: 'hidden'
+            }}
+          >
+            <SearchInput containerStyle="shadow-sm" />
+          </Animated.View>
 
-          {/* 标签页导航 */}
-          <View className="flex-row border-b border-gray-200 mx-4 mt-8">
+          {/* 标签页导航 - 美化样式 */}
+          <View className="flex-row justify-center border-b border-gray-100 mx-1 mt-6">
             <TouchableOpacity
-              className={`flex-1 pb-2 ${activeTab === 0 ? 'border-b-2 border-secondary' : ''}`}
+              className={`flex-1 pb-2 ${activeTab === 0 ? 'border-b-2 border-[#FFB300]' : ''}`}
               onPress={() => {
                 setActiveTab(0);
               }}
             >
-              <Text className={`text-center font-psemibold ${activeTab === 0 ? 'text-[#FFB300]' : 'text-gray-500'}`}>
+              <Text className={`text-center font-psemibold text-[15px] ${activeTab === 0 ? 'text-[#FFB300]' : 'text-gray-400'}`}>
                 {t("Top Hits")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className={`flex-1 pb-2 ${activeTab === 1 ? 'border-b-2 border-secondary' : ''}`}
+              className={`flex-1 pb-2 ${activeTab === 1 ? 'border-b-2 border-[#FFB300]' : ''}`}
               onPress={() => {
                 setActiveTab(1);
               }}
             >
-              <Text className={`text-center font-psemibold ${activeTab === 1 ? 'text-[#FFB300]' : 'text-gray-500'}`}>
+              <Text className={`text-center font-psemibold text-[15px] ${activeTab === 1 ? 'text-[#FFB300]' : 'text-gray-400'}`}>
                 {t("Latest")}
               </Text>
             </TouchableOpacity>
@@ -360,7 +418,7 @@ export default function Home() {
             {/* 热门视频标签页 */}
             <View className="flex-1 px-4">
               {popularData.length === 0 && !loading ? (
-                <View className="items-center">
+                <View className="items-center mt-4">
                   <Image
                     source={images.empty}
                     className="w-[75px] h-[60px]"
@@ -372,7 +430,9 @@ export default function Home() {
                   </Text>
                 </View>
               ) : (
-                <Trending video={popularData} loading={loading} />
+                  <View className="pt-4">
+                    <Trending video={popularData} loading={loading} />
+                  </View>
               )}
             </View>
 
