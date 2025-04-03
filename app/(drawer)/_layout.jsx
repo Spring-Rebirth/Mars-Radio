@@ -22,7 +22,7 @@ export default function DrawerLayout() {
                     gesture.enabled(true);
                     return gesture;
                 },
-                swipeEdgeWidth: isHomeOrProfile ? screenWidth / 2 : screenWidth / 5,
+                swipeEdgeWidth: isHomeOrProfile ? screenWidth / 5 : screenWidth / 2,
                 headerShown: false,
             }}
         >
