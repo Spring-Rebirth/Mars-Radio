@@ -3,7 +3,7 @@
     "name": "Mars Radio",
     "slug": "marsx",
     "scheme": "marsx",
-    "version": "4.1.0",
+    "version": "4.2.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,7 +18,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mystseed.marsx",
-      "buildNumber": "4.1.0",
+      "buildNumber": "4.2.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }

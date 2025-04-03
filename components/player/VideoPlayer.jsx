@@ -62,51 +62,109 @@ const VideoPlayer = ({
     const [selectedVideoHeight, setSelectedVideoHeight] = useState(landscapeVideoHeight);
     const totalDuration = videoPlayer.duration || 1;
     const previousFullscreen = useRef(fullscreen);
+    const ratioCheckAttempts = useRef(0);
 
     // 检测视频比例并设置合适的高度
     const checkVideoRatio = useCallback(async () => {
         if (!videoPlayer) return;
 
         try {
+            console.log("检测视频比例，当前状态:", status);
+
             // 确保视频已加载并准备好
             if (status !== 'readyToPlay') {
-                // 如果视频还没加载完成，使用默认高度并稍后再尝试
-                setSelectedVideoHeight(landscapeVideoHeight); // 使用默认值
+                console.log("视频尚未准备好，使用默认高度");
+                setSelectedVideoHeight(landscapeVideoHeight);
                 return;
             }
 
-            // 获取视频第一帧缩略图以确定视频真实尺寸
-            const thumbnails = await videoPlayer.generateThumbnailsAsync([0]);
-            if (thumbnails && thumbnails.length > 0) {
-                const { width, height } = thumbnails[0];
-                const ratio = width / height; // 计算宽高比
-                if (ratio < 1) {
+            // 获取视频时长作为备用检测方法
+            const duration = videoPlayer.duration;
+            console.log("视频时长:", duration);
+
+            try {
+                // 尝试获取视频第一帧缩略图以确定视频真实尺寸
+                console.log("尝试生成缩略图...");
+                const thumbnails = await videoPlayer.generateThumbnailsAsync([0]);
+
+                if (thumbnails && thumbnails.length > 0) {
+                    const { width, height } = thumbnails[0];
+                    console.log("获取到缩略图尺寸:", width, "x", height);
+
+                    const ratio = width / height; // 计算宽高比
+                    console.log("视频宽高比:", ratio);
+
+                    if (ratio < 1) {
                     // 如果宽度小于高度，说明是竖屏视频
+                        console.log("检测到竖屏视频，设置竖屏高度");
+                        setSelectedVideoHeight(portraitVideoHeight);
+                    } else {
+                        // 横屏视频
+                        console.log("检测到横屏视频，设置横屏高度");
+                        setSelectedVideoHeight(landscapeVideoHeight);
+                    }
+                    // 成功检测到比例，重置尝试次数
+                    ratioCheckAttempts.current = 0;
+                    return;
+                } else {
+                    console.warn("未能获取到有效的缩略图");
+                }
+            } catch (thumbnailError) {
+                console.warn("生成缩略图失败:", thumbnailError);
+            }
+
+            // 如果获取缩略图失败，尝试备用方法 - 检查视频原生尺寸属性
+            if (videoPlayer.naturalSize && videoPlayer.naturalSize.width && videoPlayer.naturalSize.height) {
+                const { width, height } = videoPlayer.naturalSize;
+                console.log("使用原生尺寸:", width, "x", height);
+
+                const ratio = width / height;
+                console.log("原生尺寸宽高比:", ratio);
+
+                if (ratio < 1) {
+                    console.log("检测到竖屏视频(原生尺寸)，设置竖屏高度");
                     setSelectedVideoHeight(portraitVideoHeight);
                 } else {
-                    // 横屏视频
+                    console.log("检测到横屏视频(原生尺寸)，设置横屏高度");
                     setSelectedVideoHeight(landscapeVideoHeight);
                 }
+                ratioCheckAttempts.current = 0;
+                return;
+            }
+
+            // 如果都失败了且尝试次数小于3，计划稍后再次尝试
+            if (ratioCheckAttempts.current < 3) {
+                ratioCheckAttempts.current += 1;
+                console.log(`未能检测到视频比例，将在1秒后重试 (${ratioCheckAttempts.current}/3)`);
+
+                setTimeout(() => {
+                    checkVideoRatio();
+                }, 1000);
+            } else {
+                console.warn("多次尝试检测视频比例失败，使用默认横屏模式");
+                setSelectedVideoHeight(landscapeVideoHeight);
+                ratioCheckAttempts.current = 0;
             }
         } catch (error) {
-            console.warn('检测视频尺寸失败:', error);
+            console.warn('检测视频尺寸完全失败:', error);
             // 默认使用横屏模式高度
             setSelectedVideoHeight(landscapeVideoHeight);
         }
-    }, [videoPlayer, portraitVideoHeight, landscapeVideoHeight]);
+    }, [videoPlayer, portraitVideoHeight, landscapeVideoHeight, status]);
 
     // 监听全屏状态变化，确保退出全屏时正确重置布局
     useEffect(() => {
         if (previousFullscreen.current && !fullscreen) {
             // 从全屏退出到竖屏，重新计算视频尺寸
             console.log("退出全屏，重新计算视频布局");
+            ratioCheckAttempts.current = 0; // 重置尝试次数
             checkVideoRatio();
 
             // 如果在iOS上，可能需要额外延迟以确保布局正确更新
             if (Platform.OS === 'ios') {
                 const timer = setTimeout(() => {
                     checkVideoRatio();
-                }, 100);
+                }, 300); // 增加延迟时间
                 return () => clearTimeout(timer);
             }
         }
@@ -117,7 +175,19 @@ const VideoPlayer = ({
     // 添加视频尺寸检测，模拟原有onReadyForDisplay功能
     useEffect(() => {
         if (status === 'readyToPlay') {
+            console.log("视频已准备好播放，开始检测视频比例");
+            ratioCheckAttempts.current = 0; // 重置尝试次数
             checkVideoRatio();
+
+            // 为确保视频比例检测成功，添加延迟后的再次检测
+            const timer = setTimeout(() => {
+                if (ratioCheckAttempts.current === 0) {
+                    console.log("延迟检测视频比例");
+                    checkVideoRatio();
+                }
+            }, 500);
+
+            return () => clearTimeout(timer);
         }
     }, [status, checkVideoRatio]);
 
