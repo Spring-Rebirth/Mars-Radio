@@ -15,6 +15,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { images } from "../../../constants";
 import SearchInput from "../../../components/SearchInput";
 import Trending from "../../../components/Trending";
+import TrendingItem from "../../../components/TrendingItem";
 import EmptyState from "../../../components/EmptyState";
 import CustomButton from "../../../components/CustomButton";
 import VideoCard from "../../../components/VideoCard";
@@ -70,31 +71,6 @@ export default function Home() {
   const prevActiveTabRef = useRef(0);
   const [showSearch, setShowSearch] = useState(false);
   const searchAnimatedValue = useRef(new Animated.Value(0)).current;
-
-  // 禁用侧滑手势
-  useEffect(() => {
-    const disableDrawerGesture = () => {
-      if (navigation.getParent()) {
-        navigation.getParent().setOptions({
-          gestureEnabled: false
-        });
-      }
-    };
-
-    const enableDrawerGesture = () => {
-      if (navigation.getParent()) {
-        navigation.getParent().setOptions({
-          gestureEnabled: true
-        });
-      }
-    };
-
-    disableDrawerGesture();
-
-    return () => {
-      enableDrawerGesture();
-    };
-  }, [navigation]);
 
   // 滚动到顶部方法
   const scrollToTop = useCallback(() => {
@@ -451,7 +427,22 @@ export default function Home() {
                 </View>
               ) : (
                   <View className="pt-4">
-                    <Trending video={popularData} loading={loading} />
+                    <Trending
+                      video={popularData}
+                      loading={loading || refreshing}
+                      refreshControl={
+                        <RefreshControl
+                          refreshing={refreshing}
+                          onRefresh={() => {
+                            setRefreshing(true);
+                            fetchPopularPosts().finally(() => {
+                              setRefreshing(false);
+                            });
+                          }}
+                          colors={["#FFB300"]}
+                        />
+                      }
+                    />
                   </View>
               )}
             </View>

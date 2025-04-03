@@ -6,7 +6,7 @@ import TrendingItem from './TrendingItem'
 
 const { width } = Dimensions.get('window');
 
-export default function Trending({ video, loading }) {
+export default function Trending({ video, loading, refreshControl }) {
     // cSpell: words viewability
     const viewabilityConfig = { itemVisiblePercentThreshold: 70 }; // 配置可见性百分比
     const [activeItem, setActiveItem] = useState(null);
@@ -44,6 +44,7 @@ export default function Trending({ video, loading }) {
                 directionalLockEnabled={true}
                 contentContainerStyle={{ paddingBottom: 80 }}
                 ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+                refreshControl={refreshControl}
             />
         )
 }
