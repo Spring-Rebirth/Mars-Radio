@@ -19,7 +19,6 @@ import EmptyState from "../../../components/EmptyState";
 import CustomButton from "../../../components/CustomButton";
 import VideoCard from "../../../components/VideoCard";
 import useGetData from "../../../hooks/useGetData";
-import downIcon from "../../../assets/icons/down.png";
 import { useGlobalContext, useTabContext } from "../../../context/GlobalProvider";
 import { StatusBar } from "expo-status-bar";
 import { updateSavedVideo } from "../../../lib/appwrite";
@@ -71,6 +70,31 @@ export default function Home() {
   const prevActiveTabRef = useRef(0);
   const [showSearch, setShowSearch] = useState(false);
   const searchAnimatedValue = useRef(new Animated.Value(0)).current;
+
+  // 禁用侧滑手势
+  useEffect(() => {
+    const disableDrawerGesture = () => {
+      if (navigation.getParent()) {
+        navigation.getParent().setOptions({
+          gestureEnabled: false
+        });
+      }
+    };
+
+    const enableDrawerGesture = () => {
+      if (navigation.getParent()) {
+        navigation.getParent().setOptions({
+          gestureEnabled: true
+        });
+      }
+    };
+
+    disableDrawerGesture();
+
+    return () => {
+      enableDrawerGesture();
+    };
+  }, [navigation]);
 
   // 滚动到顶部方法
   const scrollToTop = useCallback(() => {
@@ -402,18 +426,14 @@ export default function Home() {
         </View>
 
         {/* 内容区域 */}
-        <View className="flex-1">
+        <View className="flex-1 mt-2">
           <Swiper
             ref={swiperRef}
             index={activeTab}
-            onIndexChanged={(index) => {
-              if (index !== activeTab) {
-                setActiveTab(index);
-              }
-            }}
+            onIndexChanged={(index) => setActiveTab(index)}
             loop={false}
             showsPagination={false}
-            scrollEnabled={false} // 禁用滑动手势
+            scrollEnabled={true}
           >
             {/* 热门视频标签页 */}
             <View className="flex-1 px-4">

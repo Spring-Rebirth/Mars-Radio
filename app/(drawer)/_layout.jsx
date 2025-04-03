@@ -4,17 +4,27 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Dimensions } from 'react-native';
 import CustomDrawerContent from '../../components/drawer/CustomDrawerContent';
+import { usePathname } from 'expo-router';
 
 export default function DrawerLayout() {
     const { t } = useTranslation();
     const screenWidth = Dimensions.get('window').width;
+    const pathname = usePathname();
+
+    // 检查当前路径是否为home或profile页面
+    const isHomeOrProfile = pathname === '/home' || pathname === '/profile';
 
     return (
         <Drawer
             drawerContent={(props) => <CustomDrawerContent {...props} />}
             screenOptions={{
                 configureGestureHandler: (gesture) => {
-                    gesture.enabled(true);
+                    // 如果是home或profile路由，禁用手势
+                    if (isHomeOrProfile) {
+                        gesture.enabled(false);
+                    } else {
+                        gesture.enabled(true);
+                    }
                     return gesture;
                 },
                 swipeEdgeWidth: screenWidth / 2,
