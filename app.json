@@ -8,7 +8,8 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/a8640a18-c37e-4c8b-8b18-48f78543849d"
     },
     "splash": {
       "image": "./assets/splash.png",
