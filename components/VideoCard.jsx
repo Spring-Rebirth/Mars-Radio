@@ -109,21 +109,6 @@ export default function VideoCard({
               </Text>
             </View>
           </View>
-
-          {/* 右上角操作按钮 */}
-          <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
-            if (nativeEvent.state === State.ACTIVE) {
-              onMenuPress($id);
-            }
-          }}>
-            <View className="absolute top-3 right-3 bg-[rgba(255,255,255,0.2)] p-2 rounded-full">
-              <Image
-                source={icons.menu}
-                className="w-5 h-5"
-                resizeMode="contain"
-              />
-            </View>
-          </TapGestureHandler>
         </ImageBackground>
 
         {/* 加载动画 */}
@@ -146,6 +131,21 @@ export default function VideoCard({
           <Image
             source={{ uri: avatar }}
             className="w-[36px] h-[36px] border-2 border-white rounded-full"
+          />
+        </View>
+      </TapGestureHandler>
+
+      {/* 右上角操作按钮 - 移到Pressable外部，防止点击事件冲突 */}
+      <TapGestureHandler onHandlerStateChange={({ nativeEvent }) => {
+        if (nativeEvent.state === State.ACTIVE) {
+          onMenuPress($id);
+        }
+      }}>
+        <View className="absolute top-3 right-3 z-10 bg-[rgba(255,255,255,0.2)] p-2 rounded-full">
+          <Image
+            source={icons.menu}
+            className="w-5 h-5"
+            resizeMode="contain"
           />
         </View>
       </TapGestureHandler>

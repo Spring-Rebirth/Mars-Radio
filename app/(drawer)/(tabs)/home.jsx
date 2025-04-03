@@ -441,7 +441,7 @@ export default function Home() {
               <FlatList
                 ref={flatListRef}
                 directionalLockEnabled={true}
-                contentContainerStyle={{ paddingBottom: 44 }}
+                contentContainerStyle={{ paddingBottom: 100 }}
                 data={loading ? [] : data}
                 keyExtractor={(item) => item.$id}
                 renderItem={({ item }) => {
@@ -485,13 +485,25 @@ export default function Home() {
                   <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
                 }
                 onEndReached={loadPosts}
-                onEndReachedThreshold={0.5}
+                onEndReachedThreshold={0.3}
+                initialNumToRender={5}
+                maxToRenderPerBatch={10}
+                windowSize={10}
+                removeClippedSubviews={true}
                 ListFooterComponent={() => {
                   return isLoadingMore ? (
                     <View className="items-center justify-center my-4">
                       <ActivityIndicator size="large" color="#FFB300" />
                     </View>
-                  ) : null;
+                  ) : hasMore ? (
+                    <View className="items-center justify-center my-4 pb-10">
+                      <ActivityIndicator size="small" color="#FFB300" />
+                    </View>
+                  ) : (
+                    <View className="items-center justify-center my-4 pb-10">
+                      <Text className="text-gray-400 text-sm">{t("No more videos")}</Text>
+                    </View>
+                  );
                 }}
               />
             </View>
