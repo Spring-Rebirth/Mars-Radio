@@ -21,6 +21,7 @@ import mime from 'mime';
 import { useTranslation } from "react-i18next";
 import Toast from 'react-native-root-toast';
 import VideoPlayButton from '../../../components/VideoPlayButton';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Create() {
   const insetTop = useSafeAreaInsets().top;
@@ -273,15 +274,25 @@ export default function Create() {
         {!isImageSelected ? (
           <View className='flex-row w-full justify-around mt-6 mb-8'>
             <TouchableOpacity onPress={handlePickImage}>
-              <View className='w-36 h-16 bg-[#7979f6] rounded-3xl  flex-row justify-center items-center px-4'>
+              <LinearGradient
+                colors={['#3498db', '#8e44ad']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                className='w-36 h-16 rounded-3xl flex-row justify-center items-center px-4'
+              >
                 <Text className='text-white'>{t("Choose File")}</Text>
-              </View>
+              </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={generateThumbnailFromVideo}>
-              <View className='w-36 h-16 bg-[#7979f6] rounded-3xl  flex-row justify-center items-center px-4'>
+              <LinearGradient
+                colors={['#2980b9', '#9b59b6']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                className='w-36 h-16 rounded-3xl flex-row justify-center items-center px-4'
+              >
                 <Text className='text-white'>{t("Auto Generate")}</Text>
-              </View>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         ) : (
@@ -302,7 +313,6 @@ export default function Create() {
             </TouchableOpacity>
           </View>
         )}
-
 
         {uploading ? (
           <View className="w-full h-20 justify-center items-center bg-primary mb-4">
@@ -330,13 +340,23 @@ export default function Create() {
         ) : false}
 
         {/* submit button */}
-        <CustomButton
+        <TouchableOpacity 
           onPress={() => { handleUpload() }}
-          title={t('Submit & Publish')}
-          style={'h-16 mb-8 bg-[#5f89f4]'}
-          textStyle={'text-white'}
-          isLoading={uploading}
-        />
+          disabled={uploading}
+        >
+          <LinearGradient
+            colors={['#FFB800', '#FF6B6B', '#FFA001']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className='h-16 mb-8 rounded-xl flex-row justify-center items-center'
+          >
+            {uploading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text className='text-white font-psemibold text-lg'>{t('Submit & Publish')}</Text>
+            )}
+          </LinearGradient>
+        </TouchableOpacity>
       </ScrollView>
 
       <StatusBar style='dark' />
