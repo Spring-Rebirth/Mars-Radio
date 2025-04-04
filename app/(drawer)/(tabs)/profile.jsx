@@ -12,9 +12,7 @@ import useGetData from "../../../hooks/useGetData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import { StatusBar } from "expo-status-bar";
-import { getCurrentUser } from "../../../lib/appwrite";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@clerk/clerk-expo";
 import {
   GestureHandlerRootView,
   PanGestureHandler,
@@ -32,12 +30,10 @@ const { width } = Dimensions.get('window');
 
 export default function Profile() {
   const insetTop = useSafeAreaInsets().top;
-  const { userId } = useAuth();
   const [userPostsData, setUserPostsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
-  const { user, setUser } = useGlobalContext();
-  const [refreshing, setRefreshing] = useState(false);
+  const { user } = useGlobalContext();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
@@ -70,21 +66,6 @@ export default function Profile() {
       setLoading(false);
     }
   }, [user?.$id, user?.avatar]);
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchUserPosts(user?.$id);
-
-    if (userId) {
-      await getCurrentUser(userId)
-        .then((res) => setUser(res))
-        .catch((error) => {
-          console.error("getCurrentUser() failed:", error);
-        });
-    }
-
-    setRefreshing(false);
-  };
 
   // 添加分享个人主页的函数
   const shareProfile = async () => {

@@ -12,17 +12,15 @@ import VideoCard from "./VideoCard";
 import EmptyState from "./EmptyState";
 import CustomButton from "./CustomButton";
 import { router } from "expo-router";
-import { useGlobalContext } from "../context/GlobalProvider";
 import { useTranslation } from "react-i18next";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-toast-message";
 import { getVideoDetails } from "../lib/appwrite";
 import trash from "../assets/menu/trash-solid.png";
 import closeIcon from "../assets/icons/close.png";
 import { deleteVideoDoc, deleteVideoFiles } from "../lib/appwrite";
 
 export default function UserTab({ userPostsData, loading, fetchUserPosts, userId }) {
-    const { user } = useGlobalContext();
     const { t } = useTranslation();
     const [refreshing, setRefreshing] = useState(false);
     const bottomSheetRef = useRef(null);
@@ -48,9 +46,10 @@ export default function UserTab({ userPostsData, loading, fetchUserPosts, userId
                     deleteVideoFiles(image_ID),
                     deleteVideoFiles(video_ID),
                 ]);
-                Toast.show(t("Delete Success"), {
-                    duration: Toast.durations.SHORT,
-                    position: Toast.positions.CENTER,
+                Toast.show({
+                    text1: t("Delete Success"),
+                    type: "success",
+                    topOffset: 68,
                 });
                 handleRefresh && handleRefresh();
             } else {

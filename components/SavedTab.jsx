@@ -14,7 +14,7 @@ import useGetData from "../hooks/useGetData";
 import { useGlobalContext } from "../context/GlobalProvider";
 import { useTranslation } from "react-i18next";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-toast-message";
 import { updateSavedCounts, updateSavedVideo } from "../lib/appwrite";
 import star from "../assets/menu/star-solid.png";
 import starThree from "../assets/menu/star3.png";
@@ -65,9 +65,10 @@ export default function SavedTab() {
                 setUser((prev) => ({ ...prev, favorite: newUser.favorite }));
                 setIsSaved(true);
                 isIncrement = true;
-                Toast.show(t("Save successful"), {
-                    duration: Toast.durations.SHORT,
-                    position: Toast.positions.CENTER,
+                Toast.show({
+                    text1: t("Save successful"),
+                    type: "success",
+                    topOffset: 68,
                 });
             } else {
                 const updatedItems = user?.favorite.filter(
@@ -76,9 +77,10 @@ export default function SavedTab() {
                 setUser((prev) => ({ ...prev, favorite: updatedItems }));
                 setIsSaved(false);
                 isIncrement = false;
-                Toast.show(t("Cancel save successfully"), {
-                    duration: Toast.durations.SHORT,
-                    position: Toast.positions.CENTER,
+                Toast.show({
+                    text1: t("Cancel save successfully"),
+                    type: "success",
+                    topOffset: 68,
                 });
             }
             await updateSavedCounts(selectedVideoId, isIncrement);
