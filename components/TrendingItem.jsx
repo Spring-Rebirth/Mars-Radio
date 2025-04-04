@@ -15,7 +15,7 @@ import { updateSavedCounts } from "../lib/appwrite";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-toast-message";
 import star from "../assets/menu/star-solid.png";
 import starTwo from "../assets/menu/star2.png";
 import usePlaybackStore from "../store/playbackStore";
@@ -60,9 +60,10 @@ export default function TrendingItem({ activeItem, item }) {
         }));
         setIsSaved(true);
         isIncrement = true;
-        Toast.show(t("Save successful"), {
-          duration: Toast.durations.SHORT,
-          position: Toast.positions.CENTER,
+        Toast.show({
+          text1: t("Save successful"),
+          type: "success",
+          topOffset: 68,
         });
       } else {
         // 剔除已保存项的新数组
@@ -75,9 +76,10 @@ export default function TrendingItem({ activeItem, item }) {
         setIsSaved(false);
         isIncrement = false;
 
-        Toast.show(t("Cancel save successfully"), {
-          duration: Toast.durations.SHORT,
-          position: Toast.positions.CENTER,
+        Toast.show({
+          text1: t("Cancel save successfully"),
+          type: "success",
+          topOffset: 68,
         });
       }
       await updateSavedCounts($id, isIncrement);

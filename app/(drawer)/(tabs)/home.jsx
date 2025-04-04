@@ -35,7 +35,7 @@ import { updateSavedCounts, getVideoDetails } from "../../../lib/appwrite";
 import star from "../../../assets/menu/star-solid.png";
 import starThree from "../../../assets/menu/star3.png";
 import trash from "../../../assets/menu/trash-solid.png";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-toast-message";
 import closeIcon from "../../../assets/icons/close.png";
 import { getPostsWithPagination } from "../../../services/videoService";
 import Swiper from 'react-native-swiper';
@@ -210,9 +210,10 @@ export default function Home() {
           return true;
         });
         isIncrement = true;
-        Toast.show(t("Save successful"), {
-          duration: Toast.durations.SHORT,
-          position: Toast.positions.CENTER,
+        Toast.show({
+          text1: t("Save successful"),
+          type: "success",
+          topOffset: 68,
         });
       } else {
         // 剔除已保存项的新数组
@@ -228,9 +229,10 @@ export default function Home() {
           return false;
         });
         isIncrement = false;
-        Toast.show(t("Cancel save successfully"), {
-          duration: Toast.durations.SHORT,
-          position: Toast.positions.CENTER,
+        Toast.show({
+          text1: t("Cancel save successfully"),
+          type: "success",
+          topOffset: 68,
         });
       }
       await updateSavedCounts(selectedVideoId, isIncrement);
@@ -262,9 +264,10 @@ export default function Home() {
         ]);
         console.log("删除成功");
         handleRefresh();
-        Toast.show(t("Delete Success"), {
-          duration: Toast.durations.SHORT,
-          position: Toast.positions.CENTER,
+        Toast.show({
+          text1: t("Delete Success"),
+          type: "success",
+          topOffset: 68,
         });
       } else {
         console.log("未找到与该视频关联的文件 ID");
