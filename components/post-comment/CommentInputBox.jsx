@@ -13,6 +13,10 @@ export default function CommentInputBox({ onCommentSubmitted, post_id, postCreat
   const { user } = useGlobalContext();
 
   const handleCommentSubmit = async () => {
+    if (comment.trim() === "") {
+      return;
+    }
+
     try {
       const newComment = {
         content: comment,

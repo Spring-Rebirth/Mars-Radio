@@ -17,9 +17,11 @@ export default function CommentInputBox({
   const [comment, setComment] = useState("");
   const { user } = useGlobalContext();
 
-  // console.log('videoCreator:', JSON.stringify(videoCreator, null, 2));
-
   const handleCommentSubmit = async () => {
+    if (comment.trim() === "") {
+      return;
+    }
+
     try {
       const newComment = {
         content: comment,
