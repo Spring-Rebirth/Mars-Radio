@@ -1,6 +1,8 @@
 import {
     View,
     ScrollView,
+    KeyboardAvoidingView,
+    Platform,
 } from "react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
@@ -79,6 +81,11 @@ export default function PlayScreen() {
             />
         </View>
     ) : (
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={0}
+        >
             <ScrollView style={[styles.container, { backgroundColor: fullscreen ? "black" : "#F5F5F5" }]}>
                 <VideoPlayer
                     videoPlayer={videoPlayer}
@@ -88,17 +95,21 @@ export default function PlayScreen() {
                     safeAreaInset={safeAreaInsets.top}
                 />
 
-            <View className="flex-1">
-                <View className="px-2">
-                    <CommentInputBox
-                        userId={userId}
-                        videoId={videoId}
-                        videoCreator={videoCreator}
-                        onCommentSubmitted={onCommentSubmitted}
-                    />
+                <View className="flex-1">
+                    <View className="px-2">
+                        <CommentInputBox
+                            userId={userId}
+                            videoId={videoId}
+                            videoCreator={videoCreator}
+                            onCommentSubmitted={onCommentSubmitted}
+                        />
+                    </View>
+
+                    <View className="flex-1">
+                        {memoizedCommentView}
+                    </View>
                 </View>
-                <View className="flex-1">{memoizedCommentView}</View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
