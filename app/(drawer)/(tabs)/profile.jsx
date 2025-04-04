@@ -248,7 +248,7 @@ export default function Profile() {
         setIsVisible={setIsImageModalVisible}
       />
 
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
     </GestureHandlerRootView>
   );
 }
