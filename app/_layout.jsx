@@ -78,21 +78,6 @@ export default function RootLayout() {
                     if (lang) {
                         await i18n.changeLanguage(lang);
                     }
-
-                    // 检查更新
-                    const update = await Updates.checkForUpdateAsync();
-                    if (update.isAvailable) {
-                        await Updates.fetchUpdateAsync();
-                        // 显示 Toast 提示
-                        Toast.show({
-                            text1: t("OTA update loaded, restarting soon."),
-                            type: "info",
-                            topOffset: 68,
-                        });
-                        // 等待N秒后重启
-                        await new Promise((resolve) => setTimeout(resolve, 2500));
-                        await Updates.reloadAsync();
-                    }
                 }
 
                 // 检查是否有字体加载错误
