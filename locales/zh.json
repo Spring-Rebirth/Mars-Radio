@@ -151,5 +151,26 @@
         "title": "退出登录",
         "message": "确定要退出登录吗",
         "loading": "正在退出···"
-    }
+    },
+    "Guest": "访客",
+    "Preferences": "偏好设置",
+    "Notifications": "通知",
+    "Receive push notifications": "接收推送通知",
+    "Dark Mode": "深色模式",
+    "Change app appearance": "更改应用外观",
+    "Success": "成功",
+    "Language changed successfully": "语言切换成功",
+    "Failed to change language": "语言切换失败",
+    "Account": "账户",
+    "Privacy": "隐私",
+    "Privacy settings coming soon": "隐私设置即将推出",
+    "Security": "安全",
+    "Security settings coming soon": "安全设置即将推出",
+    "About": "关于",
+    "About App": "关于应用",
+    "Version 4.5.0": "版本 4.5.0",
+    "Mars Radio - Your Galactic Audio Platform": "Mars Radio - 您的星际音频平台",
+    "Help & Support": "帮助与支持",
+    "Contact us at cjunwei6249@gmail.com": "联系我们：cjunwei6249@gmail.com",
+    "Dark mode settings coming soon": "深色模式设置即将推出"
 }

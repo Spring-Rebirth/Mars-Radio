@@ -144,5 +144,26 @@
         "title": "Logout",
         "message": "Are you sure you want to logout?",
         "loading": "Logging out..."
-    }
+    },
+    "Guest": "Guest",
+    "Preferences": "Preferences",
+    "Notifications": "Notifications",
+    "Receive push notifications": "Receive push notifications",
+    "Dark Mode": "Dark Mode",
+    "Change app appearance": "Change app appearance",
+    "Success": "Success",
+    "Language changed successfully": "Language changed successfully",
+    "Failed to change language": "Failed to change language",
+    "Account": "Account",
+    "Privacy": "Privacy",
+    "Privacy settings coming soon": "Privacy settings coming soon",
+    "Security": "Security",
+    "Security settings coming soon": "Security settings coming soon",
+    "About": "About",
+    "About App": "About App",
+    "Version 4.5.0": "Version 4.5.0",
+    "Mars Radio - Your Galactic Audio Platform": "Mars Radio - Your Galactic Audio Platform",
+    "Help & Support": "Help & Support",
+    "Contact us at cjunwei6249@gmail.com": "Contact us at cjunwei6249@gmail.com",
+    "Dark mode settings coming soon": "Dark mode settings coming soon"
 }
