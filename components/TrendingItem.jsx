@@ -20,9 +20,6 @@ import star from "../assets/menu/star-solid.png";
 import starTwo from "../assets/menu/star2.png";
 import usePlaybackStore from "../store/playbackStore";
 
-const { width } = Dimensions.get('window');
-const cardWidth = width - 32; // 左右边距16px
-
 export default function TrendingItem({ activeItem, item }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const { user, setUser } = useGlobalContext();
