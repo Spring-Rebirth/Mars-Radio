@@ -56,11 +56,11 @@ export default function VideoLoadingSkeleton() {
           }} />
         </View>
 
-        {/* 模拟菜单按钮 */}
+        {/* 模拟用户头像 */}
         <View style={{
           position: 'absolute',
           top: 12,
-          right: 12,
+          left: 12,
           width: 32,
           height: 32,
           backgroundColor: 'rgba(255, 255, 255, 0.3)',
