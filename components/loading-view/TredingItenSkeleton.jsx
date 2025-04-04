@@ -57,17 +57,6 @@ function TrendingItemSkeleton() {
             borderRadius: 4
           }} />
         </View>
-
-        {/* 收藏按钮占位 */}
-        <View style={{
-          position: 'absolute',
-          top: 12,
-          right: 12,
-          width: 32,
-          height: 32,
-          backgroundColor: 'rgba(255, 255, 255, 0.3)',
-          borderRadius: 16,
-        }} />
       </View>
     </Animatable.View>
   );
