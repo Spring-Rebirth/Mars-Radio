@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInputBox from "../../components/CustomInputBox";
@@ -211,39 +213,47 @@ const UserInfo = () => {
         </View>
       </ScrollView>
 
-      <CustomModal
-        isVisible={showEditNameModal}
-        contentStyle={{
-          height: 200,
-          position: "absolute", // 让 Modal 固定位置
-          bottom: 0, // 距离底部的距离
-          left: 0,
-          right: 0,
-        }}
-        onClose={() => setShowEditNameModal(false)}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
-        <View className="w-full h-full py-4 items-center justify-start">
-          <CustomInputBox
-            title="Name"
-            placeholder={"Type new name"}
-            containerStyle="w-full"
-            inputStyle="p-3.5"
-            titleStyle=" mb-2"
-            editable={true}
-            focus={true}
-            onChangeText={(text) => setNewName(text)}
-            initialText={user?.username}
-          />
+        <CustomModal
+          isVisible={showEditNameModal}
+          contentStyle={{
+            height: 200,
+            position: "absolute", // 让 Modal 固定位置
+            bottom: 0, // 距离底部的距离
+            left: 0,
+            right: 0,
+          }}
+          onClose={() => setShowEditNameModal(false)}
+          avoidKeyboard={true}
+          // Modal组件的参数传递给底层的react-native-modal
+          propagateSwipe={true}
+        >
+          <View className="w-full h-full py-4 items-center justify-start">
+            <CustomInputBox
+              title="Name"
+              placeholder={"Type new name"}
+              containerStyle="w-full"
+              inputStyle="p-3.5"
+              titleStyle=" mb-2"
+              editable={true}
+              focus={true}
+              onChangeText={(text) => setNewName(text)}
+              initialText={user?.username}
+            />
 
-          <CustomButton
-            title="Save"
-            onPress={changeUsername}
-            textStyle={"text-white"}
-            style={"w-11/12 h-12 mt-6"}
-            isLoading={PressedUpload}
-          />
-        </View>
-      </CustomModal>
+            <CustomButton
+              title="Save"
+              onPress={changeUsername}
+              textStyle={"text-white"}
+              style={"w-11/12 h-12 mt-6"}
+              isLoading={PressedUpload}
+            />
+          </View>
+        </CustomModal>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

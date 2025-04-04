@@ -8,6 +8,8 @@ import {
   TextInput,
   StyleSheet,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import commentIcon from "../../assets/icons/comment.png";
 import likeIcon from "../../assets/icons/like.png";
@@ -340,17 +342,22 @@ const CommentItem = ({
         onBackButtonPress={() => setShowReplyModal(false)}
         style={styles.modal}
       >
-        <View style={styles.modalContent}>
-          <TextInput
-            ref={inputRef}
-            value={replyMsg}
-            onChangeText={setReplyMsg}
-            placeholder={t("Add a reply...")}
-            placeholderTextColor="gray"
-            style={styles.input}
-            onSubmitEditing={handleReplySubmit}
-          />
-        </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={0}
+        >
+          <View style={styles.modalContent}>
+            <TextInput
+              ref={inputRef}
+              value={replyMsg}
+              onChangeText={setReplyMsg}
+              placeholder={t("Add a reply...")}
+              placeholderTextColor="gray"
+              style={styles.input}
+              onSubmitEditing={handleReplySubmit}
+            />
+          </View>
+        </KeyboardAvoidingView>
       </ReactNativeModal>
       <LoadingModal isVisible={replySubmiting} loadingText={t("Submitting")} />
     </View>
