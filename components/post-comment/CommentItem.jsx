@@ -29,6 +29,7 @@ import { fetchCommentUsername } from "../../services/commentService";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import LoadingModal from "../modal/LoadingModal";
 import Toast from "react-native-toast-message";
+import { Ionicons } from '@expo/vector-icons';
 
 const CommentItem = ({
   comment,
@@ -53,6 +54,7 @@ const CommentItem = ({
   const [cmtAvatar, setCmtAvatar] = useState(
     require("../../assets/images/default-avatar.png")
   );
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [replyMsg, setReplyMsg] = useState("");
   const [parentCommentId, setParentCommentId] = useState(null); // 当前回复的父评论 ID
@@ -253,7 +255,19 @@ const CommentItem = ({
             })
           }
         >
-          <Image source={cmtAvatar} style={styles.avatar} />
+          <View style={styles.avatarContainer}>
+            {!imageLoaded && (
+              <View style={styles.avatarPlaceholder}>
+                <Ionicons name="person-circle" size={25} color="#CCCCCC" />
+              </View>
+            )}
+            <Image
+              source={cmtAvatar}
+              style={[styles.avatar, imageLoaded ? null : { opacity: 0 }]}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageLoaded(true)}
+            />
+          </View>
         </TouchableOpacity>
         <Text style={styles.username}>{cmtUsername}</Text>
       </View>
@@ -371,6 +385,18 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "start",
+  },
+  avatarContainer: {
+    width: 25,
+    height: 25,
+    position: 'relative',
+  },
+  avatarPlaceholder: {
+    position: 'absolute',
+    width: 25,
+    height: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   avatar: {
     width: 25,
