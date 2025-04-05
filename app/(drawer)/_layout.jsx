@@ -2,17 +2,10 @@ import React from 'react';
 import { Drawer } from 'expo-router/drawer';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Dimensions } from 'react-native';
 import CustomDrawerContent from '../../components/drawer/CustomDrawerContent';
-import { usePathname } from 'expo-router';
 
 export default function DrawerLayout() {
     const { t } = useTranslation();
-    const screenWidth = Dimensions.get('window').width;
-    const pathname = usePathname();
-
-    // 检查当前路径是否为home或profile页面
-    const isHomeOrProfile = pathname === '/home' || pathname === '/profile';
 
     return (
         <Drawer
@@ -22,7 +15,7 @@ export default function DrawerLayout() {
                     gesture.enabled(true);
                     return gesture;
                 },
-                swipeEdgeWidth: isHomeOrProfile ? screenWidth / 5 : screenWidth / 2,
+                swipeEdgeWidth: 0,
                 headerShown: false,
             }}
         >

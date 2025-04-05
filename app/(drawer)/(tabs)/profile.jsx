@@ -39,7 +39,9 @@ import star from "../../../assets/menu/star-solid.png";
 import starThree from "../../../assets/menu/star3.png";
 import trash from "../../../assets/menu/trash-solid.png";
 import closeIcon from "../../../assets/icons/close.png";
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
+const TopTab = createMaterialTopTabNavigator();
 const { width } = Dimensions.get('window');
 
 export default function Profile() {
@@ -49,9 +51,8 @@ export default function Profile() {
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
   const { user, setUser } = useGlobalContext();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
-  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const navigation = useNavigation();
 
   const bottomSheetRef = useRef(null);
@@ -168,21 +169,6 @@ export default function Profile() {
     setShowControlMenu(true);
   };
 
-  const translateX = useRef(new Animated.Value(0)).current;
-
-  const onGestureEvent = Animated.event(
-    [{ nativeEvent: { translationX: translateX } }],
-    { useNativeDriver: false }
-  );
-
-  const onHandlerStateChange = (event) => {
-    if (event.nativeEvent.translationX > 50) {
-      setIsDrawerVisible(true);
-    } else if (event.nativeEvent.translationX < -50 && isDrawerVisible) {
-      setIsDrawerVisible(false);
-    }
-  };
-
   useEffect(() => {
     setLoading(true);
 
@@ -222,122 +208,120 @@ export default function Profile() {
       className="bg-primary h-full"
       style={{ marginTop: insetTop }}
     >
-      <PanGestureHandler
-        onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-        activeOffsetX={[-10, 10]}
-      >
-        <Animated.View style={{ flex: 1 }}>
-          <View className="relative">
-            <LinearGradient
-              colors={['#FFB800', '#FF6B6B', '#FFA001']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{
-                height: 120,
-                width: width,
-                position: 'absolute',
-                top: 0,
-                borderBottomLeftRadius: 25,
-                borderBottomRightRadius: 25,
-              }}
-            />
+      <Animated.View style={{ flex: 1 }}>
+        <View className="relative">
+          <LinearGradient
+            colors={['#FFB800', '#FF6B6B', '#FFA001']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              height: 120,
+              width: width,
+              position: 'absolute',
+              top: 0,
+              borderBottomLeftRadius: 25,
+              borderBottomRightRadius: 25,
+            }}
+          />
 
-            <View className="flex-row justify-between items-center px-4 pt-2">
-              <TouchableOpacity
-                onPress={() => navigation.openDrawer()}
-                className="w-10 h-10 bg-white/20 rounded-full items-center justify-center"
-              >
-                <Ionicons name="menu-outline" size={22} color="#fff" />
-              </TouchableOpacity>
+          <View className="flex-row justify-between items-center px-4 pt-2">
+            <TouchableOpacity
+              onPress={() => navigation.openDrawer()}
+              className="w-10 h-10 bg-white/20 rounded-full items-center justify-center"
+            >
+              <Ionicons name="menu-outline" size={22} color="#fff" />
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={shareProfile}
-                className="w-10 h-10 bg-white/20 rounded-full items-center justify-center"
-              >
-                <Ionicons name="share-social-outline" size={20} color="#fff" />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={shareProfile}
+              className="w-10 h-10 bg-white/20 rounded-full items-center justify-center"
+            >
+              <Ionicons name="share-social-outline" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
 
-            <View className="mx-4 bg-white rounded-2xl p-5 mt-4 shadow-md">
-              <View className="flex-row">
-                <View className="w-[80px] h-[80px] border-2 border-secondary rounded-full overflow-hidden mr-4">
-                  <Image
-                    source={{ uri: user?.avatar }}
-                    className="w-full h-full"
-                    resizeMode="cover"
-                  />
-                </View>
+          <View className="mx-4 bg-white rounded-2xl p-5 mt-4 shadow-md">
+            <View className="flex-row">
+              <View className="w-[80px] h-[80px] border-2 border-secondary rounded-full overflow-hidden mr-4">
+                <Image
+                  source={{ uri: user?.avatar }}
+                  className="w-full h-full"
+                  resizeMode="cover"
+                />
+              </View>
 
-                <View className="flex-1 justify-center">
-                  <Text className="text-black text-xl font-psemibold">
-                    {user?.username}
-                  </Text>
-                  <Text className="text-[#999999] text-sm font-pregular">
-                    {"#" + user?.email?.split("@")[0]}
-                  </Text>
+              <View className="flex-1 justify-center">
+                <Text className="text-black text-xl font-psemibold">
+                  {user?.username}
+                </Text>
+                <Text className="text-[#999999] text-sm font-pregular">
+                  {"#" + user?.email?.split("@")[0]}
+                </Text>
 
-                  <View className="flex-row mt-3 justify-between pr-4">
-                    <View className="items-center">
-                      <Text className="text-black font-psemibold">{userPostsData?.length || 0}</Text>
-                      <Text className="text-gray-500 text-xs">{t('Videos')}</Text>
-                    </View>
-                    <View className="items-center">
-                      <Text className="text-black font-psemibold">{user?.favorite?.length || 0}</Text>
-                      <Text className="text-gray-500 text-xs">{t('Saved')}</Text>
-                    </View>
-                    <View className="items-center">
-                      <Text className="text-black font-psemibold">0</Text>
-                      <Text className="text-gray-500 text-xs">{t('Following')}</Text>
-                    </View>
+                <View className="flex-row mt-3 justify-between pr-4">
+                  <View className="items-center">
+                    <Text className="text-black font-psemibold">{userPostsData?.length || 0}</Text>
+                    <Text className="text-gray-500 text-xs">{t('Videos')}</Text>
+                  </View>
+                  <View className="items-center">
+                    <Text className="text-black font-psemibold">{user?.favorite?.length || 0}</Text>
+                    <Text className="text-gray-500 text-xs">{t('Saved')}</Text>
+                  </View>
+                  <View className="items-center">
+                    <Text className="text-black font-psemibold">0</Text>
+                    <Text className="text-gray-500 text-xs">{t('Following')}</Text>
                   </View>
                 </View>
               </View>
             </View>
-
-            <View className="flex-row border-b border-gray-200 mx-4 mt-4">
-              <TouchableOpacity
-                className={`flex-1 pb-2 ${activeTab === 0 ? 'border-b-2 border-secondary' : ''}`}
-                onPress={() => setActiveTab(0)}
-              >
-                <Text className={`text-center font-psemibold ${activeTab === 0 ? 'text-black' : 'text-gray-500'}`}>
-                  {t('My Videos')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className={`flex-1 pb-2 ${activeTab === 1 ? 'border-b-2 border-secondary' : ''}`}
-                onPress={() => setActiveTab(1)}
-              >
-                <Text className={`text-center font-psemibold ${activeTab === 1 ? 'text-black' : 'text-gray-500'}`}>
-                  {t('Saved')}
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
+        </View>
 
-          <View className="flex-1 mt-2">
-            <Swiper
-              index={activeTab}
-              onIndexChanged={(index) => setActiveTab(index)}
-              loop={false}
-              showsPagination={false}
-              scrollEnabled={true}
+        <View className="flex-1 mt-4">
+          <TopTab.Navigator
+            initialRouteName={t('My Videos')}
+            screenListeners={{
+              state: (e) => {
+                const currentIndex = e.data?.state?.index;
+                if (typeof currentIndex === 'number') {
+                  setActiveTabIndex(currentIndex);
+                }
+              },
+            }}
+            screenOptions={{
+              tabBarLabelStyle: { fontSize: 14, fontFamily: 'Poppins-SemiBold', textTransform: 'none' },
+              tabBarIndicatorStyle: { backgroundColor: '#FF9C01' },
+              tabBarStyle: { backgroundColor: 'white', elevation: 0, shadowOpacity: 0 },
+              tabBarActiveTintColor: '#000000',
+              tabBarInactiveTintColor: '#CDCDE0',
+              swipeEnabled: true,
+            }}
+          >
+            <TopTab.Screen
+              name={t('My Videos')}
             >
-              <UserTab
-                userPostsData={userPostsData}
-                loading={loading}
-                fetchUserPosts={fetchUserPosts}
-                userId={user?.$id}
-                onMenuPress={(videoId) => openMenu(videoId, 'user')}
-              />
-
-              <SavedTab
-                onMenuPress={(videoId) => openMenu(videoId, 'saved')}
-              />
-            </Swiper>
-          </View>
-        </Animated.View>
-      </PanGestureHandler>
+              {() => (
+                <UserTab
+                  userPostsData={userPostsData}
+                  loading={loading}
+                  fetchUserPosts={fetchUserPosts}
+                  userId={user?.$id}
+                  onMenuPress={(videoId) => openMenu(videoId, 'user')}
+                />
+              )}
+            </TopTab.Screen>
+            <TopTab.Screen
+              name={t('Saved')}
+            >
+              {() => (
+                <SavedTab
+                  onMenuPress={(videoId) => openMenu(videoId, 'saved')}
+                />
+              )}
+            </TopTab.Screen>
+          </TopTab.Navigator>
+        </View>
+      </Animated.View>
 
       <BottomSheet
         ref={bottomSheetRef}

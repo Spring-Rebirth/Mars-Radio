@@ -36,10 +36,12 @@ import star from "../../../assets/menu/star-solid.png";
 import starThree from "../../../assets/menu/star3.png";
 import trash from "../../../assets/menu/trash-solid.png";
 import Toast from "react-native-toast-message";
-import closeIcon from "../../../assets/icons/close.png";
 import { getPostsWithPagination, getPopularPosts } from "../../../lib/appwrite";
 import Swiper from 'react-native-swiper';
 import icons from "../../../constants/icons";
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+const TopTab = createMaterialTopTabNavigator();
 
 export default function Home() {
     const { t } = useTranslation();
@@ -68,8 +70,9 @@ export default function Home() {
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [cursor, setCursor] = useState(null);
-    const limit = 10;
     const [isInitialLatestLoading, setIsInitialLatestLoading] = useState(true);
+    const [activeTabIndex, setActiveTabIndex] = useState(0);
+    const limit = 10;
 
     // Define the backdrop component using useCallback
     const renderBackdrop = useCallback(
@@ -232,10 +235,6 @@ export default function Home() {
             };
         }, [])
     );
-
-    const toggleFullscreen = (fullscreen) => {
-        setIsFullscreen(fullscreen);
-    };
 
     // Refresh Handler
     const handleRefresh = async () => {
@@ -504,131 +503,126 @@ export default function Home() {
                     >
                         <SearchInput containerStyle="shadow-sm" />
                     </Animated.View>
-
-                    {/* Tab Navigation */}
-                    <View className="flex-row justify-center border-b border-gray-100 mx-1 mt-6">
-                        <TouchableOpacity
-                            className={`flex-1 pb-2 ${activeTab === 0 ? 'border-b-2 border-[#FFB300]' : ''}`}
-                            onPress={() => setActiveTab(0)}
-                        >
-                            <Text className={`text-center font-psemibold text-[15px] ${activeTab === 0 ? 'text-[#FFB300]' : 'text-gray-400'}`}>
-                                {t("Top Hits")}
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            className={`flex-1 pb-2 ${activeTab === 1 ? 'border-b-2 border-[#FFB300]' : ''}`}
-                            onPress={() => setActiveTab(1)}
-                        >
-                            <Text className={`text-center font-psemibold text-[15px] ${activeTab === 1 ? 'text-[#FFB300]' : 'text-gray-400'}`}>
-                                {t("Latest")}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
 
                 {/* Content Area - Conditional Rendering based on initial load */}
                 <View className="flex-1 mt-2">
-                    <Swiper
-                        ref={swiperRef}
-                        index={activeTab}
-                        onIndexChanged={(index) => setActiveTab(index)}
-                        loop={false}
-                        showsPagination={false}
-                        scrollEnabled={true}
+                    <TopTab.Navigator
+                        initialRouteName={t('Latest')}
+                        screenListeners={{
+                            state: (e) => {
+                                const currentIndex = e.data?.state?.index;
+                                if (typeof currentIndex === 'number') {
+                                    setActiveTabIndex(currentIndex);
+                                }
+                            },
+                        }}
+                        screenOptions={{
+                            tabBarLabelStyle: { fontSize: 14, fontFamily: 'Poppins-SemiBold', textTransform: 'none' },
+                            tabBarIndicatorStyle: { backgroundColor: '#FF9C01' },
+                            tabBarStyle: { backgroundColor: 'white', elevation: 0, shadowOpacity: 0 },
+                            tabBarActiveTintColor: '#000000',
+                            tabBarInactiveTintColor: '#CDCDE0',
+                            swipeEnabled: true,
+                        }}
                     >
-                        {/* Popular Videos Tab */}
-                        <View className="flex-1 px-4">
-
-                            {popularData.length === 0 ? (
-                                <View className="items-center justify-center flex-1">
-                                    <Image
-                                        source={images.empty}
-                                        className="w-[75px] h-[60px]"
-                                        resizeMode="contain"
-                                    />
-                                    <Text className="text-gray-400 text-center font-psemibold mt-2">
-                                        {t("No popular videos yet.")} {"\n"}
-                                        {t("Watch some to make them popular!")}
-                                    </Text>
-                                </View>
-                            ) : (
-                                <View className="pt-4 flex-1">
-                                    <Trending
-                                        video={popularData}
-                                        loading={refreshing}
-                                    />
+                        <TopTab.Screen name={t("Top Hits")} >
+                            {() => (
+                                <View className="flex-1 px-4">
+                                    {popularData.length === 0 ? (
+                                        <View className="items-center justify-center flex-1">
+                                            <Image
+                                                source={images.empty}
+                                                className="w-[75px] h-[60px]"
+                                                resizeMode="contain"
+                                            />
+                                            <Text className="text-gray-400 text-center font-psemibold mt-2">
+                                                {t("No popular videos yet.")} {"\n"}
+                                                {t("Watch some to make them popular!")}
+                                            </Text>
+                                        </View>
+                                    ) : (
+                                        <View className="pt-4 flex-1">
+                                            <Trending
+                                                video={popularData}
+                                                loading={refreshing}
+                                            />
+                                        </View>
+                                    )}
                                 </View>
                             )}
-                        </View>
-
-                        {/* Latest Videos Tab */}
-                        <View className="flex-1">
-                            {isInitialLatestLoading ? (
-                                <View>
-                                    <VideoLoadingSkeleton />
-                                    <VideoLoadingSkeleton />
-                                    <VideoLoadingSkeleton />
-                                </View>
-                            ) : data.length === 0 ? (
-                                <View className="mt-10 items-center">
-                                    <EmptyState title={t("No Videos Found")} subtitle={t("Be the first one to upload a video!")} />
-                                    <CustomButton
-                                        title={t("Create Video")}
-                                        textStyle={"text-black"}
-                                        style={"h-16 my-5 mx-4 w-[90%]"}
-                                        onPress={() => router.push("/create")}
-                                    />
-                                </View>
-                            ) : (
-                                <FlatList
-                                    ref={flatListRef}
-                                    directionalLockEnabled={true}
-                                    contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
-                                    data={data}
-                                    keyExtractor={(item) => item.$id}
-                                    renderItem={({ item }) => (
-                                        <VideoCard
-                                            post={item}
-                                            adminList={adminList}
-                                            onMenuPress={(videoId) => {
-                                                setSelectedVideoId(videoId);
-                                                setIsSaved(user?.favorite?.includes(videoId) ?? false);
-                                                setIsVideoCreator(user?.$id === item?.creator?.$id);
-                                                setShowControlMenu(true);
+                        </TopTab.Screen>
+                        <TopTab.Screen name={t("Latest")} >
+                            {() => (
+                                <View className="flex-1">
+                                    {isInitialLatestLoading ? (
+                                        <View>
+                                            <VideoLoadingSkeleton />
+                                            <VideoLoadingSkeleton />
+                                            <VideoLoadingSkeleton />
+                                        </View>
+                                    ) : data.length === 0 ? (
+                                        <View className="mt-10 items-center">
+                                            <EmptyState title={t("No Videos Found")} subtitle={t("Be the first one to upload a video!")} />
+                                            <CustomButton
+                                                title={t("Create Video")}
+                                                textStyle={"text-black"}
+                                                style={"h-16 my-5 mx-4 w-[90%]"}
+                                                onPress={() => router.push("/create")}
+                                            />
+                                        </View>
+                                    ) : (
+                                        <FlatList
+                                            ref={flatListRef}
+                                            directionalLockEnabled={true}
+                                            contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
+                                            data={data}
+                                            keyExtractor={(item) => item.$id}
+                                            renderItem={({ item }) => (
+                                                <VideoCard
+                                                    post={item}
+                                                    adminList={adminList}
+                                                    onMenuPress={(videoId) => {
+                                                        setSelectedVideoId(videoId);
+                                                        setIsSaved(user?.favorite?.includes(videoId) ?? false);
+                                                        setIsVideoCreator(user?.$id === item?.creator?.$id);
+                                                        setShowControlMenu(true);
+                                                    }}
+                                                />
+                                            )}
+                                            ListEmptyComponent={null}
+                                            refreshControl={
+                                                <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#FFB300"]} />
+                                            }
+                                            onEndReached={loadMorePosts}
+                                            onEndReachedThreshold={0.5}
+                                            initialNumToRender={5}
+                                            maxToRenderPerBatch={10}
+                                            windowSize={10}
+                                            removeClippedSubviews={true}
+                                            ListFooterComponent={() => {
+                                                if (isLoadingMore) {
+                                                    return (
+                                                        <View className="items-center justify-center my-4">
+                                                            <ActivityIndicator size="large" color="#FFB300" />
+                                                        </View>
+                                                    );
+                                                } else if (!hasMore && data.length > 0) {
+                                                    return (
+                                                        <View className="items-center justify-center my-4 pb-10">
+                                                            <Text className="text-gray-400 text-sm">{t("No more videos")}</Text>
+                                                        </View>
+                                                    );
+                                                } else {
+                                                    return null;
+                                                }
                                             }}
                                         />
                                     )}
-                                    ListEmptyComponent={null}
-                                    refreshControl={
-                                        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#FFB300"]} />
-                                    }
-                                    onEndReached={loadMorePosts}
-                                    onEndReachedThreshold={0.5}
-                                    initialNumToRender={5}
-                                    maxToRenderPerBatch={10}
-                                    windowSize={10}
-                                    removeClippedSubviews={true}
-                                    ListFooterComponent={() => {
-                                        if (isLoadingMore) {
-                                            return (
-                                                <View className="items-center justify-center my-4">
-                                                    <ActivityIndicator size="large" color="#FFB300" />
-                                                </View>
-                                            );
-                                        } else if (!hasMore && data.length > 0) {
-                                            return (
-                                                <View className="items-center justify-center my-4 pb-10">
-                                                    <Text className="text-gray-400 text-sm">{t("No more videos")}</Text>
-                                                </View>
-                                            );
-                                        } else {
-                                            return null;
-                                        }
-                                    }}
-                                />
+                                </View>
                             )}
-                        </View>
-                    </Swiper>
+                        </TopTab.Screen>
+                    </TopTab.Navigator>
                 </View>
             </View>
 
