@@ -10,6 +10,7 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     Animated,
+    ScrollView,
 } from "react-native";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { images } from "../../../constants";
@@ -18,7 +19,6 @@ import Trending from "../../../components/Trending";
 import EmptyState from "../../../components/EmptyState";
 import CustomButton from "../../../components/CustomButton";
 import VideoCard from "../../../components/VideoCard";
-import useGetData from "../../../hooks/useGetData";
 import { useGlobalContext, useTabContext } from "../../../context/GlobalProvider";
 import { StatusBar } from "expo-status-bar";
 import { updateSavedVideo } from "../../../lib/appwrite";
@@ -37,7 +37,7 @@ import starThree from "../../../assets/menu/star3.png";
 import trash from "../../../assets/menu/trash-solid.png";
 import Toast from "react-native-toast-message";
 import closeIcon from "../../../assets/icons/close.png";
-import { getPostsWithPagination } from "../../../services/videoService";
+import { getPostsWithPagination, getPopularPosts } from "../../../lib/appwrite";
 import Swiper from 'react-native-swiper';
 import icons from "../../../constants/icons";
 
@@ -56,20 +56,20 @@ export default function Home() {
     const [adminList, setAdminList] = useState([]);
     const [isVideoCreator, setIsVideoCreator] = useState(false);
     const [popularData, setPopularData] = useState([]);
-    const { fetchPosts, fetchPopularPosts } = useGetData({
-        setLoading,
-        setData,
-        setPopularData,
-    });
     let admin = adminList?.includes(user?.email);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [selectedVideoId, setSelectedVideoId] = useState(null);
     const [isSaved, setIsSaved] = useState(false);
-    const [activeTab, setActiveTab] = useState(0);
+    const [activeTab, setActiveTab] = useState(1);
     const swiperRef = useRef(null);
     const prevActiveTabRef = useRef(0);
     const [showSearch, setShowSearch] = useState(false);
     const searchAnimatedValue = useRef(new Animated.Value(0)).current;
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [cursor, setCursor] = useState(null);
+    const limit = 10;
+    const [isInitialLatestLoading, setIsInitialLatestLoading] = useState(true);
 
     // Define the backdrop component using useCallback
     const renderBackdrop = useCallback(
@@ -94,90 +94,128 @@ export default function Home() {
 
     // 监听homeTab点击事件
     useEffect(() => {
-        // 当homeTab事件计数器变化时，执行滚动到顶部
         if (tabEvents.homeTab > 0) {
             scrollToTop();
         }
     }, [tabEvents.homeTab, scrollToTop]);
 
-    // 添加admin数据
+    // Fetch initial data (Latest, Popular, Admin, User Saved)
     useEffect(() => {
-        const addAdminData = async () => {
-            await fetchAdminData()
-                .then((data) => {
-                    const adminArray = data.map((doc) => doc.account);
-                    console.log("adminArray:", adminArray);
-                    setAdminList(adminArray);
-                })
-                .catch((error) => {
-                    console.error("Error fetching admin data:", error);
-                });
-        };
-
-        addAdminData();
-    }, []);
-
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
-    const [cursor, setCursor] = useState(null);
-    const limit = 10;
-
-    // 分页加载视频帖子数据
-    const loadPosts = async () => {
-        if (isLoadingMore || !hasMore) return;
-        setIsLoadingMore(true);
-        try {
-            const newPosts = await getPostsWithPagination(cursor, limit);
-            // 提取所有 thumbnail URL
-            const imageUrls = newPosts.map(post => post.thumbnail).filter(url => url);
-            // 预加载图片
-            await Promise.all(imageUrls.map(url => Image.prefetch(url)));
-            setData(prevPosts => [...prevPosts, ...newPosts]);
-            if (newPosts.length < limit) {
-                setHasMore(false);
-            } else {
-                const lastPost = newPosts[newPosts.length - 1];
-                setCursor(lastPost.$id);
-            }
-        } catch (error) {
-            console.error('Failed to load posts:', error);
-        } finally {
-            setIsLoadingMore(false);
-        }
-    };
-
-    useEffect(() => {
-        loadPosts();
-        // console.log("data:", JSON.stringify(data, null, 2));
-    }, []);
-
-    useEffect(() => {
-        const fetchDataAndUpdateVideo = async () => {
-            if (!user) return; // 如果 user 不存在，直接返回
-
-            setLoading(true); // 开始加载
+        const loadInitialData = async () => {
+            setLoading(true); // Start loading indicator
+            setCursor(null);  // Reset pagination cursor
+            setHasMore(true); // Assume there's more data initially
 
             try {
-                // 获取用户信息，更新收藏视频
-                const favorite = user.favorite || []; // 确保 favorite 至少是一个空数组
-                await updateSavedVideo(user?.$id, { favorite });
+                const promises = [];
 
-                // 并行请求 fetchPosts 和 fetchPopularPosts
-                await fetchPopularPosts();
+                // Reset initial latest loading state
+                setIsInitialLatestLoading(true);
+
+                // 1. Fetch Latest Posts (Page 1)
+                promises.push(
+                    (async () => {
+                        try {
+                            const initialPosts = await getPostsWithPagination(null, limit);
+                            const imageUrls = initialPosts.map(post => post.thumbnail).filter(url => url);
+                            await Promise.all(imageUrls.map(url => Image.prefetch(url)));
+                            setData(initialPosts); // Set data first
+                            if (initialPosts.length < limit) {
+                                setHasMore(false);
+                            } else {
+                                const lastPost = initialPosts[initialPosts.length - 1];
+                                setCursor(lastPost.$id);
+                            }
+                            setIsInitialLatestLoading(false); // Mark as done *after* setting data/hasMore
+                        } catch (error) {
+                            console.error('Initial loadPosts failed:', error);
+                            setData([]);
+                            setHasMore(false);
+                            setIsInitialLatestLoading(false); // Mark as done even on error
+                        }
+                    })()
+                );
+
+                // 2. Fetch Admin Data
+                promises.push(
+                    (async () => {
+                        try {
+                            const adminData = await fetchAdminData();
+                            const adminArray = adminData.map((doc) => doc.account);
+                            setAdminList(adminArray);
+                        } catch (error) {
+                            console.error("Error fetching admin data:", error);
+                            setAdminList([]);
+                        }
+                    })()
+                );
+
+                // 3. Fetch Popular Posts (if user exists, adjust if needed for guests)
+                if (user?.$id) { // Assuming popular posts require user context or similar logic
+                    promises.push(
+                        (async () => {
+                            try {
+                                // Assuming getPopularPosts service exists
+                                const popular = await getPopularPosts();
+                                setPopularData(popular || []);
+                            } catch (error) {
+                                console.error("Error fetching popular posts:", error);
+                                setPopularData([]);
+                            }
+                        })()
+                    );
+
+                    // 4. Update Saved Video (less critical for initial display, maybe optional?)
+                    // This doesn't fetch data for display but updates based on user context
+                    // Can run in parallel but doesn't directly contribute to initial content display states (data, popularData)
+                    promises.push(
+                        (async () => {
+                            try {
+                                const favorite = user.favorite || [];
+                                await updateSavedVideo(user.$id, { favorite });
+                            } catch (error) {
+                                console.error("Error updating saved video on initial load:", error);
+                            }
+                        })()
+                    );
+
+                } else {
+                    // Handle case where user is not logged in (e.g., show default popular posts or empty)
+                    setPopularData([]); // Clear popular data if no user
+                }
+
+
+                await Promise.all(promises); // Wait for all essential initial fetches
+
             } catch (error) {
-                console.error(error); // 处理错误
+                console.error("Error during initial data load setup:", error);
+                // Ensure states reflect error scenario if needed
+                setData([]);
+                setPopularData([]);
+                setAdminList([]);
+                setHasMore(false);
             } finally {
-                setLoading(false); // 请求完成后设置 loading 为 false
+                setLoading(false); // Stop loading indicator *after* all fetches complete
             }
         };
 
-        fetchDataAndUpdateVideo(); // 调用异步函数
+        loadInitialData();
+
+        // Rerun this effect if the user logs in/out (user ID changes)
     }, [user?.$id]);
 
+    // Update user's saved list in backend when local user.favorite changes
     useEffect(() => {
-        updateSavedVideo(user?.$id, { favorite: user?.favorite });
-    }, [user?.favorite]);
+        // Avoid running on initial load if logic is already in the main useEffect
+        // This should only react to *changes* in user.favorite after initial load
+        if (!loading && user?.$id && user?.favorite) { // Check loading state? Or use a flag?
+            updateSavedVideo(user.$id, { favorite: user.favorite })
+                .catch(error => console.error("Error updating saved video on favorite change:", error));
+        }
+    }, [user?.favorite]); // Keep dependency on user.favorite
 
+
+    // Handle Bottom Sheet visibility
     useEffect(() => {
         if (showControlMenu) {
             bottomSheetRef.current?.expand();
@@ -186,6 +224,7 @@ export default function Home() {
         }
     }, [showControlMenu]);
 
+    // Close bottom sheet on screen blur
     useFocusEffect(
         React.useCallback(() => {
             return () => {
@@ -198,99 +237,190 @@ export default function Home() {
         setIsFullscreen(fullscreen);
     };
 
-    const handleRefresh = () => {
+    // Refresh Handler
+    const handleRefresh = async () => {
         setRefreshing(true);
-        fetchPosts();
-        fetchPopularPosts();
-        setRefreshing(false);
-        console.log("user.favorite:", user?.favorite);
+        setCursor(null); // Reset cursor for latest posts
+        setHasMore(true); // Reset hasMore for latest posts
+        setIsInitialLatestLoading(true); // Mark latest as loading during refresh
+
+        try {
+            const promises = [];
+
+            // 1. Fetch Latest Posts (Page 1)
+            promises.push(
+                (async () => {
+                    try {
+                        const refreshedPosts = await getPostsWithPagination(null, limit);
+                        const imageUrls = refreshedPosts.map(post => post.thumbnail).filter(url => url);
+                        await Promise.all(imageUrls.map(url => Image.prefetch(url)));
+                        setData(refreshedPosts); // Replace data
+                        if (refreshedPosts.length < limit) {
+                            setHasMore(false);
+                        } else {
+                            const lastPost = refreshedPosts[refreshedPosts.length - 1];
+                            setCursor(lastPost.$id);
+                            setHasMore(true);
+                        }
+                        setIsInitialLatestLoading(false); // Mark as done *after* setting data/hasMore
+                    } catch (error) {
+                        console.error('Refresh loadPosts failed:', error);
+                        setData([]);
+                        setHasMore(false);
+                        setIsInitialLatestLoading(false); // Mark as done even on error
+                    }
+                })()
+            );
+
+            // 2. Fetch Popular Posts
+            if (user?.$id) { // Check user context again for refresh
+                promises.push(
+                    (async () => {
+                        try {
+                            const popular = await getPopularPosts();
+                            setPopularData(popular || []);
+                        } catch (error) {
+                            console.error("Error refreshing popular posts:", error);
+                            setPopularData([]);
+                        }
+                    })()
+                );
+            } else {
+                setPopularData([]); // Clear popular if user logs out during session
+            }
+
+
+            await Promise.all(promises); // Wait for all refresh fetches
+
+        } catch (error) {
+            console.error("Error during refresh:", error);
+        } finally {
+            setRefreshing(false); // Stop refresh indicator
+        }
     };
 
+    // Load More Posts for Pagination (Latest Tab)
+    const loadMorePosts = async () => {
+        if (isLoadingMore || !hasMore || cursor === null) {
+            console.log("Load more condition not met:", { isLoadingMore, hasMore, cursor });
+            return;
+        }
+        console.log("Loading more posts with cursor:", cursor);
+        setIsLoadingMore(true);
+        try {
+            const newPosts = await getPostsWithPagination(cursor, limit);
+            console.log("Fetched new posts:", newPosts.length);
+            const imageUrls = newPosts.map(post => post.thumbnail).filter(url => url);
+            await Promise.all(imageUrls.map(url => Image.prefetch(url)));
+            // Use functional update to correctly append
+            setData(prevPosts => [...prevPosts, ...newPosts]);
+            if (newPosts.length < limit) {
+                setHasMore(false);
+                console.log("No more posts to load.");
+            } else {
+                const lastPost = newPosts[newPosts.length - 1];
+                setCursor(lastPost.$id);
+                console.log("New cursor set:", lastPost.$id);
+            }
+        } catch (error) {
+            console.error('Failed to load more posts:', error);
+        } finally {
+            setIsLoadingMore(false);
+        }
+    };
+
+
+    // Handle Add/Remove Saved Video
     const handleAddSaved = async () => {
+        if (!user || !selectedVideoId) return; // Guard against missing user or video ID
+
         try {
             let isIncrement;
+            const currentFavorites = user.favorite || [];
+            let updatedFavorites;
 
-            if (!user?.favorite.includes(selectedVideoId)) {
-                // 深拷贝对象
-                const newUser = JSON.parse(JSON.stringify(user));
-                newUser.favorite.push(selectedVideoId);
-                setUser((prev) => ({
-                    ...prev,
-                    favorite: newUser.favorite,
-                }));
-                setIsSaved((prevIsSaved) => {
-                    console.log("Saving, previous isSaved:", prevIsSaved);
-                    return true;
-                });
+            if (!currentFavorites.includes(selectedVideoId)) {
+                // Add to favorites
+                updatedFavorites = [...currentFavorites, selectedVideoId];
                 isIncrement = true;
                 Toast.show({
                     text1: t("Save successful"),
                     type: "success",
                     topOffset: 68,
                 });
+                setIsSaved(true); // Update local state immediately
             } else {
-                // 剔除已保存项的新数组
-                const updatedItems = user?.favorite.filter(
-                    (item) => item !== selectedVideoId
-                );
-                setUser((prev) => ({
-                    ...prev,
-                    favorite: updatedItems,
-                }));
-                setIsSaved((prevIsSaved) => {
-                    console.log("Removing, previous isSaved:", prevIsSaved);
-                    return false;
-                });
+                // Remove from favorites
+                updatedFavorites = currentFavorites.filter(item => item !== selectedVideoId);
                 isIncrement = false;
                 Toast.show({
                     text1: t("Cancel save successfully"),
                     type: "success",
                     topOffset: 68,
                 });
+                setIsSaved(false); // Update local state immediately
             }
+
+            // Update user context optimistically
+            setUser(prevUser => ({
+                ...prevUser,
+                favorite: updatedFavorites,
+            }));
+
+
+            // Update backend (both user document and video counts)
+            // Note: The useEffect listening to user.favorite will also trigger an updateSavedVideo call.
+            // Consider if this double-updates or if the useEffect is sufficient.
+            // For immediate count update, call updateSavedCounts here.
             await updateSavedCounts(selectedVideoId, isIncrement);
+            // The useEffect on user.favorite handles the user document update.
+
         } catch (error) {
             console.error("Error handling favorite:", error);
-            Alert.alert("An error occurred while updating favorite count");
+            Alert.alert("An error occurred while updating favorites.");
+            // Optionally revert optimistic UI update here if needed
         }
     };
 
     const handleClickSave = () => {
-        console.log("Before click, isSaved:", isSaved); // Debugging
-        setShowControlMenu(false);
+        setShowControlMenu(false); // Close menu first
         handleAddSaved();
     };
 
+    // Handle Delete Video
     const handleDelete = async () => {
-        setShowControlMenu(false);
+        if (!selectedVideoId) return;
+        setShowControlMenu(false); // Close menu
 
         try {
-            // 假设 getVideoDetails 从数据库获取视频详细信息
             const videoDetails = await getVideoDetails(selectedVideoId);
             const { image_ID, video_ID } = videoDetails;
 
             if (image_ID && video_ID) {
                 await Promise.all([
-                    deleteVideoDoc(selectedVideoId), // 删除视频文档
-                    deleteVideoFiles(image_ID), // 删除图片文件
-                    deleteVideoFiles(video_ID), // 删除视频文件
+                    deleteVideoDoc(selectedVideoId),
+                    deleteVideoFiles(image_ID),
+                    deleteVideoFiles(video_ID),
                 ]);
                 console.log("删除成功");
-                handleRefresh();
                 Toast.show({
                     text1: t("Delete Success"),
                     type: "success",
                     topOffset: 68,
                 });
+                // Refresh data after deletion
+                handleRefresh(); // Trigger a full refresh
             } else {
                 console.log("未找到与该视频关联的文件 ID");
-                Alert.alert("Delete Failed, File ID not found");
+                Alert.alert("Delete Failed", "File ID not found.");
             }
         } catch (error) {
             console.error("删除过程中出错:", error);
+            Alert.alert("Delete Failed", "An error occurred during deletion.");
         }
     };
 
+    // Switch Tabs via Swiper Index
     useEffect(() => {
         if (prevActiveTabRef.current !== activeTab) {
             prevActiveTabRef.current = activeTab;
@@ -300,7 +430,7 @@ export default function Home() {
         }
     }, [activeTab]);
 
-    // 控制搜索框的显示/隐藏
+    // Toggle Search Bar Animation
     const toggleSearchBar = () => {
         const toValue = showSearch ? 0 : 1;
         Animated.spring(searchAnimatedValue, {
@@ -318,49 +448,41 @@ export default function Home() {
             style={{ marginTop: insetTop }}
         >
             <View
-                className={`flex-1 bg-primary ${isFullscreen ? "w-full h-full" : "h-full"}`}
+                className={`flex-1 bg-primary ${isFullscreen ? "w-full h-full" : ""}`} // Removed h-full when not fullscreen to allow content scroll
             >
-                {/* 更现代的头部设计 */}
+                {/* Header */}
                 <View className="px-4 pt-2">
-                    {/* 顶部栏 */}
+                    {/* Top Bar */}
                     <View className="flex-row justify-between items-center h-[50px]">
-                        {/* 左侧用户头像 */}
+                        {/* Left User Avatar */}
                         <TouchableOpacity
                             onPress={() => navigation.openDrawer()}
                             className="w-10 h-10 rounded-full justify-center items-center overflow-hidden"
-                            style={{
-                                shadowColor: '#000',
-                                shadowOffset: { width: 0, height: 1 },
-                                shadowOpacity: 0.1,
-                                shadowRadius: 1.5,
-                                elevation: 2
-                            }}
+                            style={{ /* Shadow styles */ }}
                         >
-                            <Image
-                                source={{ uri: user?.avatar }}
-                                className="w-10 h-10"
-                                resizeMode="cover"
-                            />
+                            {user?.avatar ? (
+                                <Image
+                                    source={{ uri: user.avatar }}
+                                    className="w-10 h-10"
+                                    resizeMode="cover"
+                                />
+                            ) : (
+                                <View className="w-10 h-10 bg-gray-300 rounded-full" /> // Placeholder
+                            )}
                         </TouchableOpacity>
 
-                        {/* 中间Logo */}
+                        {/* Center Logo */}
                         <Image
                             source={images.logoSmall}
                             className="w-9 h-10"
                             resizeMode="contain"
                         />
 
-                        {/* 右侧搜索按钮 */}
+                        {/* Right Search Button */}
                         <TouchableOpacity
                             onPress={toggleSearchBar}
                             className="w-10 h-10 bg-white rounded-full justify-center items-center"
-                            style={{
-                                shadowColor: '#000',
-                                shadowOffset: { width: 0, height: 1 },
-                                shadowOpacity: 0.1,
-                                shadowRadius: 1.5,
-                                elevation: 2
-                            }}
+                            style={{ /* Shadow styles */ }}
                         >
                             <Image
                                 source={icons.search}
@@ -370,20 +492,12 @@ export default function Home() {
                         </TouchableOpacity>
                     </View>
 
-                    {/* 搜索栏 - 使用动画控制显示/隐藏 */}
+                    {/* Animated Search Bar */}
                     <Animated.View
                         style={{
-                            maxHeight: searchAnimatedValue.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [0, 80]
-                            }),
+                            maxHeight: searchAnimatedValue.interpolate({ inputRange: [0, 1], outputRange: [0, 80] }),
                             opacity: searchAnimatedValue,
-                            transform: [{
-                                translateY: searchAnimatedValue.interpolate({
-                                    inputRange: [0, 1],
-                                    outputRange: [-10, 0]
-                                })
-                            }],
+                            transform: [{ translateY: searchAnimatedValue.interpolate({ inputRange: [0, 1], outputRange: [-10, 0] }) }],
                             marginTop: 8,
                             overflow: 'hidden'
                         }}
@@ -391,13 +505,11 @@ export default function Home() {
                         <SearchInput containerStyle="shadow-sm" />
                     </Animated.View>
 
-                    {/* 标签页导航 - 美化样式 */}
+                    {/* Tab Navigation */}
                     <View className="flex-row justify-center border-b border-gray-100 mx-1 mt-6">
                         <TouchableOpacity
                             className={`flex-1 pb-2 ${activeTab === 0 ? 'border-b-2 border-[#FFB300]' : ''}`}
-                            onPress={() => {
-                                setActiveTab(0);
-                            }}
+                            onPress={() => setActiveTab(0)}
                         >
                             <Text className={`text-center font-psemibold text-[15px] ${activeTab === 0 ? 'text-[#FFB300]' : 'text-gray-400'}`}>
                                 {t("Top Hits")}
@@ -405,9 +517,7 @@ export default function Home() {
                         </TouchableOpacity>
                         <TouchableOpacity
                             className={`flex-1 pb-2 ${activeTab === 1 ? 'border-b-2 border-[#FFB300]' : ''}`}
-                            onPress={() => {
-                                setActiveTab(1);
-                            }}
+                            onPress={() => setActiveTab(1)}
                         >
                             <Text className={`text-center font-psemibold text-[15px] ${activeTab === 1 ? 'text-[#FFB300]' : 'text-gray-400'}`}>
                                 {t("Latest")}
@@ -416,181 +526,166 @@ export default function Home() {
                     </View>
                 </View>
 
-                {/* 内容区域 */}
-                <View className="flex-1 mt-2">
-                    <Swiper
-                        ref={swiperRef}
-                        index={activeTab}
-                        onIndexChanged={(index) => setActiveTab(index)}
-                        loop={false}
-                        showsPagination={false}
-                        scrollEnabled={true}
-                    >
-                        {/* 热门视频标签页 */}
-                        <View className="flex-1 px-4">
-                            {popularData.length === 0 && !loading ? (
-                                <View className="items-center mt-4">
-                                    <Image
-                                        source={images.empty}
-                                        className="w-[75px] h-[60px]"
-                                        resizeMode="contain"
-                                    />
-                                    <Text className="text-sky-300 text-center font-psemibold">
-                                        {t("Play the video to help it")} {"\n"}
-                                        {t("become a popular one !")}
-                                    </Text>
-                                </View>
-                            ) : (
-                                <View className="pt-4">
-                                    <Trending
-                                        video={popularData}
-                                        loading={loading || refreshing}
-                                        refreshControl={
-                                            <RefreshControl
-                                                refreshing={refreshing}
-                                                onRefresh={() => {
-                                                    setRefreshing(true);
-                                                    fetchPopularPosts().finally(() => {
-                                                        setRefreshing(false);
-                                                    });
-                                                }}
-                                                colors={["#FFB300"]}
+                {/* Content Area - Conditional Rendering based on initial load */}
+                {loading ? (
+                    <View className="flex-1 items-center justify-center pt-10">
+                        <VideoLoadingSkeleton />
+                        <VideoLoadingSkeleton />
+                        <VideoLoadingSkeleton />
+                    </View>
+                ) : (
+                    <View className="flex-1 mt-2">
+                        <Swiper
+                            ref={swiperRef}
+                            index={activeTab}
+                            onIndexChanged={(index) => setActiveTab(index)}
+                            loop={false}
+                            showsPagination={false}
+                            scrollEnabled={true}
+                        >
+                            {/* Popular Videos Tab */}
+                            <View className="flex-1 px-4">
+                                <ScrollView
+                                    contentContainerStyle={{ flexGrow: 1 }}
+                                    showsVerticalScrollIndicator={false}
+                                    refreshControl={
+                                        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#FFB300"]} />
+                                    }
+                                >
+                                    {popularData.length === 0 ? (
+                                        <View className="items-center justify-center flex-1">
+                                            <Image
+                                                source={images.empty}
+                                                className="w-[75px] h-[60px]"
+                                                resizeMode="contain"
                                             />
-                                        }
-                                    />
-                                </View>
-                            )}
-                        </View>
+                                            <Text className="text-gray-400 text-center font-psemibold mt-2">
+                                                {t("No popular videos yet.")} {"\n"}
+                                                {t("Watch some to make them popular!")}
+                                            </Text>
+                                        </View>
+                                    ) : (
+                                        <View className="pt-4 flex-1">
+                                            <Trending
+                                                video={popularData}
+                                                loading={refreshing}
+                                            />
+                                        </View>
+                                    )}
+                                </ScrollView>
+                            </View>
 
-                        {/* 最新视频标签页 */}
-                        <View className="flex-1">
-                            <FlatList
-                                ref={flatListRef}
-                                directionalLockEnabled={true}
-                                contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
-                                data={loading ? [] : data}
-                                keyExtractor={(item) => item.$id}
-                                renderItem={({ item }) => {
-                                    return (
-                                        <VideoCard
-                                            post={item}
-                                            handleRefresh={handleRefresh}
-                                            isFullscreen={isFullscreen}
-                                            adminList={adminList}
-                                            toggleFullscreen={toggleFullscreen}
-                                            setShowControlMenu={setShowControlMenu}
-                                            setIsVideoCreator={setIsVideoCreator}
-                                            onMenuPress={(videoId) => {
-                                                setSelectedVideoId(videoId);
-                                                setIsSaved(user?.favorite.includes(videoId));
-                                                setShowControlMenu((prev) => !prev);
-                                            }}
+                            {/* Latest Videos Tab */}
+                            <View className="flex-1">
+                                {isInitialLatestLoading ? (
+                                    <View>
+                                        <VideoLoadingSkeleton />
+                                        <VideoLoadingSkeleton />
+                                        <VideoLoadingSkeleton />
+                                    </View>
+                                ) : data.length === 0 ? (
+                                    <View className="mt-10 items-center">
+                                        <EmptyState title={t("No Videos Found")} subtitle={t("Be the first one to upload a video!")} />
+                                        <CustomButton
+                                            title={t("Create Video")}
+                                            textStyle={"text-black"}
+                                            style={"h-16 my-5 mx-4 w-[90%]"}
+                                            onPress={() => router.push("/create")}
                                         />
-                                    );
-                                }}
-                                ListEmptyComponent={() => {
-                                    return loading ? (
-                                        <>
-                                            <VideoLoadingSkeleton />
-                                            <VideoLoadingSkeleton />
-                                            <VideoLoadingSkeleton />
-                                        </>
-                                    ) : (
-                                        <View>
-                                            <EmptyState />
-                                            <CustomButton
-                                                title={"Create Video"}
-                                                textStyle={"text-black"}
-                                                style={"h-16 my-5 mx-4"}
-                                                onPress={() => router.push("/create")}
+                                    </View>
+                                ) : (
+                                    <FlatList
+                                        ref={flatListRef}
+                                        directionalLockEnabled={true}
+                                        contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
+                                        data={data}
+                                        keyExtractor={(item) => item.$id}
+                                        renderItem={({ item }) => (
+                                            <VideoCard
+                                                post={item}
+                                                adminList={adminList}
+                                                onMenuPress={(videoId) => {
+                                                    setSelectedVideoId(videoId);
+                                                    setIsSaved(user?.favorite?.includes(videoId) ?? false);
+                                                    setIsVideoCreator(user?.$id === item?.creator?.$id);
+                                                    setShowControlMenu(true);
+                                                }}
                                             />
-                                        </View>
-                                    );
-                                }}
-                                refreshControl={
-                                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-                                }
-                                onEndReached={loadPosts}
-                                onEndReachedThreshold={0.3}
-                                initialNumToRender={5}
-                                maxToRenderPerBatch={10}
-                                windowSize={10}
-                                removeClippedSubviews={true}
-                                ListFooterComponent={() => {
-                                    return isLoadingMore ? (
-                                        <View className="items-center justify-center my-4">
-                                            <ActivityIndicator size="large" color="#FFB300" />
-                                        </View>
-                                    ) : hasMore ? (
-                                        <View className="items-center justify-center my-4 pb-10">
-                                            <ActivityIndicator size="small" color="#FFB300" />
-                                        </View>
-                                    ) : (
-                                        <View className="items-center justify-center my-4 pb-10">
-                                            <Text className="text-gray-400 text-sm">{t("No more videos")}</Text>
-                                        </View>
-                                    );
-                                }}
-                            />
-                        </View>
-                    </Swiper>
-                </View>
+                                        )}
+                                        ListEmptyComponent={null}
+                                        refreshControl={
+                                            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#FFB300"]} />
+                                        }
+                                        onEndReached={loadMorePosts}
+                                        onEndReachedThreshold={0.5}
+                                        initialNumToRender={5}
+                                        maxToRenderPerBatch={10}
+                                        windowSize={10}
+                                        removeClippedSubviews={true}
+                                        ListFooterComponent={() => {
+                                            if (isLoadingMore) {
+                                                return (
+                                                    <View className="items-center justify-center my-4">
+                                                        <ActivityIndicator size="large" color="#FFB300" />
+                                                    </View>
+                                                );
+                                            } else if (!hasMore && data.length > 0) {
+                                                return (
+                                                    <View className="items-center justify-center my-4 pb-10">
+                                                        <Text className="text-gray-400 text-sm">{t("No more videos")}</Text>
+                                                    </View>
+                                                );
+                                            } else {
+                                                return null;
+                                            }
+                                        }}
+                                    />
+                                )}
+                            </View>
+                        </Swiper>
+                    </View>
+                )}
             </View>
 
-            {/* 视频弹出菜单 */}
+            {/* Video Control Bottom Sheet */}
             <BottomSheet
                 ref={bottomSheetRef}
                 index={-1}
-                snapPoints={[275]}
+                snapPoints={[isVideoCreator || admin ? 220 : 160]}
                 enablePanDownToClose={true}
-                enableContentPanningGesture={true}
-                enableHandlePanningGesture={true}
                 backdropComponent={renderBackdrop}
                 handleIndicatorStyle={{ backgroundColor: '#999' }}
                 backgroundStyle={{ backgroundColor: 'white' }}
                 onClose={() => setShowControlMenu(false)}
             >
-                <BottomSheetView>
-                    <View className="relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto">
-                        <Pressable
-                            onPress={() => setShowControlMenu(false)}
-                            className="z-20 items-end"
-                        >
-                            <Image
-                                source={closeIcon}
-                                className="w-6 h-6"
-                                resizeMode="contain"
-                            />
-                        </Pressable>
+                <BottomSheetView style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24 }}>
+                    <Pressable
+                        onPress={handleClickSave}
+                        className="w-full h-12 flex-row items-center mb-2"
+                    >
+                        <Image
+                            source={isSaved ? star : starThree}
+                            className="w-6 h-6 mr-6"
+                            resizeMode="contain"
+                        />
+                        <Text className="text-[#333333] text-lg font-pmedium">
+                            {isSaved ? t("Cancel save video") : t("Save video")}
+                        </Text>
+                    </Pressable>
 
+                    {(isVideoCreator || admin) && (
                         <Pressable
-                            onPress={handleClickSave}
+                            onPress={handleDelete}
                             className="w-full h-12 flex-row items-center"
                         >
                             <Image
-                                source={isSaved ? star : starThree}
-                                className="w-6 h-6 mr-8"
+                                source={trash}
+                                className="w-6 h-6 mr-6"
                                 resizeMode="contain"
                             />
-                            <Text className="text-[#333333] text-lg">
-                                {isSaved ? t("Cancel save video") : t("Save video")}
-                            </Text>
+                            <Text className="text-red-500 text-lg font-pmedium">{t("Delete video")}</Text>
                         </Pressable>
-
-                        {isVideoCreator || admin === true ? (
-                            <Pressable
-                                onPress={handleDelete}
-                                className="w-full h-12 flex-row items-center"
-                            >
-                                <Image
-                                    source={trash}
-                                    className="w-6 h-6 mr-8"
-                                    resizeMode="contain"
-                                />
-                                <Text className="text-black text-lg">{t("Delete video")}</Text>
-                            </Pressable>
-                        ) : null}
-                    </View>
+                    )}
                 </BottomSheetView>
             </BottomSheet>
 
