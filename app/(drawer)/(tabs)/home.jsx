@@ -538,34 +538,27 @@ export default function Home() {
                     >
                         {/* Popular Videos Tab */}
                         <View className="flex-1 px-4">
-                            <ScrollView
-                                contentContainerStyle={{ flexGrow: 1 }}
-                                showsVerticalScrollIndicator={false}
-                                refreshControl={
-                                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#FFB300"]} />
-                                }
-                            >
-                                {popularData.length === 0 ? (
-                                    <View className="items-center justify-center flex-1">
-                                        <Image
-                                            source={images.empty}
-                                            className="w-[75px] h-[60px]"
-                                            resizeMode="contain"
-                                        />
-                                        <Text className="text-gray-400 text-center font-psemibold mt-2">
-                                            {t("No popular videos yet.")} {"\n"}
-                                            {t("Watch some to make them popular!")}
-                                        </Text>
-                                    </View>
-                                ) : (
-                                    <View className="pt-4 flex-1">
-                                        <Trending
-                                            video={popularData}
-                                            loading={refreshing}
-                                        />
-                                    </View>
-                                )}
-                            </ScrollView>
+
+                            {popularData.length === 0 ? (
+                                <View className="items-center justify-center flex-1">
+                                    <Image
+                                        source={images.empty}
+                                        className="w-[75px] h-[60px]"
+                                        resizeMode="contain"
+                                    />
+                                    <Text className="text-gray-400 text-center font-psemibold mt-2">
+                                        {t("No popular videos yet.")} {"\n"}
+                                        {t("Watch some to make them popular!")}
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View className="pt-4 flex-1">
+                                    <Trending
+                                        video={popularData}
+                                        loading={refreshing}
+                                    />
+                                </View>
+                            )}
                         </View>
 
                         {/* Latest Videos Tab */}
