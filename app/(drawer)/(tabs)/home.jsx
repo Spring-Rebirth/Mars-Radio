@@ -527,124 +527,116 @@ export default function Home() {
                 </View>
 
                 {/* Content Area - Conditional Rendering based on initial load */}
-                {loading ? (
-                    <View className="flex-1 items-center justify-center pt-10">
-                        <VideoLoadingSkeleton />
-                        <VideoLoadingSkeleton />
-                        <VideoLoadingSkeleton />
-                    </View>
-                ) : (
-                    <View className="flex-1 mt-2">
-                        <Swiper
-                            ref={swiperRef}
-                            index={activeTab}
-                            onIndexChanged={(index) => setActiveTab(index)}
-                            loop={false}
-                            showsPagination={false}
-                            scrollEnabled={true}
-                        >
-                            {/* Popular Videos Tab */}
-                            <View className="flex-1 px-4">
-                                <ScrollView
-                                    contentContainerStyle={{ flexGrow: 1 }}
-                                    showsVerticalScrollIndicator={false}
+                <View className="flex-1 mt-2">
+                    <Swiper
+                        ref={swiperRef}
+                        index={activeTab}
+                        onIndexChanged={(index) => setActiveTab(index)}
+                        loop={false}
+                        showsPagination={false}
+                        scrollEnabled={true}
+                    >
+                        {/* Popular Videos Tab */}
+                        <View className="flex-1 px-4">
+                            <ScrollView
+                                contentContainerStyle={{ flexGrow: 1 }}
+                                showsVerticalScrollIndicator={false}
+                                refreshControl={
+                                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#FFB300"]} />
+                                }
+                            >
+                                {popularData.length === 0 ? (
+                                    <View className="items-center justify-center flex-1">
+                                        <Image
+                                            source={images.empty}
+                                            className="w-[75px] h-[60px]"
+                                            resizeMode="contain"
+                                        />
+                                        <Text className="text-gray-400 text-center font-psemibold mt-2">
+                                            {t("No popular videos yet.")} {"\n"}
+                                            {t("Watch some to make them popular!")}
+                                        </Text>
+                                    </View>
+                                ) : (
+                                    <View className="pt-4 flex-1">
+                                        <Trending
+                                            video={popularData}
+                                            loading={refreshing}
+                                        />
+                                    </View>
+                                )}
+                            </ScrollView>
+                        </View>
+
+                        {/* Latest Videos Tab */}
+                        <View className="flex-1">
+                            {isInitialLatestLoading ? (
+                                <View>
+                                    <VideoLoadingSkeleton />
+                                    <VideoLoadingSkeleton />
+                                    <VideoLoadingSkeleton />
+                                </View>
+                            ) : data.length === 0 ? (
+                                <View className="mt-10 items-center">
+                                    <EmptyState title={t("No Videos Found")} subtitle={t("Be the first one to upload a video!")} />
+                                    <CustomButton
+                                        title={t("Create Video")}
+                                        textStyle={"text-black"}
+                                        style={"h-16 my-5 mx-4 w-[90%]"}
+                                        onPress={() => router.push("/create")}
+                                    />
+                                </View>
+                            ) : (
+                                <FlatList
+                                    ref={flatListRef}
+                                    directionalLockEnabled={true}
+                                    contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
+                                    data={data}
+                                    keyExtractor={(item) => item.$id}
+                                    renderItem={({ item }) => (
+                                        <VideoCard
+                                            post={item}
+                                            adminList={adminList}
+                                            onMenuPress={(videoId) => {
+                                                setSelectedVideoId(videoId);
+                                                setIsSaved(user?.favorite?.includes(videoId) ?? false);
+                                                setIsVideoCreator(user?.$id === item?.creator?.$id);
+                                                setShowControlMenu(true);
+                                            }}
+                                        />
+                                    )}
+                                    ListEmptyComponent={null}
                                     refreshControl={
                                         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#FFB300"]} />
                                     }
-                                >
-                                    {popularData.length === 0 ? (
-                                        <View className="items-center justify-center flex-1">
-                                            <Image
-                                                source={images.empty}
-                                                className="w-[75px] h-[60px]"
-                                                resizeMode="contain"
-                                            />
-                                            <Text className="text-gray-400 text-center font-psemibold mt-2">
-                                                {t("No popular videos yet.")} {"\n"}
-                                                {t("Watch some to make them popular!")}
-                                            </Text>
-                                        </View>
-                                    ) : (
-                                        <View className="pt-4 flex-1">
-                                            <Trending
-                                                video={popularData}
-                                                loading={refreshing}
-                                            />
-                                        </View>
-                                    )}
-                                </ScrollView>
-                            </View>
-
-                            {/* Latest Videos Tab */}
-                            <View className="flex-1">
-                                {isInitialLatestLoading ? (
-                                    <View>
-                                        <VideoLoadingSkeleton />
-                                        <VideoLoadingSkeleton />
-                                        <VideoLoadingSkeleton />
-                                    </View>
-                                ) : data.length === 0 ? (
-                                    <View className="mt-10 items-center">
-                                        <EmptyState title={t("No Videos Found")} subtitle={t("Be the first one to upload a video!")} />
-                                        <CustomButton
-                                            title={t("Create Video")}
-                                            textStyle={"text-black"}
-                                            style={"h-16 my-5 mx-4 w-[90%]"}
-                                            onPress={() => router.push("/create")}
-                                        />
-                                    </View>
-                                ) : (
-                                    <FlatList
-                                        ref={flatListRef}
-                                        directionalLockEnabled={true}
-                                        contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
-                                        data={data}
-                                        keyExtractor={(item) => item.$id}
-                                        renderItem={({ item }) => (
-                                            <VideoCard
-                                                post={item}
-                                                adminList={adminList}
-                                                onMenuPress={(videoId) => {
-                                                    setSelectedVideoId(videoId);
-                                                    setIsSaved(user?.favorite?.includes(videoId) ?? false);
-                                                    setIsVideoCreator(user?.$id === item?.creator?.$id);
-                                                    setShowControlMenu(true);
-                                                }}
-                                            />
-                                        )}
-                                        ListEmptyComponent={null}
-                                        refreshControl={
-                                            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#FFB300"]} />
+                                    onEndReached={loadMorePosts}
+                                    onEndReachedThreshold={0.5}
+                                    initialNumToRender={5}
+                                    maxToRenderPerBatch={10}
+                                    windowSize={10}
+                                    removeClippedSubviews={true}
+                                    ListFooterComponent={() => {
+                                        if (isLoadingMore) {
+                                            return (
+                                                <View className="items-center justify-center my-4">
+                                                    <ActivityIndicator size="large" color="#FFB300" />
+                                                </View>
+                                            );
+                                        } else if (!hasMore && data.length > 0) {
+                                            return (
+                                                <View className="items-center justify-center my-4 pb-10">
+                                                    <Text className="text-gray-400 text-sm">{t("No more videos")}</Text>
+                                                </View>
+                                            );
+                                        } else {
+                                            return null;
                                         }
-                                        onEndReached={loadMorePosts}
-                                        onEndReachedThreshold={0.5}
-                                        initialNumToRender={5}
-                                        maxToRenderPerBatch={10}
-                                        windowSize={10}
-                                        removeClippedSubviews={true}
-                                        ListFooterComponent={() => {
-                                            if (isLoadingMore) {
-                                                return (
-                                                    <View className="items-center justify-center my-4">
-                                                        <ActivityIndicator size="large" color="#FFB300" />
-                                                    </View>
-                                                );
-                                            } else if (!hasMore && data.length > 0) {
-                                                return (
-                                                    <View className="items-center justify-center my-4 pb-10">
-                                                        <Text className="text-gray-400 text-sm">{t("No more videos")}</Text>
-                                                    </View>
-                                                );
-                                            } else {
-                                                return null;
-                                            }
-                                        }}
-                                    />
-                                )}
-                            </View>
-                        </Swiper>
-                    </View>
-                )}
+                                    }}
+                                />
+                            )}
+                        </View>
+                    </Swiper>
+                </View>
             </View>
 
             {/* Video Control Bottom Sheet */}
