@@ -21,7 +21,6 @@ import {
 import { Animated } from "react-native";
 import ImageModal from "../../../components/modal/ImageModal";
 import { Ionicons } from '@expo/vector-icons';
-import Swiper from 'react-native-swiper';
 import UserTab from "../../../components/UserTab";
 import SavedTab from "../../../components/SavedTab";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -40,6 +39,7 @@ import starThree from "../../../assets/menu/star3.png";
 import trash from "../../../assets/menu/trash-solid.png";
 import closeIcon from "../../../assets/icons/close.png";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import useFocusStatusStore from "../../../store/focusStatusStore";
 
 const TopTab = createMaterialTopTabNavigator();
 const { width } = Dimensions.get('window');
@@ -51,7 +51,7 @@ export default function Profile() {
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
   const { user, setUser } = useGlobalContext();
   const { t } = useTranslation();
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const setProfileActiveTabIndex = useFocusStatusStore(state => state.setProfileActiveTabIndex);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const navigation = useNavigation();
 
@@ -284,7 +284,8 @@ export default function Profile() {
               state: (e) => {
                 const currentIndex = e.data?.state?.index;
                 if (typeof currentIndex === 'number') {
-                  setActiveTabIndex(currentIndex);
+                  console.log("currentIndex", currentIndex);
+                  setProfileActiveTabIndex(currentIndex);
                 }
               },
             }}

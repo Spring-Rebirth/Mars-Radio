@@ -37,10 +37,9 @@ import starThree from "../../../assets/menu/star3.png";
 import trash from "../../../assets/menu/trash-solid.png";
 import Toast from "react-native-toast-message";
 import { getPostsWithPagination, getPopularPosts } from "../../../lib/appwrite";
-import Swiper from 'react-native-swiper';
 import icons from "../../../constants/icons";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
+import useFocusStatusStore from "../../../store/focusStatusStore";
 const TopTab = createMaterialTopTabNavigator();
 
 export default function Home() {
@@ -59,19 +58,15 @@ export default function Home() {
     const [isVideoCreator, setIsVideoCreator] = useState(false);
     const [popularData, setPopularData] = useState([]);
     let admin = adminList?.includes(user?.email);
-    const [isFullscreen, setIsFullscreen] = useState(false);
     const [selectedVideoId, setSelectedVideoId] = useState(null);
     const [isSaved, setIsSaved] = useState(false);
-    const [activeTab, setActiveTab] = useState(1);
-    const swiperRef = useRef(null);
-    const prevActiveTabRef = useRef(0);
     const [showSearch, setShowSearch] = useState(false);
     const searchAnimatedValue = useRef(new Animated.Value(0)).current;
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [cursor, setCursor] = useState(null);
     const [isInitialLatestLoading, setIsInitialLatestLoading] = useState(true);
-    const [activeTabIndex, setActiveTabIndex] = useState(0);
+    const setHomeActiveTabIndex = useFocusStatusStore(state => state.setHomeActiveTabIndex);
     const limit = 10;
 
     // Define the backdrop component using useCallback
@@ -419,16 +414,6 @@ export default function Home() {
         }
     };
 
-    // Switch Tabs via Swiper Index
-    useEffect(() => {
-        if (prevActiveTabRef.current !== activeTab) {
-            prevActiveTabRef.current = activeTab;
-            if (swiperRef.current && swiperRef.current.scrollTo) {
-                swiperRef.current.scrollTo(activeTab, true);
-            }
-        }
-    }, [activeTab]);
-
     // Toggle Search Bar Animation
     const toggleSearchBar = () => {
         const toValue = showSearch ? 0 : 1;
@@ -447,7 +432,7 @@ export default function Home() {
             style={{ marginTop: insetTop }}
         >
             <View
-                className={`flex-1 bg-primary ${isFullscreen ? "w-full h-full" : ""}`} // Removed h-full when not fullscreen to allow content scroll
+                className={`flex-1 bg-primary`}
             >
                 {/* Header */}
                 <View className="px-4 pt-2">
@@ -513,7 +498,8 @@ export default function Home() {
                             state: (e) => {
                                 const currentIndex = e.data?.state?.index;
                                 if (typeof currentIndex === 'number') {
-                                    setActiveTabIndex(currentIndex);
+                                    console.log("currentIndex", currentIndex);
+                                    setHomeActiveTabIndex(currentIndex);
                                 }
                             },
                         }}
