@@ -528,7 +528,7 @@ export default function Home() {
                                             </Text>
                                         </View>
                                     ) : (
-                                        <View className="pt-4 flex-1">
+                                        <View className="flex-1">
                                             <Trending
                                                 video={popularData}
                                                 loading={refreshing}

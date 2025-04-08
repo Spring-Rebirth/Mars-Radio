@@ -47,7 +47,7 @@ export default function SavedTab({ onMenuPress }) {
                 data={loading ? [] : savedPostsData}
                 directionalLockEnabled={true}
                 keyExtractor={(item) => item.$id}
-                contentContainerStyle={{ paddingBottom: 44 }}
+                contentContainerStyle={{ paddingBottom: 44, paddingTop: 16 }}
                 renderItem={({ item }) => (
                     <VideoCard
                         post={item}

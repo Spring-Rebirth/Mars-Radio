@@ -35,7 +35,7 @@ export default function UserTab({ userPostsData, loading, fetchUserPosts, userId
                 data={loading ? [] : userPostsData}
                 directionalLockEnabled={true}
                 keyExtractor={(item) => item?.$id}
-                contentContainerStyle={{ paddingBottom: 44 }}
+                contentContainerStyle={{ paddingBottom: 44, paddingTop: 16 }}
                 renderItem={({ item }) => (
                     <VideoCard
                         post={item}
