@@ -542,11 +542,11 @@ export default function Home() {
                             {() => (
                                 <View className="flex-1">
                                     {isInitialLatestLoading ? (
-                                        <View>
+                                        <ScrollView>
                                             <VideoLoadingSkeleton />
                                             <VideoLoadingSkeleton />
                                             <VideoLoadingSkeleton />
-                                        </View>
+                                        </ScrollView>
                                     ) : data.length === 0 ? (
                                         <View className="mt-10 items-center">
                                             <EmptyState title={t("No Videos Found")} subtitle={t("Be the first one to upload a video!")} />
