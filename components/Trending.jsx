@@ -1,5 +1,5 @@
 // cSpell:ignore Pressable cooldown
-import { FlatList, View, Dimensions } from 'react-native'
+import { FlatList, View, Dimensions, ScrollView } from 'react-native'
 import { useState, useEffect } from 'react'
 import TrendingItemSkeleton from './loading-view/TredingItenSkeleton'
 import TrendingItem from './TrendingItem'
@@ -25,26 +25,26 @@ export default function Trending({ video, loading, refreshControl }) {
     };
 
     return loading ? (
-        <View>
+        <ScrollView>
             <TrendingItemSkeleton />
             <TrendingItemSkeleton />
             <TrendingItemSkeleton />
-        </View>
+        </ScrollView>
     ) : (
         <FlatList
-                data={loading || video.length === 0 ? [] : video}
-                keyExtractor={(item) => item.$id}
-                renderItem={({ item }) => (
-                    <TrendingItem item={item} activeItem={activeItem} />
-                )}
-                onViewableItemsChanged={handleViewableItemsChanged}
-                viewabilityConfig={viewabilityConfig}
-                showsVerticalScrollIndicator={false}
-                decelerationRate="fast"
-                directionalLockEnabled={true}
-                contentContainerStyle={{ paddingBottom: 80 }}
-                ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-                refreshControl={refreshControl}
-            />
-        )
+            data={loading || video.length === 0 ? [] : video}
+            keyExtractor={(item) => item.$id}
+            renderItem={({ item }) => (
+                <TrendingItem item={item} activeItem={activeItem} />
+            )}
+            onViewableItemsChanged={handleViewableItemsChanged}
+            viewabilityConfig={viewabilityConfig}
+            showsVerticalScrollIndicator={false}
+            decelerationRate="fast"
+            directionalLockEnabled={true}
+            contentContainerStyle={{ paddingBottom: 80 }}
+            ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+            refreshControl={refreshControl}
+        />
+    )
 }
