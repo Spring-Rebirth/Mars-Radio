@@ -25,7 +25,7 @@ export default function Trending({ video, loading, refreshControl }) {
     };
 
     return loading ? (
-        <ScrollView>
+        <ScrollView style={{ paddingTop: 16 }}>
             <TrendingItemSkeleton />
             <TrendingItemSkeleton />
             <TrendingItemSkeleton />

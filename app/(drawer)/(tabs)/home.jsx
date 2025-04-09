@@ -532,6 +532,13 @@ export default function Home() {
                                             <Trending
                                                 video={popularData}
                                                 loading={refreshing}
+                                                refreshControl={
+                                                    <RefreshControl
+                                                        refreshing={refreshing}
+                                                        onRefresh={handleRefresh}
+                                                        colors={["#FFB300"]}
+                                                    />
+                                                }
                                             />
                                         </View>
                                     )}
