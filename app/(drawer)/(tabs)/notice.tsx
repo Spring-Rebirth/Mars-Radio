@@ -233,7 +233,7 @@ function NoticeScreen(): JSX.Element {
             if (postId) {
                 // 只导航到视频播放页面
                 router.push({
-                    pathname: 'screens/play-screen',
+                    pathname: 'player/play-screen',
                     params: {
                         videoId: postId
                     },
