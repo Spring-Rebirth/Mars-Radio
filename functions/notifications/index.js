@@ -51,13 +51,67 @@ async function registerForPushNotificationsAsync() {
   }
 }
 
-async function schedulePushNotification() {
+async function schedulePushNotification(type = 'welcome', customData = {}) {
+  let notificationContent = {
+    title: "欢迎使用 Mars Radio!",
+    body: "感谢您使用我们的应用，探索更多功能并开始分享您的视频！",
+    data: { type: 'welcome', ...customData },
+  };
+
+  // 根据不同类型设置不同内容
+  switch (type) {
+    case 'post':
+      notificationContent = {
+        title: "有人发布了新内容",
+        body: "点击查看刚发布的新内容",
+        data: {
+          type: 'post',
+          postId: customData.postId || '123456789',
+          ...customData
+        },
+      };
+      break;
+    case 'comment':
+      notificationContent = {
+        title: "收到新评论",
+        body: "有人评论了您的内容，点击查看",
+        data: {
+          type: 'comment',
+          postId: customData.postId || '123456789',
+          commentId: customData.commentId || '987654321',
+          ...customData
+        },
+      };
+      break;
+    case 'like':
+      notificationContent = {
+        title: "获得了新赞",
+        body: "您的内容收到了新的点赞，太棒了！",
+        data: {
+          type: 'like',
+          postId: customData.postId || '123456789',
+          ...customData
+        },
+      };
+      break;
+    case 'follow':
+      notificationContent = {
+        title: "有新粉丝关注了您",
+        body: "点击查看是谁关注了您",
+        data: {
+          type: 'user',
+          userId: customData.userId || '123456789',
+          ...customData
+        },
+      };
+      break;
+    default:
+      // 使用默认欢迎消息
+      break;
+  }
+
   await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "You've got mail! 📬",
-      body: 'Here is the notification body',
-      data: { data: 'goes here', test: { test1: 'more data' } },
-    },
+    content: notificationContent,
     trigger: { seconds: 2 },
   });
 }

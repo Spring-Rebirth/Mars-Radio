@@ -1,7 +1,8 @@
 import { schedulePushNotification } from '../../../functions/notifications';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { config, databases } from '../../../services/postsService';
+import { config as postConfig, databases } from '../../../services/postsService';
+import { config } from '../../../lib/appwrite';
 import { useTranslation } from 'react-i18next';
 import {
     Text,
@@ -35,23 +36,12 @@ function NoticeScreen(): JSX.Element {
     // URL参数和状态
     const { data } = useLocalSearchParams<{ data?: string }>();
     const [notificationsData, setNotificationsData] = useState<ParsedNotificationData | null>(null);
-    const [notifications, setNotifications] = useState<NotificationItem[]>([
-        // 样本通知数据 - 实际中应从API或存储中获取
-        {
-            id: '1',
-            title: '欢迎使用 Mars Radio!',
-            body: '感谢您使用我们的应用，探索更多功能并开始分享您的视频！',
-            createdAt: new Date(Date.now() - 3600000).toISOString(),
-            read: true,
-            type: 'welcome',
-            data: {}
-        }
-    ]);
+    const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const [selectedNotification, setSelectedNotification] = useState<NotificationItem | null>(null);
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [notificationStats, setNotificationStats] = useState<NotificationStats>({
-        total: 1,
+        total: 0,
         unread: 0,
         today: 0,
         weekly: 0
@@ -59,7 +49,19 @@ function NoticeScreen(): JSX.Element {
     const { t } = useTranslation();
     const insetTop = useSafeAreaInsets().top;
     const fadeAnim = useRef<Animated.Value>(new Animated.Value(0)).current;
-    const { notification, setNotification, clearNotification } = useNotificationStore();
+
+    // 获取通知存储中的方法
+    const {
+        notification,
+        setNotification,
+        clearNotification,
+        savedNotifications,
+        loadSavedNotifications,
+        saveNotification,
+        markNotificationAsRead,
+        markAllNotificationsAsRead,
+        clearAllSavedNotifications
+    } = useNotificationStore();
 
     // 加载动画
     useEffect(() => {
@@ -69,6 +71,26 @@ function NoticeScreen(): JSX.Element {
             useNativeDriver: true
         }).start();
     }, []);
+
+    // 从存储加载保存的通知
+    const loadNotifications = useCallback(async () => {
+        try {
+            setRefreshing(true);
+            const loadedNotifications = await loadSavedNotifications();
+            setNotifications(loadedNotifications || []);
+            updateNotificationStats(loadedNotifications || []);
+        } catch (error) {
+            console.error('加载保存的通知失败:', error);
+            Alert.alert(t('Error'), t('Failed to load notifications'));
+        } finally {
+            setRefreshing(false);
+        }
+    }, [loadSavedNotifications, t]);
+
+    // 页面加载时加载通知
+    useEffect(() => {
+        loadNotifications();
+    }, [loadNotifications]);
 
     // 解析URL参数中的通知数据并添加到列表
     useEffect(() => {
@@ -96,6 +118,9 @@ function NoticeScreen(): JSX.Element {
                     data: parsedData.data || {}
                 };
 
+                // 保存到本地存储
+                saveNotification(newNotification);
+
                 // 添加到通知列表并更新统计
                 setNotifications(prev => [newNotification, ...prev]);
                 updateNotificationStats([newNotification, ...notifications]);
@@ -113,7 +138,7 @@ function NoticeScreen(): JSX.Element {
                 );
             }
         }
-    }, [data]);
+    }, [data, saveNotification, t]);
 
     // 处理从通知商店获取的通知
     useEffect(() => {
@@ -139,6 +164,9 @@ function NoticeScreen(): JSX.Element {
                 data: data as NotificationData || {}
             };
 
+            // 保存到本地存储
+            saveNotification(newNotification);
+
             const updatedNotifications = [newNotification, ...notifications];
             setNotifications(updatedNotifications);
             updateNotificationStats(updatedNotifications);
@@ -146,18 +174,11 @@ function NoticeScreen(): JSX.Element {
             // 清除通知商店中的当前通知
             clearNotification();
         }
-    }, [notification]);
+    }, [notification, saveNotification, clearNotification, t]);
 
     // 刷新通知列表
     const handleRefresh = async (): Promise<void> => {
-        setRefreshing(true);
-        // 这里应有获取最新通知的网络请求
-        // 模拟延迟加载
-        setTimeout(() => {
-            // 更新通知统计
-            updateNotificationStats(notifications);
-            setRefreshing(false);
-        }, 1000);
+        await loadNotifications();
     };
 
     // 更新通知统计信息
@@ -188,6 +209,10 @@ function NoticeScreen(): JSX.Element {
 
         // 如果未读，标记为已读
         if (!item.read) {
+            // 更新本地存储中的通知状态
+            await markNotificationAsRead(item.id);
+
+            // 更新本地状态
             const updatedNotifications = notifications.map(n =>
                 n.id === item.id ? { ...n, read: true } : n
             );
@@ -203,28 +228,15 @@ function NoticeScreen(): JSX.Element {
         setModalVisible(false);
 
         try {
-            const { postId, commentId, userId } = selectedNotification.data;
+            const { postId } = selectedNotification.data;
 
             if (postId) {
-                // 导航到帖子详情
-                const post = await databases.getDocument(
-                    config.databaseId,
-                    config.postColletionId,
-                    postId
-                );
-
+                // 只导航到视频播放页面
                 router.push({
-                    pathname: 'screens/post-details',
+                    pathname: 'screens/play-screen',
                     params: {
-                        post: JSON.stringify(post),
-                        commentId: commentId,
+                        videoId: postId
                     },
-                });
-            } else if (userId) {
-                // 导航到用户资料
-                router.push({
-                    pathname: 'view-user/index',
-                    params: { userId }
                 });
             }
         } catch (error) {
@@ -236,28 +248,71 @@ function NoticeScreen(): JSX.Element {
     // 发送测试通知
     const sendTestNotification = async (): Promise<void> => {
         try {
-            await schedulePushNotification();
+            // 弹出选择通知类型的对话框
             Alert.alert(
-                t('Success'),
-                t('Test notification sent. You should receive it shortly.'),
-                [{ text: t('OK'), onPress: () => console.log('OK Pressed') }]
+                t('Send Test Notification'),
+                t('Choose notification type'),
+                [
+                    {
+                        text: t('Welcome'),
+                        onPress: async () => {
+                            await schedulePushNotification('welcome');
+                            Alert.alert(t('Success'), t('Test notification sent'));
+                        }
+                    },
+                    {
+                        text: t('New Post'),
+                        onPress: async () => {
+                            await schedulePushNotification('post');
+                            Alert.alert(t('Success'), t('Test notification sent'));
+                        }
+                    },
+                    {
+                        text: t('Comment'),
+                        onPress: async () => {
+                            await schedulePushNotification('comment');
+                            Alert.alert(t('Success'), t('Test notification sent'));
+                        }
+                    },
+                    {
+                        text: t('Like'),
+                        onPress: async () => {
+                            await schedulePushNotification('like');
+                            Alert.alert(t('Success'), t('Test notification sent'));
+                        }
+                    },
+                    {
+                        text: t('New Follower'),
+                        onPress: async () => {
+                            await schedulePushNotification('follow');
+                            Alert.alert(t('Success'), t('Test notification sent'));
+                        }
+                    },
+                    {
+                        text: t('Cancel'),
+                        style: 'cancel'
+                    }
+                ]
             );
         } catch (error) {
             Alert.alert(
                 t('Error'),
-                t('Failed to send test notification.'),
-                [{ text: t('OK'), onPress: () => console.log('OK Pressed') }]
+                t('Failed to send test notification'),
+                [{ text: t('OK') }]
             );
             console.error('Failed to send test notification:', error);
         }
     };
 
     // 标记所有通知为已读
-    const markAllAsRead = (): void => {
+    const markAllAsRead = async (): Promise<void> => {
         if (notifications.some(n => !n.read)) {
+            await markAllNotificationsAsRead();
+
             const updatedNotifications = notifications.map(n => ({ ...n, read: true }));
             setNotifications(updatedNotifications);
             updateNotificationStats(updatedNotifications);
+
             Alert.alert(t('Success'), t('All notifications marked as read'));
         }
     };
@@ -272,7 +327,8 @@ function NoticeScreen(): JSX.Element {
                 {
                     text: t('Clear All'),
                     style: 'destructive',
-                    onPress: () => {
+                    onPress: async () => {
+                        await clearAllSavedNotifications();
                         setNotifications([]);
                         updateNotificationStats([]);
                     }

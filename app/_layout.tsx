@@ -3,13 +3,12 @@ import React, { useEffect, useState, useRef } from "react";
 import { router, SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import CombinedProvider from "../context/CombinedProvider";
-import * as Updates from "expo-updates";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
-import { useTranslation } from "react-i18next";
+import { EventSubscription } from "expo-modules-core";
 import useNotificationStore from "../store/notificationStore";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { tokenCache } from "../lib/clerk/auth";
@@ -21,8 +20,8 @@ import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const originalWarn = console.warn;
-console.warn = (message) => {
-    if (message.includes("Clerk")) {
+console.warn = (message: any) => {
+    if (typeof message === 'string' && message.includes("Clerk")) {
         return;
     }
     originalWarn(message);
@@ -47,13 +46,12 @@ Notifications.setNotificationHandler({
     }),
 });
 
-export default function RootLayout() {
-    const [isReady, setIsReady] = useState(false);
+export default function RootLayout(): React.ReactNode {
+    const [isReady, setIsReady] = useState<boolean>(false);
     const { setChannels, setNotification } = useNotificationStore();
-    const notificationListener = useRef();
-    const responseListener = useRef();
+    const notificationListener = useRef<EventSubscription>();
+    const responseListener = useRef<EventSubscription>();
     const setAdminList = useAdminStore((state) => state.setAdminList);
-    const { t } = useTranslation();
 
     // 加载字体
     const [fontsLoaded, fontsError] = useFonts({
@@ -69,7 +67,7 @@ export default function RootLayout() {
     });
 
     useEffect(() => {
-        async function prepare() {
+        async function prepare(): Promise<void> {
             try {
                 // 确保字体已加载
                 if (fontsLoaded && !fontsError) {
@@ -130,12 +128,13 @@ export default function RootLayout() {
                 try {
                     // 检查应用是否已初始化
                     AsyncStorage.getItem('appInitialized').then((initialized) => {
+                        const notificationContent = response.notification.request.content;
                         if (initialized === 'true') {
                             // 应用已初始化，可以安全导航
                             router.push({
                                 pathname: "(drawer)/(tabs)/notice",
                                 params: {
-                                    data: JSON.stringify(response.notification.request.content),
+                                    data: notificationContent ? JSON.stringify(notificationContent) : '',
                                 }
                             });
                         } else {
@@ -145,7 +144,7 @@ export default function RootLayout() {
                                 router.push({
                                     pathname: "(drawer)/(tabs)/notice",
                                     params: {
-                                        data: JSON.stringify(response.notification.request.content),
+                                        data: notificationContent ? JSON.stringify(notificationContent) : '',
                                     }
                                 });
                             }, 1500); // 延长等待时间到1.5秒
@@ -169,12 +168,14 @@ export default function RootLayout() {
     }, []);
 
     useEffect(() => {
-        const addAdminData = async () => {
+        const addAdminData = async (): Promise<void> => {
             await fetchAdminData()
                 .then((data) => {
-                    const adminArray = data.map((doc) => doc.account);
-                    console.log("adminArray:", adminArray);
-                    setAdminList(adminArray);
+                    if (data) {
+                        const adminArray = data.map((doc) => doc.account);
+                        console.log("adminArray:", adminArray);
+                        setAdminList(adminArray);
+                    }
                 })
                 .catch((error) => {
                     console.error("Error fetching admin data:", error);
@@ -219,4 +220,4 @@ export default function RootLayout() {
             <Toast />
         </ClerkProvider>
     );
-}
+} 
