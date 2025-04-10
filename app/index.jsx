@@ -117,11 +117,6 @@ export default function Welcome() {
               Possibilities with{" "}
               <Text className="text-secondary-200">Mars Radio</Text>
             </Text>
-            <Image
-              source={images.path}
-              className="w-[136] h-[15] absolute -bottom-2.5 -right-4"
-              resizeMode="contain"
-            />
           </View>
           <Text className="text-[#808080] text-center mt-6 font-pregular text-sm">
             {t("welcome_description")}
