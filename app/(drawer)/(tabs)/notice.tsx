@@ -104,7 +104,13 @@ function NoticeScreen(): JSX.Element {
                 setSelectedNotification(newNotification);
                 setModalVisible(true);
             } catch (error) {
-                console.error('Failed to parse notification data:', error);
+                console.error('解析通知数据失败:', error);
+                // 添加错误处理，确保应用不会崩溃
+                Alert.alert(
+                    t('Error'),
+                    t('Failed to process notification'),
+                    [{ text: t('OK') }]
+                );
             }
         }
     }, [data]);

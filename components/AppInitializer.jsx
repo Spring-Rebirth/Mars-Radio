@@ -4,6 +4,7 @@ import { useDataManager } from '../hooks/useDataManager';
 import * as Updates from "expo-updates";
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
  * 应用初始化组件
@@ -18,6 +19,24 @@ export default function AppInitializer({ children }) {
 
     // 使用自定义hook处理数据管理
     useDataManager();
+
+    // 设置应用初始化标记
+    useEffect(() => {
+        const markAppInitialized = async () => {
+            try {
+                await AsyncStorage.setItem('appInitialized', 'true');
+                console.log('应用初始化完成标记已设置');
+            } catch (error) {
+                console.error('设置应用初始化标记失败:', error);
+            }
+        };
+
+        markAppInitialized();
+
+        return () => {
+            // 清理函数
+        };
+    }, []);
 
     // 检查更新的逻辑单独放在一个useEffect中
     useEffect(() => {

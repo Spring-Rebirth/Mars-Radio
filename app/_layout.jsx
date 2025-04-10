@@ -126,14 +126,36 @@ export default function RootLayout() {
         responseListener.current =
             Notifications.addNotificationResponseReceivedListener((response) => {
                 console.log(response);
-                setTimeout(() => {
-                    router.push({
-                        pathname: "/(tabs)/notice-screen",
-                        params: {
-                            data: JSON.stringify(response.notification.request.content),
-                        },
+                // 不使用setTimeout，避免时机问题
+                try {
+                    // 检查应用是否已初始化
+                    AsyncStorage.getItem('appInitialized').then((initialized) => {
+                        if (initialized === 'true') {
+                            // 应用已初始化，可以安全导航
+                            router.push({
+                                pathname: "(drawer)/(tabs)/notice",
+                                params: {
+                                    data: JSON.stringify(response.notification.request.content),
+                                }
+                            });
+                        } else {
+                            // 应用未初始化，延迟导航
+                            console.log("应用未初始化，延迟通知处理");
+                            setTimeout(() => {
+                                router.push({
+                                    pathname: "(drawer)/(tabs)/notice",
+                                    params: {
+                                        data: JSON.stringify(response.notification.request.content),
+                                    }
+                                });
+                            }, 1500); // 延长等待时间到1.5秒
+                        }
+                    }).catch(error => {
+                        console.error("检查应用初始化状态失败:", error);
                     });
-                }, 500); // 延迟 500 毫秒后跳转
+                } catch (error) {
+                    console.error("通知导航错误:", error);
+                }
             });
 
         return () => {
