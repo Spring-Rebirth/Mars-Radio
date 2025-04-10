@@ -21,7 +21,8 @@
       "buildNumber": "5.2.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "bundleIdentifier": "com.mystseed.marsx"
     },
     "android": {
       "adaptiveIcon": {
