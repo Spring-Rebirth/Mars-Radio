@@ -35,7 +35,6 @@ export default function PlayScreen() {
     const { $id: userId, avatar, username } = user;
     const router = useRouter();
     const insets = useSafeAreaInsets();
-    const [safeAreaInsets, setSafeAreaInsets] = useState({ top: insets.top, bottom: insets.bottom });
     const { fullscreen, setFullscreen, toggleFullscreen } = useScreenOrientation();
     const [refreshFlag, setRefreshFlag] = useState(false);
 
@@ -167,7 +166,7 @@ export default function PlayScreen() {
                 fullscreen={fullscreen}
                 setFullscreen={setFullscreen}
                 toggleFullscreen={toggleFullscreen}
-                safeAreaInset={safeAreaInsets.top}
+                safeAreaInset={insets.top}
             />
         </View>
     ) : (
@@ -182,7 +181,7 @@ export default function PlayScreen() {
                     fullscreen={fullscreen}
                     setFullscreen={setFullscreen}
                     toggleFullscreen={toggleFullscreen}
-                    safeAreaInset={safeAreaInsets.top}
+                    safeAreaInset={insets.top}
                 />
 
                 <View className="flex-1">
