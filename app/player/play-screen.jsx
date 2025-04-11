@@ -36,6 +36,15 @@ export default function PlayScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [safeAreaInsets, setSafeAreaInsets] = useState({ top: insets.top, bottom: insets.bottom });
+    const { fullscreen, setFullscreen, toggleFullscreen } = useScreenOrientation();
+    const [refreshFlag, setRefreshFlag] = useState(false);
+
+    // 创建视频播放器实例 - 移到顶部
+    const videoPlayer = useVideoPlayer(videoData?.video || '', player => {
+        if (player && videoData?.video) {
+            player.play();
+        }
+    });
 
     // 加载视频数据
     useEffect(() => {
@@ -86,6 +95,35 @@ export default function PlayScreen() {
         fetchVideoData();
     }, [post, videoId]);
 
+    // 确保只在 videoData 存在且有效时才获取评论
+    const currentVideoId = videoData?.$id || null;
+    const [commentsDoc, setCommentsDoc] = useComments(currentVideoId, refreshFlag);
+
+    const onCommentSubmitted = (newComment) => {
+        setCommentsDoc((prevComments) => [newComment, ...prevComments]);
+    };
+
+    // 将 memoizedCommentView 也移到条件渲染之前
+    const memoizedCommentView = useMemo(() => {
+        // 只有当 videoData 存在时才渲染评论列表
+        if (!videoData) return null;
+
+        return (
+            <CommentList
+                userId={userId}
+                videoId={videoData.$id}
+                submitReply={submitReply}
+                commentsDoc={commentsDoc}
+                videoCreator={videoData.creator}
+                fetchReplies={fetchReplies}
+                setRefreshFlag={setRefreshFlag}
+                fetchCommentUser={fetchCommentUser}
+                fetchUsername={fetchCommentUsername}
+                scrollToComment={commentId}
+            />
+        );
+    }, [userId, videoData, commentId, commentsDoc, fetchReplies, submitReply]);
+
     // 如果视频数据未加载且不是因为视频无效，显示加载状态
     // 如果是因为视频无效，返回一个简单的提示界面
     if (!videoData) {
@@ -120,41 +158,7 @@ export default function PlayScreen() {
         return null;
     }
 
-    const parsedVideoUrl = videoData.video;
-    const targetCommentId = commentId;
-    const currentVideoId = videoData.$id;
     const videoCreator = videoData.creator;
-
-    // 创建视频播放器实例
-    const videoPlayer = useVideoPlayer(parsedVideoUrl, player => {
-        // 初始化播放器
-        player.play();
-    });
-
-    const { fullscreen, setFullscreen, toggleFullscreen } = useScreenOrientation();
-    const [refreshFlag, setRefreshFlag] = useState(false);
-    const [commentsDoc, setCommentsDoc] = useComments(currentVideoId, refreshFlag);
-
-    const onCommentSubmitted = (newComment) => {
-        setCommentsDoc((prevComments) => [newComment, ...prevComments]);
-    };
-
-    const memoizedCommentView = useMemo(() => {
-        return (
-            <CommentList
-                userId={userId}
-                videoId={currentVideoId}
-                submitReply={submitReply}
-                commentsDoc={commentsDoc}
-                videoCreator={videoCreator}
-                fetchReplies={fetchReplies}
-                setRefreshFlag={setRefreshFlag}
-                fetchCommentUser={fetchCommentUser}
-                fetchUsername={fetchCommentUsername}
-                scrollToComment={targetCommentId} // 传递用于滚动的评论ID
-            />
-        );
-    }, [userId, currentVideoId, avatar, username, commentsDoc, fetchReplies, submitReply, targetCommentId]);
 
     return fullscreen ? (
         <View style={[styles.container, { backgroundColor: fullscreen ? "black" : "#F5F5F5" }]}>
@@ -172,21 +176,6 @@ export default function PlayScreen() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             keyboardVerticalOffset={0}
         >
-            <TouchableOpacity
-                style={{
-                    position: 'absolute',
-                    top: safeAreaInsets.top + 10,
-                    left: 10,
-                    zIndex: 10,
-                    padding: 5,
-                    backgroundColor: 'rgba(0,0,0,0.3)',
-                    borderRadius: 20
-                }}
-                onPress={() => router.back()}
-            >
-                <Ionicons name="arrow-back" size={28} color="#fff" />
-            </TouchableOpacity>
-
             <ScrollView style={[styles.container, { backgroundColor: fullscreen ? "black" : "#F5F5F5" }]}>
                 <VideoPlayer
                     videoPlayer={videoPlayer}

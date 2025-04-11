@@ -3,6 +3,12 @@ import { ID, Query } from 'react-native-appwrite';
 
 export const fetchCommentsData = async (videoId) => {
   try {
+    // 如果 videoId 不存在，直接返回空数组
+    if (!videoId) {
+      console.log('No videoId provided, returning empty comments array');
+      return [];
+    }
+
     const result = await databases.listDocuments(
       config.databaseId,
       config.commentsCollectionId,
