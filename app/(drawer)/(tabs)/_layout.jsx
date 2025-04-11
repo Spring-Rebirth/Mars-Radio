@@ -7,6 +7,7 @@ import { useEffect, useCallback } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTabContext } from "../../../context/GlobalProvider";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 function TabIcon({ name, icon, color, focused }) {
   const { width, height } = useWindowDimensions();
@@ -68,133 +69,135 @@ export default function TabsLayout() {
   }, [pathname, triggerTabPress]);
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: "#FFA001",
-        tabBarInactiveTintColor: "#B0B0B0",
-        tabBarHideOnKeyboard: true,
-        tabBarStyle: {
-          backgroundColor: "#F5F5F5",
-          borderTopWidth: 0,
-          height: 60 + insets.bottom,
-          paddingBottom: insets.bottom,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: t("Home"),
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={t("Home")}
-              icon={icons.home}
-              color={color}
-              focused={focused}
-            />
-          ),
-          tabBarButton: (props) => (
-            <TouchableWithoutFeedback
-              {...props}
-              onPress={() => {
-                props.onPress();
-                handleTabPress('home');
-              }}
-            >
-              <View {...props} />
-            </TouchableWithoutFeedback>
-          ),
+    <BottomSheetModalProvider>
+      <Tabs
+        screenOptions={{
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: "#FFA001",
+          tabBarInactiveTintColor: "#B0B0B0",
+          tabBarHideOnKeyboard: true,
+          tabBarStyle: {
+            backgroundColor: "#F5F5F5",
+            borderTopWidth: 0,
+            height: 60 + insets.bottom,
+            paddingBottom: insets.bottom,
+          },
         }}
-      />
-      <Tabs.Screen
-        name="posts"
-        options={{
-          title: t("Posts"),
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={t("Posts")}
-              icon={require("../../../assets/icons/post/post-icon.png")}
-              color={color}
-              focused={focused}
-            />
-          ),
-          tabBarButton: (props) => (
-            <TouchableWithoutFeedback
-              {...props}
-              onPress={() => {
-                props.onPress();
-                handleTabPress('posts');
-              }}
-            >
-              <View {...props} />
-            </TouchableWithoutFeedback>
-          ),
-        }}
-      />
+      >
+        <Tabs.Screen
+          name="home"
+          options={{
+            title: t("Home"),
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                name={t("Home")}
+                icon={icons.home}
+                color={color}
+                focused={focused}
+              />
+            ),
+            tabBarButton: (props) => (
+              <TouchableWithoutFeedback
+                {...props}
+                onPress={() => {
+                  props.onPress();
+                  handleTabPress('home');
+                }}
+              >
+                <View {...props} />
+              </TouchableWithoutFeedback>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="posts"
+          options={{
+            title: t("Posts"),
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                name={t("Posts")}
+                icon={require("../../../assets/icons/post/post-icon.png")}
+                color={color}
+                focused={focused}
+              />
+            ),
+            tabBarButton: (props) => (
+              <TouchableWithoutFeedback
+                {...props}
+                onPress={() => {
+                  props.onPress();
+                  handleTabPress('posts');
+                }}
+              >
+                <View {...props} />
+              </TouchableWithoutFeedback>
+            ),
+          }}
+        />
 
-      <Tabs.Screen
-        name="create"
-        options={{
-          title: t("Create"),
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={t("Create")}
-              icon={icons.plus}
-              color={color}
-              focused={focused}
-            />
-          ),
-          tabBarButton: (props) => (
-            <TouchableWithoutFeedback {...props}>
-              <View {...props} />
-            </TouchableWithoutFeedback>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="notice"
-        options={{
-          title: t("Notice"),
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={t("Notice")}
-              icon={require("../../../assets/menu/notify.png")}
-              color={color}
-              focused={focused}
-            />
-          ),
-          tabBarButton: (props) => (
-            <TouchableWithoutFeedback {...props}>
-              <View {...props} />
-            </TouchableWithoutFeedback>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: t("Profile"),
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={t("Profile")}
-              icon={icons.profile}
-              color={color}
-              focused={focused}
-            />
-          ),
-          tabBarButton: (props) => (
-            <TouchableWithoutFeedback {...props}>
-              <View {...props} />
-            </TouchableWithoutFeedback>
-          ),
-        }}
-      />
-    </Tabs>
+        <Tabs.Screen
+          name="create"
+          options={{
+            title: t("Create"),
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                name={t("Create")}
+                icon={icons.plus}
+                color={color}
+                focused={focused}
+              />
+            ),
+            tabBarButton: (props) => (
+              <TouchableWithoutFeedback {...props}>
+                <View {...props} />
+              </TouchableWithoutFeedback>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="notice"
+          options={{
+            title: t("Notice"),
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                name={t("Notice")}
+                icon={require("../../../assets/menu/notify.png")}
+                color={color}
+                focused={focused}
+              />
+            ),
+            tabBarButton: (props) => (
+              <TouchableWithoutFeedback {...props}>
+                <View {...props} />
+              </TouchableWithoutFeedback>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: t("Profile"),
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                name={t("Profile")}
+                icon={icons.profile}
+                color={color}
+                focused={focused}
+              />
+            ),
+            tabBarButton: (props) => (
+              <TouchableWithoutFeedback {...props}>
+                <View {...props} />
+              </TouchableWithoutFeedback>
+            ),
+          }}
+        />
+      </Tabs>
+    </BottomSheetModalProvider>
   );
 }

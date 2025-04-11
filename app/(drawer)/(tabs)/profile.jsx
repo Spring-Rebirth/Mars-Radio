@@ -25,7 +25,7 @@ import UserTab from "../../../components/UserTab";
 import SavedTab from "../../../components/SavedTab";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetView, BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import Toast from "react-native-toast-message";
 import {
   updateSavedCounts,
@@ -46,6 +46,7 @@ const { width } = Dimensions.get('window');
 
 export default function Profile() {
   const insetTop = useSafeAreaInsets().top;
+  const insetBottom = useSafeAreaInsets().bottom;
   const [userPostsData, setUserPostsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { fetchUserPosts } = useGetData({ setLoading, setUserPostsData });
@@ -55,7 +56,7 @@ export default function Profile() {
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const navigation = useNavigation();
 
-  const bottomSheetRef = useRef(null);
+  const bottomSheetModalRef = useRef(null);
   const [showControlMenu, setShowControlMenu] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
@@ -76,9 +77,9 @@ export default function Profile() {
 
   useEffect(() => {
     if (showControlMenu) {
-      bottomSheetRef.current?.expand();
+      bottomSheetModalRef.current?.present();
     } else {
-      setTimeout(() => bottomSheetRef.current?.close(), 50);
+      setTimeout(() => bottomSheetModalRef.current?.dismiss(), 50);
     }
   }, [showControlMenu]);
 
@@ -324,59 +325,46 @@ export default function Profile() {
         </View>
       </Animated.View>
 
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={[275]}
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={[220]}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
         handleIndicatorStyle={{ backgroundColor: '#999' }}
         backgroundStyle={{ backgroundColor: 'white' }}
-        onClose={() => setShowControlMenu(false)}
+        onDismiss={() => setShowControlMenu(false)}
       >
-        <BottomSheetView>
-          <View className="relative bg-white w-full h-auto rounded-md z-10 px-6 py-0 space-y-1 mx-auto">
+        <BottomSheetView style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24 + insetBottom }}>
+          <Pressable
+            onPress={handleClickSave}
+            className="w-full h-12 flex-row items-center mb-2"
+          >
+            <Image
+              source={isSaved ? star : starThree}
+              className="w-6 h-6 mr-6"
+              resizeMode="contain"
+            />
+            <Text className="text-[#333333] text-lg font-pmedium">
+              {isSaved ? t("Cancel save video") : t("Save video")}
+            </Text>
+          </Pressable>
+
+          {menuSourceTab === 'user' && (
             <Pressable
-              onPress={() => setShowControlMenu(false)}
-              className="z-20 items-end"
+              onPress={handleDelete}
+              className="w-full h-12 flex-row items-center"
             >
               <Image
-                source={closeIcon}
-                className="w-6 h-6"
+                source={trash}
+                className="w-6 h-6 mr-6"
                 resizeMode="contain"
               />
+              <Text className="text-red-500 text-lg font-pmedium">{t("Delete video")}</Text>
             </Pressable>
-
-            <Pressable
-              onPress={handleClickSave}
-              className="w-full h-12 flex-row items-center mt-6"
-            >
-              <Image
-                source={isSaved ? star : starThree}
-                className="w-6 h-6 mr-8"
-                resizeMode="contain"
-              />
-              <Text className="text-[#333333] text-lg">
-                {isSaved ? t("Cancel save video") : t("Save video")}
-              </Text>
-            </Pressable>
-
-            {menuSourceTab === 'user' && (
-              <Pressable
-                onPress={handleDelete}
-                className="w-full h-12 flex-row items-center"
-              >
-                <Image
-                  source={trash}
-                  className="w-6 h-6 mr-8"
-                  resizeMode="contain"
-                />
-                <Text className="text-black text-lg">{t("Delete video")}</Text>
-              </Pressable>
-            )}
-          </View>
+          )}
         </BottomSheetView>
-      </BottomSheet>
+      </BottomSheetModal>
 
       <ImageModal
         isVisible={isImageModalVisible}

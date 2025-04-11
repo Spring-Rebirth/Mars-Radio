@@ -28,7 +28,7 @@ import { fetchAdminData } from "../../../lib/appwrite";
 import VideoLoadingSkeleton from "../../../components/loading-view/VideoLoadingSkeleton";
 import { router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetView, BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { deleteVideoDoc, deleteVideoFiles } from "../../../lib/appwrite";
 import { updateSavedCounts, getVideoDetails } from "../../../lib/appwrite";
@@ -45,10 +45,11 @@ const TopTab = createMaterialTopTabNavigator();
 export default function Home() {
     const { t } = useTranslation();
     const navigation = useNavigation();
-    const bottomSheetRef = useRef(null);
+    const bottomSheetModalRef = useRef(null);
     const flatListRef = useRef(null);
     const [showControlMenu, setShowControlMenu] = useState(false);
     const insetTop = useSafeAreaInsets().top;
+    const insetBottom = useSafeAreaInsets().bottom;
     const { user, setUser } = useGlobalContext();
     const { tabEvents } = useTabContext();
     const [data, setData] = useState([]);
@@ -68,6 +69,16 @@ export default function Home() {
     const [isInitialLatestLoading, setIsInitialLatestLoading] = useState(true);
     const setHomeActiveTabIndex = useFocusStatusStore(state => state.setHomeActiveTabIndex);
     const limit = 10;
+
+    // 处理底部弹出菜单
+    const handlePresentModalPress = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
+
+    // 处理底部弹出菜单关闭
+    const handleDismissModalPress = useCallback(() => {
+        bottomSheetModalRef.current?.dismiss();
+    }, []);
 
     // Define the backdrop component using useCallback
     const renderBackdrop = useCallback(
@@ -216,19 +227,19 @@ export default function Home() {
     // Handle Bottom Sheet visibility
     useEffect(() => {
         if (showControlMenu) {
-            bottomSheetRef.current?.expand();
+            handlePresentModalPress();
         } else {
-            bottomSheetRef.current?.close();
+            handleDismissModalPress();
         }
-    }, [showControlMenu]);
+    }, [showControlMenu, handlePresentModalPress, handleDismissModalPress]);
 
     // Close bottom sheet on screen blur
     useFocusEffect(
         React.useCallback(() => {
             return () => {
-                bottomSheetRef.current?.close();
+                handleDismissModalPress();
             };
-        }, [])
+        }, [handleDismissModalPress])
     );
 
     // Refresh Handler
@@ -620,17 +631,17 @@ export default function Home() {
             </View>
 
             {/* Video Control Bottom Sheet */}
-            <BottomSheet
-                ref={bottomSheetRef}
-                index={-1}
+            <BottomSheetModal
+                ref={bottomSheetModalRef}
+                index={0}
                 snapPoints={[isVideoCreator || admin ? 220 : 160]}
                 enablePanDownToClose={true}
                 backdropComponent={renderBackdrop}
                 handleIndicatorStyle={{ backgroundColor: '#999' }}
                 backgroundStyle={{ backgroundColor: 'white' }}
-                onClose={() => setShowControlMenu(false)}
+                onDismiss={() => setShowControlMenu(false)}
             >
-                <BottomSheetView style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24 }}>
+                <BottomSheetView style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24 + insetBottom }}>
                     <Pressable
                         onPress={handleClickSave}
                         className="w-full h-12 flex-row items-center mb-2"
@@ -659,7 +670,7 @@ export default function Home() {
                         </Pressable>
                     )}
                 </BottomSheetView>
-            </BottomSheet>
+            </BottomSheetModal>
 
             <StatusBar style="dark" />
         </GestureHandlerRootView>
