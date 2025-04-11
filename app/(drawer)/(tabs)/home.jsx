@@ -54,7 +54,8 @@ export default function Home() {
     const { tabEvents } = useTabContext();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
+    const [refreshingLatest, setRefreshingLatest] = useState(false);
+    const [refreshingPopular, setRefreshingPopular] = useState(false);
     const [adminList, setAdminList] = useState([]);
     const [isVideoCreator, setIsVideoCreator] = useState(false);
     const [popularData, setPopularData] = useState([]);
@@ -242,65 +243,76 @@ export default function Home() {
         }, [handleDismissModalPress])
     );
 
-    // Refresh Handler
-    const handleRefresh = async () => {
-        setRefreshing(true);
+    // Refresh Handler for Latest Videos
+    const handleRefreshLatest = async () => {
+        setRefreshingLatest(true);
         setCursor(null); // Reset cursor for latest posts
         setHasMore(true); // Reset hasMore for latest posts
         setIsInitialLatestLoading(true); // Mark latest as loading during refresh
 
         try {
-            const promises = [];
+            // Fetch Latest Posts (Page 1)
+            try {
+                const refreshedPosts = await getPostsWithPagination(null, limit);
+                const imageUrls = refreshedPosts.map(post => post.thumbnail).filter(url => url);
+                await Promise.all(imageUrls.map(url => Image.prefetch(url)));
+                setData(refreshedPosts); // Replace data
+                if (refreshedPosts.length < limit) {
+                    setHasMore(false);
+                } else {
+                    const lastPost = refreshedPosts[refreshedPosts.length - 1];
+                    setCursor(lastPost.$id);
+                    setHasMore(true);
+                }
+                setIsInitialLatestLoading(false); // Mark as done *after* setting data/hasMore
+            } catch (error) {
+                console.error('Refresh loadPosts failed:', error);
+                setData([]);
+                setHasMore(false);
+                setIsInitialLatestLoading(false); // Mark as done even on error
+            }
+        } catch (error) {
+            console.error("Error during refresh latest:", error);
+        } finally {
+            setRefreshingLatest(false); // Stop refresh indicator
+        }
+    };
 
-            // 1. Fetch Latest Posts (Page 1)
-            promises.push(
-                (async () => {
-                    try {
-                        const refreshedPosts = await getPostsWithPagination(null, limit);
-                        const imageUrls = refreshedPosts.map(post => post.thumbnail).filter(url => url);
-                        await Promise.all(imageUrls.map(url => Image.prefetch(url)));
-                        setData(refreshedPosts); // Replace data
-                        if (refreshedPosts.length < limit) {
-                            setHasMore(false);
-                        } else {
-                            const lastPost = refreshedPosts[refreshedPosts.length - 1];
-                            setCursor(lastPost.$id);
-                            setHasMore(true);
-                        }
-                        setIsInitialLatestLoading(false); // Mark as done *after* setting data/hasMore
-                    } catch (error) {
-                        console.error('Refresh loadPosts failed:', error);
-                        setData([]);
-                        setHasMore(false);
-                        setIsInitialLatestLoading(false); // Mark as done even on error
-                    }
-                })()
-            );
-
-            // 2. Fetch Popular Posts
+    // Refresh Handler for Popular Videos
+    const handleRefreshPopular = async () => {
+        setRefreshingPopular(true);
+        try {
             if (user?.$id) { // Check user context again for refresh
-                promises.push(
-                    (async () => {
-                        try {
-                            const popular = await getPopularPosts();
-                            setPopularData(popular || []);
-                        } catch (error) {
-                            console.error("Error refreshing popular posts:", error);
-                            setPopularData([]);
-                        }
-                    })()
-                );
+                try {
+                    const popular = await getPopularPosts();
+                    setPopularData(popular || []);
+                } catch (error) {
+                    console.error("Error refreshing popular posts:", error);
+                    setPopularData([]);
+                }
             } else {
                 setPopularData([]); // Clear popular if user logs out during session
             }
-
-
-            await Promise.all(promises); // Wait for all refresh fetches
-
         } catch (error) {
-            console.error("Error during refresh:", error);
+            console.error("Error during refresh popular:", error);
         } finally {
-            setRefreshing(false); // Stop refresh indicator
+            setRefreshingPopular(false); // Stop refresh indicator
+        }
+    };
+
+    // Complete Refresh Handler (for cases like after deletion)
+    const handleRefresh = async () => {
+        setRefreshingLatest(true);
+        setRefreshingPopular(true);
+        // Run both refresh methods sequentially
+        try {
+            await handleRefreshLatest();
+            await handleRefreshPopular();
+        } catch (error) {
+            console.error("Error during complete refresh:", error);
+        } finally {
+            setRefreshingLatest(false);
+            setRefreshingPopular(false);
         }
     };
 
@@ -542,11 +554,11 @@ export default function Home() {
                                         <View className="flex-1">
                                             <Trending
                                                 video={popularData}
-                                                loading={refreshing}
+                                                loading={refreshingPopular}
                                                 refreshControl={
                                                     <RefreshControl
-                                                        refreshing={refreshing}
-                                                        onRefresh={handleRefresh}
+                                                        refreshing={refreshingPopular}
+                                                        onRefresh={handleRefreshPopular}
                                                         colors={["#FFB300"]}
                                                     />
                                                 }
@@ -596,7 +608,7 @@ export default function Home() {
                                             )}
                                             ListEmptyComponent={null}
                                             refreshControl={
-                                                <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#FFB300"]} />
+                                                <RefreshControl refreshing={refreshingLatest} onRefresh={handleRefreshLatest} colors={["#FFB300"]} />
                                             }
                                             onEndReached={loadMorePosts}
                                             onEndReachedThreshold={0.5}
