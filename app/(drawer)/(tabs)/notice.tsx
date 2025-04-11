@@ -1,8 +1,6 @@
 import { schedulePushNotification } from '../../../functions/notifications';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { config as postConfig, databases } from '../../../services/postsService';
-import { config } from '../../../lib/appwrite';
 import { useTranslation } from 'react-i18next';
 import {
     Text,
@@ -13,7 +11,6 @@ import {
     Animated,
     RefreshControl,
     Alert,
-    ScrollView,
     ListRenderItem
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -60,7 +57,8 @@ function NoticeScreen(): JSX.Element {
         saveNotification,
         markNotificationAsRead,
         markAllNotificationsAsRead,
-        clearAllSavedNotifications
+        clearAllSavedNotifications,
+        deleteNotification
     } = useNotificationStore();
 
     // 加载动画
@@ -354,12 +352,31 @@ function NoticeScreen(): JSX.Element {
         return date.toLocaleDateString();
     };
 
+    // 删除单个通知
+    const handleDeleteNotification = async (id: string): Promise<void> => {
+        try {
+            // 从通知列表中移除
+            const updatedNotifications = notifications.filter(n => n.id !== id);
+            setNotifications(updatedNotifications);
+            updateNotificationStats(updatedNotifications);
+
+            // 从存储中删除
+            await useNotificationStore.getState().deleteNotification(id);
+
+            Alert.alert(t('Success'), t('Notification deleted'));
+        } catch (error) {
+            console.error('删除通知失败:', error);
+            Alert.alert(t('Error'), t('Failed to delete notification'));
+        }
+    };
+
     // 渲染单个通知项
     const renderNotificationItem: ListRenderItem<NotificationItem> = ({ item }) => (
         <NotificationItemComponent
             item={item}
             onPress={handleNoticePress}
             formatTime={formatTime}
+            onDelete={handleDeleteNotification}
         />
     );
 

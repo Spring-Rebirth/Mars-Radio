@@ -137,6 +137,32 @@ const useNotificationStore = create((set, get) => ({
     }
   },
 
+  // 删除单个通知
+  deleteNotification: async (notificationId) => {
+    try {
+      const { savedNotifications } = get();
+
+      // 过滤出不包含要删除id的通知列表
+      const updatedNotifications = savedNotifications.filter(
+        notification => notification.id !== notificationId
+      );
+
+      // 更新状态
+      set({ savedNotifications: updatedNotifications });
+
+      // 更新存储
+      await AsyncStorage.setItem(
+        NOTIFICATIONS_STORAGE_KEY,
+        JSON.stringify(updatedNotifications)
+      );
+
+      return true;
+    } catch (error) {
+      console.error('删除通知失败:', error);
+      return false;
+    }
+  },
+
   // 重置所有状态
   reset: () => set({
     channels: [],
