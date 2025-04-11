@@ -368,7 +368,7 @@ function NoticeScreen(): JSX.Element {
             className="bg-primary h-full"
             style={{ marginTop: insetTop }}
         >
-            <Animated.View style={{ opacity: fadeAnim }}>
+            <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
                 {/* 页面顶部 */}
                 <LinearGradient
                     colors={['#FF9800', '#FFA726', '#FFB74D']}
@@ -440,37 +440,40 @@ function NoticeScreen(): JSX.Element {
                 </LinearGradient>
 
                 {/* 通知列表 */}
-                <FlatList<NotificationItem>
-                    data={notifications}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderNotificationItem}
-                    contentContainerStyle={{ padding: 16 }}
-                    showsVerticalScrollIndicator={false}
-                    directionalLockEnabled={true}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={handleRefresh}
-                            colors={['#FFA726']}
-                            tintColor={'#FFA726'}
-                        />
-                    }
-                    ListEmptyComponent={() => (
-                        <View className="items-center justify-center mt-10">
-                            <Image
-                                source={images.empty}
-                                className="w-[200px] h-[150px]"
-                                resizeMode="contain"
+                <View style={{ flex: 1, backgroundColor: 'white' }}>
+                    <FlatList<NotificationItem>
+                        data={notifications}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderNotificationItem}
+                        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16, flexGrow: 1 }}
+                        showsVerticalScrollIndicator={false}
+                        directionalLockEnabled={true}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                                colors={['#FFA726']}
+                                tintColor={'#FFA726'}
+                                progressViewOffset={10}
                             />
-                            <Text className="mt-4 text-gray-500 font-psemibold text-base text-center">
-                                {t("No Notifications Yet")}
-                            </Text>
-                            <Text className="mt-2 text-gray-400 text-sm text-center">
-                                {t("We'll notify you when something important happens")}
-                            </Text>
-                        </View>
-                    )}
-                />
+                        }
+                        ListEmptyComponent={() => (
+                            <View className="items-center justify-center mt-10">
+                                <Image
+                                    source={images.empty}
+                                    className="w-[200px] h-[150px]"
+                                    resizeMode="contain"
+                                />
+                                <Text className="mt-4 text-gray-500 font-psemibold text-base text-center">
+                                    {t("No Notifications Yet")}
+                                </Text>
+                                <Text className="mt-2 text-gray-400 text-sm text-center">
+                                    {t("We'll notify you when something important happens")}
+                                </Text>
+                            </View>
+                        )}
+                    />
+                </View>
 
                 {/* 通知详情模态框 */}
                 <NotificationModal
@@ -485,4 +488,4 @@ function NoticeScreen(): JSX.Element {
     );
 }
 
-export default NoticeScreen; 
+export default NoticeScreen;
