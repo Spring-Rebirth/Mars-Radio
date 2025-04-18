@@ -40,6 +40,8 @@ import { getPostsWithPagination, getPopularPosts } from "../../../lib/appwrite";
 import icons from "../../../constants/icons";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import useFocusStatusStore from "../../../store/focusStatusStore";
+import { Ionicons } from "@expo/vector-icons";
+import ImageModal from "../../../components/modal/ImageModal";
 const TopTab = createMaterialTopTabNavigator();
 
 export default function Home() {
@@ -62,7 +64,7 @@ export default function Home() {
     let admin = adminList?.includes(user?.email);
     const [selectedVideoId, setSelectedVideoId] = useState(null);
     const [isSaved, setIsSaved] = useState(false);
-    const [showSearch, setShowSearch] = useState(false);
+    const [isSupportModalVisible, setIsSupportModalVisible] = useState(false);
     const searchAnimatedValue = useRef(new Animated.Value(0)).current;
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -437,16 +439,8 @@ export default function Home() {
         }
     };
 
-    // Toggle Search Bar Animation
-    const toggleSearchBar = () => {
-        const toValue = showSearch ? 0 : 1;
-        Animated.spring(searchAnimatedValue, {
-            toValue,
-            useNativeDriver: false,
-            friction: 8,
-            tension: 40
-        }).start();
-        setShowSearch(!showSearch);
+    const handleToggleSupportModal = () => {
+        setIsSupportModalVisible(!isSupportModalVisible);
     };
 
     return (
@@ -485,32 +479,16 @@ export default function Home() {
                             resizeMode="contain"
                         />
 
-                        {/* Right Search Button */}
+                        {/* Right Support Button */}
                         <TouchableOpacity
-                            onPress={toggleSearchBar}
+                            onPress={handleToggleSupportModal}
                             className="w-10 h-10 bg-white rounded-full justify-center items-center"
                             style={{ /* Shadow styles */ }}
                         >
-                            <Image
-                                source={icons.search}
-                                className="w-5 h-5"
-                                resizeMode="contain"
-                            />
+                            {/* 爱心图标 */}
+                            <Ionicons name="heart-outline" size={24} color="black" />
                         </TouchableOpacity>
                     </View>
-
-                    {/* Animated Search Bar */}
-                    <Animated.View
-                        style={{
-                            maxHeight: searchAnimatedValue.interpolate({ inputRange: [0, 1], outputRange: [0, 80] }),
-                            opacity: searchAnimatedValue,
-                            transform: [{ translateY: searchAnimatedValue.interpolate({ inputRange: [0, 1], outputRange: [-10, 0] }) }],
-                            marginTop: 8,
-                            overflow: 'hidden'
-                        }}
-                    >
-                        <SearchInput containerStyle="shadow-sm" />
-                    </Animated.View>
                 </View>
 
                 {/* Content Area - Conditional Rendering based on initial load */}
@@ -683,6 +661,12 @@ export default function Home() {
                     )}
                 </BottomSheetView>
             </BottomSheetModal>
+
+            <ImageModal
+                isVisible={isSupportModalVisible}
+                imageSource={require("../../../assets/images/ali-pay.jpg")}
+                setIsVisible={setIsSupportModalVisible}
+            />
 
             <StatusBar style="dark" />
         </GestureHandlerRootView>

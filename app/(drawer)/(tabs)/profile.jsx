@@ -366,12 +366,6 @@ export default function Profile() {
         </BottomSheetView>
       </BottomSheetModal>
 
-      <ImageModal
-        isVisible={isImageModalVisible}
-        imageSource={require("../../../assets/images/ali-pay.jpg")}
-        setIsVisible={setIsImageModalVisible}
-      />
-
       <StatusBar style="dark" />
     </GestureHandlerRootView>
   );
