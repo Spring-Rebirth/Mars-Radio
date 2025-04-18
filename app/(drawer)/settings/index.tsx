@@ -184,7 +184,7 @@ export default function Settings() {
                     <SettingItem
                         icon="information-circle-outline"
                         title={t('About App')}
-                        subtitle={t('Version 5.6.0')}
+                        subtitle={t('Version 6.1.0')}
                         onPress={() => Alert.alert(t('About App'), t('Mars Radio - Your Galactic Audio Platform'))}
                     />
 
