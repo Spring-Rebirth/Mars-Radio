@@ -1,9 +1,7 @@
 // cSpell:words appwrite psemibold
 import { useState } from 'react'
-import { View, Text, Image, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, Image, TouchableOpacity, ScrollView, Alert, ActivityIndicator, TextInput } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import CustomForm from '../../../components/CustomForm'
-import CustomButton from '../../../components/CustomButton'
 import { icons } from '../../../constants'
 import { usePickFile } from '../../../hooks/usePickFile'
 
@@ -22,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import Toast from 'react-native-root-toast';
 import VideoPlayButton from '../../../components/VideoPlayButton';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons'
 
 export default function Create() {
   const insetTop = useSafeAreaInsets().top;
@@ -207,39 +206,82 @@ export default function Create() {
     <View className='bg-primary h-full px-4 ' style={{ marginTop: insetTop }}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* Upload Video */}
-        <View className='flex-row justify-between items-center mt-10 h-[60px]'>
-          <Text className='text-black text-2xl font-psemibold'>{t("Upload Video")}</Text>
-          <Image
-            source={images.logoSmall}
-            className='w-9 h-10'
-            resizeMode='contain'
-          />
-        </View>
-
-        <CustomForm
-          title={t('Title')}
-          handleChangeText={(text) => setForm({ ...form, title: text })}
-          value={form.title}
-          placeholder={t('Catchy titles get more clicks !')}
-        />
-
-        {/* Upload Video */}
-        <Text className='text-[#808080] mt-5 text-lg'>{t('Video')}</Text>
-        {/* TODO：视频存在则显示视频 */}
-        {!isVideoSelected ? (
-          <TouchableOpacity onPress={handlePickVideo}>
-            <View className='w-full h-44 bg-[#D9D9D9] rounded-2xl mt-2 justify-center items-center'>
-              <View className='w-14 h-14 border border-dashed border-secondary-100
-                               justify-center items-center'>
+        <View className='relative mb-1'>
+          <LinearGradient
+            colors={['#3498db', '#8e44ad']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            className='h-[80px] rounded-2xl justify-center px-5 mt-5'
+          >
+            <View className='flex-row justify-between items-center'>
+              <Text className='text-white text-2xl font-psemibold'>{t("Upload Video")}</Text>
+              <View className='bg-white/20 p-2 rounded-full'>
                 <Image
-                  source={icons.upload}
-                  className='w-1/2 h-1/2'
+                  source={images.logoSmall}
+                  className='w-9 h-10'
+                  resizeMode='contain'
                 />
               </View>
             </View>
+          </LinearGradient>
+        </View>
+
+        {/* 自定义标题输入组件 */}
+        <View className="mt-4">
+          <Text className="text-[#808080] text-lg mb-2">{t('Title')}</Text>
+          <View className="relative">
+            <LinearGradient
+              colors={['#d1e3fa', '#b6d3f9']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className="rounded-xl overflow-hidden"
+            >
+              <View className="border-[1px] border-blue-200 rounded-xl overflow-hidden">
+                <TextInput
+                  className="w-full h-16 px-4 text-gray-800 text-base"
+                  placeholder={t('Catchy titles get more clicks !')}
+                  placeholderTextColor="#6b7eaa"
+                  value={form.title}
+                  onChangeText={(text) => setForm({ ...form, title: text })}
+                />
+              </View>
+            </LinearGradient>
+            {form.title.length > 0 && (
+              <TouchableOpacity
+                className="absolute right-3 top-[18px]"
+                onPress={() => setForm({ ...form, title: '' })}
+              >
+                <View className="w-6 h-6 bg-blue-400 rounded-full flex justify-center items-center">
+                  <Text className="text-white text-xs font-bold">×</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+
+        {/* Upload Video */}
+        <Text className='text-[#808080] mt-5 text-lg'>{t('Video')}</Text>
+        {/* 视频选择区域 */}
+        {!isVideoSelected ? (
+          <TouchableOpacity onPress={handlePickVideo}>
+            <LinearGradient
+              colors={['#2c3e50', '#34495e']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className='w-full h-48 rounded-2xl mt-2 justify-center items-center overflow-hidden'
+            >
+              <View className='w-16 h-16 bg-white/20 rounded-full justify-center items-center'>
+                <Image
+                  source={icons.upload}
+                  className='w-8 h-8'
+                  tintColor="#fff"
+                />
+              </View>
+              <Text className='text-white mt-3 font-medium'>{t('Tap to select video')}</Text>
+            </LinearGradient>
           </TouchableOpacity>
         ) : (
-          <View className='w-full h-56 bg-[#1e1e2d] rounded-2xl mt-2 justify-center items-center relative'>
+          <View className='w-full h-56 rounded-2xl mt-2 justify-center items-center relative overflow-hidden shadow-lg'>
             {videoPlayer && (
               <VideoView
                 ref={ref => setVideoRef(ref)}
@@ -251,6 +293,13 @@ export default function Create() {
               />
             )}
 
+            <LinearGradient
+              colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 0.5 }}
+              className='absolute top-0 left-0 right-0 h-16'
+            />
+
             <VideoPlayButton
               onPress={togglePlayback}
               isPlaying={isPlaying}
@@ -258,11 +307,11 @@ export default function Create() {
 
             <TouchableOpacity
               onPress={() => handleCancelSelected('video')}
-              className='absolute top-0 right-0 z-10 w-16 h-16 justify-start items-end py-1.5 px-2'
+              className='absolute top-2 right-2 z-10 w-8 h-8 bg-black/30 rounded-full justify-center items-center'
             >
               <Image
                 source={closeY}
-                className='w-6 h-6'
+                className='w-5 h-5'
               />
             </TouchableOpacity>
           </View>
@@ -270,90 +319,113 @@ export default function Create() {
 
         {/* Thumbnail Image */}
         <Text className='text-[#808080] mt-5 text-lg'>{t("Thumbnail")}</Text>
-        {/* TODO：图片存在则显示图片 */}
+
         {!isImageSelected ? (
-          <View className='flex-row w-full justify-around mt-6 mb-8'>
+          <View className='flex-row w-full justify-around mt-4 mb-8'>
             <TouchableOpacity onPress={handlePickImage}>
               <LinearGradient
-                colors={['#3498db', '#8e44ad']}
+                colors={['#3498db', '#2980b9']}
                 start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                className='w-36 h-16 rounded-3xl flex-row justify-center items-center px-4'
+                end={{ x: 1, y: 1 }}
+                className='w-40 h-16 rounded-xl flex-row justify-center items-center px-4 shadow-sm'
               >
-                <Text className='text-white'>{t("Choose File")}</Text>
+                <Image
+                  source={icons.upload}
+                  className='w-5 h-5 mr-2'
+                  tintColor="#fff"
+                />
+                <Text className='text-white font-medium'>{t("Choose File")}</Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={generateThumbnailFromVideo}>
               <LinearGradient
-                colors={['#2980b9', '#9b59b6']}
+                colors={['#9b59b6', '#8e44ad']}
                 start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                className='w-36 h-16 rounded-3xl flex-row justify-center items-center px-4'
+                end={{ x: 1, y: 1 }}
+                className='w-40 h-16 rounded-xl flex-row justify-center items-center px-4 shadow-sm'
               >
-                <Text className='text-white'>{t("Auto Generate")}</Text>
+                <Image
+                  source={icons.upload}
+                  className='w-5 h-5 mr-2'
+                  tintColor="#fff"
+                />
+                <Text className='text-white font-medium'>{t("Auto Generate")}</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
         ) : (
-          <View className='w-full h-56 bg-[#1e1e2d] rounded-2xl mt-2 mb-8 flex-row justify-center items-center overflow-hidden relative'>
+          <View className='w-full h-56 rounded-2xl mt-2 mb-8 flex-row justify-center items-center overflow-hidden relative shadow-lg'>
             <Image
               source={{ uri: imageFile?.uri }}
               className='w-full h-full'
               resizeMode='cover'
             />
+
+            <LinearGradient
+              colors={['rgba(0,0,0,0.4)', 'rgba(0,0,0,0)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 0.5 }}
+              className='absolute top-0 left-0 right-0 h-16'
+            />
+
             <TouchableOpacity
               onPress={() => handleCancelSelected('image')}
-              className='absolute top-0 right-0 z-10 w-16 h-16 justify-start items-end py-1.5 px-2'
+              className='absolute top-2 right-2 z-10 w-8 h-8 bg-black/30 rounded-full justify-center items-center'
             >
               <Image
                 source={closeY}
-                className='w-6 h-6'
+                className='w-5 h-5'
               />
             </TouchableOpacity>
           </View>
         )}
 
         {uploading ? (
-          <View className="w-full h-20 justify-center items-center bg-primary mb-4">
-
+          <View className="w-full rounded-xl p-4 justify-center items-center bg-gray-50 mb-4 shadow-sm">
             {progress.type !== 'Video' ? (
               <>
-                <ActivityIndicator size="small" color="#000" />
-                <Text className='text-black text-xl text-center mt-2'>
+                <ActivityIndicator size="small" color="#8e44ad" />
+                <Text className='text-gray-700 text-base text-center mt-2'>
                   {t("Thumbnail Uploading")}
                 </Text>
               </>
             ) : (
               <>
                 <Progress.Bar
-                  color="#02C2CC" unfilledColor='#fff'
-                  progress={progress.percent / 100} width={230} borderWidth={1}
+                  color="#8e44ad" unfilledColor='#e0e0e0' borderColor="#8e44ad"
+                  progress={progress.percent / 100} width={230} borderWidth={0.5}
+                  height={8} borderRadius={4}
                 />
-                <Text className=' text-black text-xl text-center mt-2'>
-                  {progress.percent} %
+                <Text className='text-gray-700 text-base text-center mt-2'>
+                  {progress.percent}% {t("Completed")}
                 </Text>
               </>
             )}
           </View>
-
-        ) : false}
+        ) : null}
 
         {/* submit button */}
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => { handleUpload() }}
           disabled={uploading}
+          className="mb-8 shadow-md"
         >
           <LinearGradient
-            colors={['#FFB800', '#FF6B6B', '#FFA001']}
+            colors={['#4a6cf7', '#3b82f6', '#2563eb']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            className='h-16 mb-8 rounded-xl flex-row justify-center items-center'
+            className='h-16 rounded-xl flex-row justify-center items-center'
           >
             {uploading ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
-              <Text className='text-white font-psemibold text-lg'>{t('Submit & Publish')}</Text>
+              <>
+                <Ionicons name='paper-plane' size={24} color='white' style={{ marginRight: 8 }} />
+                <Text className='text-white font-psemibold text-lg'>
+                  {t('Submit & Publish')}
+                </Text>
+              </>
             )}
           </LinearGradient>
         </TouchableOpacity>
