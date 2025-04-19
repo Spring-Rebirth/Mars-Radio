@@ -84,18 +84,21 @@ export default function Welcome() {
   return (
     <SafeAreaView className="bg-primary h-full">
       <StatusBar style="auto" backgroundColor="#F5F5F5" />
-      <TouchableOpacity
-        onPress={handleLanguageToggle}
-        className="absolute z-10 top-16 right-6 p-4"
-      >
-        <Image
-          source={require("../assets/icons/language.png")}
-          className="w-12 h-6"
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
+
       <ScrollView contentContainerStyle={{ height: "100%" }}>
         <View className="justify-center items-center min-h-[85vh] px-4">
+          <View className="flex-row justify-end w-full px-4 pb-2 -mt-2">
+            <TouchableOpacity
+              onPress={handleLanguageToggle}
+              className="p-2"
+            >
+              <Image
+                source={require("../assets/icons/language.png")}
+                className="w-12 h-6"
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
           <View className="flex-row items-center space-x-2 mb-1">
             <Image
               source={images.logoSmall}
