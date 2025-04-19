@@ -217,16 +217,22 @@ export default function Home() {
                     (async () => {
                         try {
                             const initialPosts = await getPostsWithPagination(null, limit);
-                            const imageUrls = initialPosts.map(post => post.thumbnail).filter(url => url);
-                            await Promise.all(imageUrls.map(url => Image.prefetch(url)));
-                            setData(initialPosts); // Set data first
+                            setData(initialPosts); // 立即设置数据，不等待图片预加载
                             if (initialPosts.length < limit) {
                                 setHasMore(false);
                             } else {
                                 const lastPost = initialPosts[initialPosts.length - 1];
                                 setCursor(lastPost.$id);
                             }
-                            setIsInitialLatestLoading(false); // Mark as done *after* setting data/hasMore
+                            setIsInitialLatestLoading(false); // 先标记加载完成
+
+                            // 图片预加载移到后面，不阻塞UI显示
+                            const imageUrls = initialPosts.map(post => post.thumbnail).filter(url => url);
+                            Image.prefetch(imageUrls[0]); // 只预加载第一张图片
+                            // 其余图片异步加载，不等待
+                            setTimeout(() => {
+                                imageUrls.slice(1).forEach(url => Image.prefetch(url));
+                            }, 100);
                         } catch (error) {
                             console.error('Initial loadPosts failed:', error);
                             setData([]);
@@ -236,8 +242,8 @@ export default function Home() {
                     })()
                 );
 
-                // 2. Fetch Admin Data
-                promises.push(
+                // 2. Fetch Admin Data (这不影响UI显示，可以后加载)
+                setTimeout(() => {
                     (async () => {
                         try {
                             const adminData = await fetchAdminData();
@@ -247,45 +253,37 @@ export default function Home() {
                             console.error("Error fetching admin data:", error);
                             setAdminList([]);
                         }
-                    })()
-                );
+                    })();
+                }, 50);
 
-                // 3. Fetch Popular Posts (if user exists, adjust if needed for guests)
-                if (user?.$id) { // Assuming popular posts require user context or similar logic
-                    promises.push(
+                // 3. Fetch Popular Posts (延迟加载)
+                if (user?.$id) {
+                    setTimeout(() => {
                         (async () => {
                             try {
-                                // Assuming getPopularPosts service exists
                                 const popular = await getPopularPosts();
                                 setPopularData(popular || []);
                             } catch (error) {
                                 console.error("Error fetching popular posts:", error);
                                 setPopularData([]);
                             }
-                        })()
-                    );
+                        })();
 
-                    // 4. Update Saved Video (less critical for initial display, maybe optional?)
-                    // This doesn't fetch data for display but updates based on user context
-                    // Can run in parallel but doesn't directly contribute to initial content display states (data, popularData)
-                    promises.push(
-                        (async () => {
-                            try {
-                                const favorite = user.favorite || [];
-                                await updateSavedVideo(user.$id, { favorite });
-                            } catch (error) {
-                                console.error("Error updating saved video on initial load:", error);
-                            }
-                        })()
-                    );
-
+                        // 4. Update Saved Video (延迟更新)
+                        setTimeout(() => {
+                            (async () => {
+                                try {
+                                    const favorite = user.favorite || [];
+                                    await updateSavedVideo(user.$id, { favorite });
+                                } catch (error) {
+                                    console.error("Error updating saved video on initial load:", error);
+                                }
+                            })();
+                        }, 100);
+                    }, 100);
                 } else {
-                    // Handle case where user is not logged in (e.g., show default popular posts or empty)
-                    setPopularData([]); // Clear popular data if no user
+                    setPopularData([]);
                 }
-
-
-                await Promise.all(promises); // Wait for all essential initial fetches
 
             } catch (error) {
                 console.error("Error during initial data load setup:", error);
@@ -417,10 +415,16 @@ export default function Home() {
         try {
             const newPosts = await getPostsWithPagination(cursor, limit);
             console.log("Fetched new posts:", newPosts.length);
-            const imageUrls = newPosts.map(post => post.thumbnail).filter(url => url);
-            await Promise.all(imageUrls.map(url => Image.prefetch(url)));
-            // Use functional update to correctly append
+
+            // 使用数据先展示，不等待图片加载
             setData(prevPosts => [...prevPosts, ...newPosts]);
+
+            // 图片预加载放在后面异步进行
+            const imageUrls = newPosts.map(post => post.thumbnail).filter(url => url);
+            setTimeout(() => {
+                imageUrls.forEach(url => Image.prefetch(url));
+            }, 100);
+
             if (newPosts.length < limit) {
                 setHasMore(false);
                 console.log("No more posts to load.");
@@ -662,62 +666,66 @@ export default function Home() {
                                             <VideoLoadingSkeleton />
                                         </ScrollView>
                                     ) : data.length === 0 ? (
-                                        <View className="mt-10 items-center">
-                                            <EmptyState title={t("No Videos Found")} subtitle={t("Be the first one to upload a video!")} />
-                                            <CustomButton
-                                                title={t("Create Video")}
-                                                textStyle={"text-black"}
-                                                style={"h-16 my-5 mx-4 w-[90%]"}
-                                                onPress={() => router.push("/create")}
+                                        <View className="items-center justify-center flex-1">
+                                            <Image
+                                                source={images.empty}
+                                                className="w-[75px] h-[60px]"
+                                                resizeMode="contain"
                                             />
+                                            <Text className="text-gray-400 text-center font-psemibold mt-2">
+                                                {t("No videos found yet.")} {"\n"}
+                                                {t("Be the first one to upload a video!")}
+                                            </Text>
                                         </View>
                                     ) : (
-                                        <FlatList
-                                            ref={flatListRef}
-                                            directionalLockEnabled={true}
-                                            contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
-                                            data={data}
-                                            keyExtractor={(item) => item.$id}
-                                            renderItem={({ item }) => (
-                                                <VideoCard
-                                                    post={item}
-                                                    adminList={adminList}
-                                                    onMenuPress={(videoId) => {
-                                                        setSelectedVideoId(videoId);
-                                                        setIsSaved(user?.favorite?.includes(videoId) ?? false);
-                                                        setIsVideoCreator(user?.$id === item?.creator?.$id);
-                                                        setShowControlMenu(true);
-                                                    }}
-                                                />
-                                            )}
-                                            ListEmptyComponent={null}
-                                            refreshControl={
-                                                <RefreshControl refreshing={refreshingLatest} onRefresh={handleRefreshLatest} colors={["#FFB300"]} />
-                                            }
-                                            onEndReached={loadMorePosts}
-                                            onEndReachedThreshold={0.5}
-                                            initialNumToRender={5}
-                                            maxToRenderPerBatch={10}
-                                            windowSize={10}
-                                            removeClippedSubviews={true}
-                                            ListFooterComponent={() => {
-                                                if (isLoadingMore) {
-                                                    return (
-                                                        <View className="items-center justify-center my-4">
-                                                            <ActivityIndicator size="large" color="#FFB300" />
-                                                        </View>
-                                                    );
-                                                } else if (!hasMore && data.length > 0) {
-                                                    return (
-                                                        <View className="items-center justify-center my-4 pb-10">
-                                                            <Text className="text-gray-400 text-sm">{t("No more videos")}</Text>
-                                                        </View>
-                                                    );
-                                                } else {
-                                                    return null;
+                                        <View className="flex-1">
+                                            <FlatList
+                                                ref={flatListRef}
+                                                directionalLockEnabled={true}
+                                                contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
+                                                data={data}
+                                                keyExtractor={(item) => item.$id}
+                                                renderItem={({ item }) => (
+                                                    <VideoCard
+                                                        post={item}
+                                                        adminList={adminList}
+                                                        onMenuPress={(videoId) => {
+                                                            setSelectedVideoId(videoId);
+                                                            setIsSaved(user?.favorite?.includes(videoId) ?? false);
+                                                            setIsVideoCreator(user?.$id === item?.creator?.$id);
+                                                            setShowControlMenu(true);
+                                                        }}
+                                                    />
+                                                )}
+                                                ListEmptyComponent={null}
+                                                refreshControl={
+                                                    <RefreshControl refreshing={refreshingLatest} onRefresh={handleRefreshLatest} colors={["#FFB300"]} />
                                                 }
-                                            }}
-                                        />
+                                                onEndReached={loadMorePosts}
+                                                onEndReachedThreshold={0.5}
+                                                initialNumToRender={5}
+                                                maxToRenderPerBatch={10}
+                                                windowSize={10}
+                                                removeClippedSubviews={true}
+                                                ListFooterComponent={() => {
+                                                    if (isLoadingMore) {
+                                                        return (
+                                                            <View className="items-center justify-center my-4">
+                                                                <ActivityIndicator size="large" color="#FFB300" />
+                                                            </View>
+                                                        );
+                                                    } else if (!hasMore && data.length > 0) {
+                                                        return (
+                                                            <View className="items-center justify-center my-4 pb-10">
+                                                                <Text className="text-gray-400 text-sm">{t("No more videos")}</Text>
+                                                            </View>
+                                                        );
+                                                    } else {
+                                                        return null;
+                                                    }
+                                                }}
+                                            />
+                                        </View>
                                     )}
                                 </View>
                             )}
