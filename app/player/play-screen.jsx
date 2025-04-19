@@ -5,6 +5,8 @@ import {
     Platform,
     Alert,
     TouchableOpacity,
+    Text,
+    ActivityIndicator
 } from "react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -25,31 +27,28 @@ import useComments from "../../hooks/useComments";
 import VideoPlayer from "../../components/player/VideoPlayer";
 import useScreenOrientation from "../../hooks/useScreenOrientation";
 import styles from "../../styles/player/styles";
-// cSpell: ignore Millis
 
 export default function PlayScreen() {
     const { user } = useGlobalContext();
     const { post, commentId, videoId } = useLocalSearchParams();
     const [videoData, setVideoData] = useState(null);
     const [isInvalidVideo, setIsInvalidVideo] = useState(false);
-    const { $id: userId, avatar, username } = user;
+    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const { fullscreen, setFullscreen, toggleFullscreen } = useScreenOrientation();
     const [refreshFlag, setRefreshFlag] = useState(false);
 
-    // 创建视频播放器实例 - 移到顶部
     const videoPlayer = useVideoPlayer(videoData?.video || '', player => {
         if (player && videoData?.video) {
             player.play();
         }
     });
 
-    // 加载视频数据
     useEffect(() => {
         const fetchVideoData = async () => {
+            setIsLoading(true);
             try {
-                // 如果直接传递了post对象，则直接使用
                 if (post) {
                     try {
                         const parsedPost = JSON.parse(post);
@@ -62,7 +61,6 @@ export default function PlayScreen() {
                     }
                 }
 
-                // 如果传递了videoId，则通过API获取视频详情
                 if (videoId) {
                     const videoDetails = await getVideoDetails(videoId);
                     if (videoDetails) {
@@ -73,7 +71,6 @@ export default function PlayScreen() {
                     }
                 }
 
-                // 如果两种方式都失败了，标记视频为无效
                 setIsInvalidVideo(true);
                 Alert.alert(
                     "视频已失效",
@@ -88,13 +85,22 @@ export default function PlayScreen() {
                     "抱歉，视频加载失败，请稍后再试",
                     [{ text: "确定", style: "default" }]
                 );
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchVideoData();
     }, [post, videoId]);
 
-    // 确保只在 videoData 存在且有效时才获取评论
+    useEffect(() => {
+        if (videoData !== null && user !== null) {
+            setIsLoading(false);
+        } else if (isInvalidVideo) {
+            setIsLoading(false);
+        }
+    }, [videoData, user, isInvalidVideo]);
+
     const currentVideoId = videoData?.$id || null;
     const [commentsDoc, setCommentsDoc] = useComments(currentVideoId, refreshFlag);
 
@@ -102,10 +108,10 @@ export default function PlayScreen() {
         setCommentsDoc((prevComments) => [newComment, ...prevComments]);
     };
 
-    // 将 memoizedCommentView 也移到条件渲染之前
+    const userId = user?.$id;
+
     const memoizedCommentView = useMemo(() => {
-        // 只有当 videoData 存在时才渲染评论列表
-        if (!videoData) return null;
+        if (!videoData || !user) return null;
 
         return (
             <CommentList
@@ -123,38 +129,42 @@ export default function PlayScreen() {
         );
     }, [userId, videoData, commentId, commentsDoc, fetchReplies, submitReply]);
 
-    // 如果视频数据未加载且不是因为视频无效，显示加载状态
-    // 如果是因为视频无效，返回一个简单的提示界面
-    if (!videoData) {
-        if (isInvalidVideo) {
-            return (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-                    <TouchableOpacity
-                        style={{
-                            position: 'absolute',
-                            top: insets.top + 10,
-                            left: 10,
-                            zIndex: 10,
-                            padding: 5
-                        }}
-                        onPress={() => router.back()}
-                    >
-                        <Ionicons name="arrow-back" size={28} color="#333" />
-                    </TouchableOpacity>
-                    <View style={{ padding: 20, backgroundColor: '#f8f8f8', borderRadius: 10 }}>
-                        <View style={{ marginBottom: 15, alignItems: 'center' }}>
-                            <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#e0e0e0', justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
-                                <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#c0c0c0' }} />
-                            </View>
-                            <View style={{ height: 24, width: 200, backgroundColor: '#e0e0e0', borderRadius: 4 }} />
-                        </View>
-                        <View style={{ height: 16, width: 250, backgroundColor: '#e0e0e0', borderRadius: 4, marginBottom: 8 }} />
-                        <View style={{ height: 16, width: 200, backgroundColor: '#e0e0e0', borderRadius: 4 }} />
-                    </View>
-                </View>
-            );
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#FF9C01" />
+            </View>
+        );
+    }
+
+    const handleBackPress = () => {
+        if (router.canGoBack()) {
+            router.back();
+        } else {
+            router.replace('/(drawer)/(tabs)/home');
         }
-        return null;
+    };
+
+    if (isInvalidVideo || !videoData) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+                <TouchableOpacity
+                    style={{
+                        position: 'absolute',
+                        top: insets.top + 10,
+                        left: 10,
+                        zIndex: 10,
+                        padding: 5
+                    }}
+                    onPress={handleBackPress}
+                >
+                    <Ionicons name="arrow-back" size={28} color="#333" />
+                </TouchableOpacity>
+                <View style={{ padding: 20, backgroundColor: '#f8f8f8', borderRadius: 10 }}>
+                    <Text>视频加载失败或已失效</Text>
+                </View>
+            </View>
+        );
     }
 
     const videoCreator = videoData.creator;
@@ -167,6 +177,7 @@ export default function PlayScreen() {
                 setFullscreen={setFullscreen}
                 toggleFullscreen={toggleFullscreen}
                 safeAreaInset={insets.top}
+                onBackPress={handleBackPress}
             />
         </View>
     ) : (
@@ -182,16 +193,23 @@ export default function PlayScreen() {
                     setFullscreen={setFullscreen}
                     toggleFullscreen={toggleFullscreen}
                     safeAreaInset={insets.top}
+                    onBackPress={handleBackPress}
                 />
 
                 <View className="flex-1">
                     <View className="px-2">
-                        <CommentInputBox
-                            userId={userId}
-                            videoId={currentVideoId}
-                            videoCreator={videoCreator}
-                            onCommentSubmitted={onCommentSubmitted}
-                        />
+                        {user ? (
+                            <CommentInputBox
+                                userId={userId}
+                                videoId={currentVideoId}
+                                videoCreator={videoCreator}
+                                onCommentSubmitted={onCommentSubmitted}
+                            />
+                        ) : (
+                            <View style={{ padding: 10, alignItems: 'center' }}>
+                                <Text>请登录后发表评论</Text>
+                            </View>
+                        )}
                     </View>
 
                     <View className="flex-1">

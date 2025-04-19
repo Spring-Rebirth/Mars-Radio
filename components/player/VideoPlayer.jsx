@@ -28,7 +28,8 @@ const VideoPlayer = ({
     fullscreen,
     setFullscreen,
     toggleFullscreen,
-    safeAreaInset
+    safeAreaInset,
+    onBackPress
 }) => {
     const {
         setPlaying,
@@ -95,7 +96,7 @@ const VideoPlayer = ({
                     console.log("视频宽高比:", ratio);
 
                     if (ratio < 1) {
-                    // 如果宽度小于高度，说明是竖屏视频
+                        // 如果宽度小于高度，说明是竖屏视频
                         console.log("检测到竖屏视频，设置竖屏高度");
                         setSelectedVideoHeight(portraitVideoHeight);
                     } else {
@@ -310,7 +311,7 @@ const VideoPlayer = ({
                         <>
                             {/* 返回按钮 */}
                             <TouchableOpacity
-                                onPress={() => router.back()}
+                                onPress={onBackPress}
                                 className="absolute top-4 left-4 z-10 p-2"
                             >
                                 <Ionicons name="arrow-back" size={24} color="white" />
