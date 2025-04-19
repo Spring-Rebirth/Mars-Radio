@@ -12,7 +12,7 @@ import {
     Animated,
     ScrollView,
 } from "react-native";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { images } from "../../../constants";
 import SearchInput from "../../../components/SearchInput";
 import Trending from "../../../components/Trending";
@@ -32,9 +32,6 @@ import BottomSheet, { BottomSheetView, BottomSheetBackdrop, BottomSheetModal } f
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { deleteVideoDoc, deleteVideoFiles } from "../../../lib/appwrite";
 import { updateSavedCounts, getVideoDetails } from "../../../lib/appwrite";
-import star from "../../../assets/menu/star-solid.png";
-import starThree from "../../../assets/menu/star3.png";
-import trash from "../../../assets/menu/trash-solid.png";
 import Toast from "react-native-toast-message";
 import { getPostsWithPagination, getPopularPosts } from "../../../lib/appwrite";
 import icons from "../../../constants/icons";
@@ -72,6 +69,42 @@ export default function Home() {
     const [isInitialLatestLoading, setIsInitialLatestLoading] = useState(true);
     const setHomeActiveTabIndex = useFocusStatusStore(state => state.setHomeActiveTabIndex);
     const limit = 10;
+
+    // 定义菜单项数组并基于数组计算高度
+    const menuItems = useMemo(() => {
+        const items = [];
+
+        // 保存视频项 - 始终存在
+        items.push({
+            id: 'save',
+            iconName: isSaved ? 'star' : 'star-outline', // 如果已收藏则显示实心星星，否则显示空心星星
+            title: isSaved ? t("Cancel save video") : t("Save video"),
+            textColor: '#333333',
+            iconColor: isSaved ? '#FFB300' : '#333333', // 已收藏时星星显示黄色
+            onPress: handleClickSave
+        });
+
+        // 删除视频项 - 条件性添加
+        if (isVideoCreator || admin) {
+            items.push({
+                id: 'delete',
+                iconName: 'trash-outline', // 垃圾桶图标
+                title: t("Delete video"),
+                textColor: '#EF4444', // 红色
+                iconColor: '#EF4444', // 图标也使用红色
+                onPress: handleDelete
+            });
+        }
+
+        // 在这里添加更多菜单项，它们会自动计入高度
+
+        return items;
+    }, [isSaved, isVideoCreator, admin, t, handleClickSave, handleDelete]);
+
+    // 自动计算底部菜单的高度：基础高度100 + 每个选项60高度
+    const bottomSheetHeight = useMemo(() => {
+        return 100 + (menuItems.length * 60);
+    }, [menuItems.length]);
 
     // 处理底部弹出菜单
     const handlePresentModalPress = useCallback(() => {
@@ -624,7 +657,7 @@ export default function Home() {
             <BottomSheetModal
                 ref={bottomSheetModalRef}
                 index={0}
-                snapPoints={[isVideoCreator || admin ? 220 : 160]}
+                snapPoints={[bottomSheetHeight]}
                 enablePanDownToClose={true}
                 backdropComponent={renderBackdrop}
                 handleIndicatorStyle={{ backgroundColor: '#999' }}
@@ -632,33 +665,23 @@ export default function Home() {
                 onDismiss={() => setShowControlMenu(false)}
             >
                 <BottomSheetView style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24 + insetBottom }}>
-                    <Pressable
-                        onPress={handleClickSave}
-                        className="w-full h-12 flex-row items-center mb-2"
-                    >
-                        <Image
-                            source={isSaved ? star : starThree}
-                            className="w-6 h-6 mr-6"
-                            resizeMode="contain"
-                        />
-                        <Text className="text-[#333333] text-lg font-pmedium">
-                            {isSaved ? t("Cancel save video") : t("Save video")}
-                        </Text>
-                    </Pressable>
-
-                    {(isVideoCreator || admin) && (
+                    {menuItems.map((item) => (
                         <Pressable
-                            onPress={handleDelete}
-                            className="w-full h-12 flex-row items-center"
+                            key={item.id}
+                            onPress={item.onPress}
+                            className="w-full h-12 flex-row items-center mb-2"
                         >
-                            <Image
-                                source={trash}
-                                className="w-6 h-6 mr-6"
-                                resizeMode="contain"
+                            <Ionicons
+                                name={item.iconName}
+                                size={24}
+                                color={item.iconColor}
+                                style={{ marginRight: 24 }}
                             />
-                            <Text className="text-red-500 text-lg font-pmedium">{t("Delete video")}</Text>
+                            <Text style={{ color: item.textColor }} className="text-lg font-pmedium">
+                                {item.title}
+                            </Text>
                         </Pressable>
-                    )}
+                    ))}
                 </BottomSheetView>
             </BottomSheetModal>
 
