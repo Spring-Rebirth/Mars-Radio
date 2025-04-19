@@ -8,7 +8,7 @@ import {
   Share,
   Pressable,
 } from "react-native";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import useGetData from "../../../hooks/useGetData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGlobalContext } from "../../../context/GlobalProvider";
@@ -34,9 +34,6 @@ import {
   deleteVideoDoc,
   deleteVideoFiles,
 } from "../../../lib/appwrite";
-import star from "../../../assets/menu/star-solid.png";
-import starThree from "../../../assets/menu/star3.png";
-import trash from "../../../assets/menu/trash-solid.png";
 import closeIcon from "../../../assets/icons/close.png";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import useFocusStatusStore from "../../../store/focusStatusStore";
@@ -61,6 +58,40 @@ export default function Profile() {
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [menuSourceTab, setMenuSourceTab] = useState('');
+
+  // 定义菜单项数组并基于数组计算高度
+  const menuItems = useMemo(() => {
+    const items = [];
+
+    // 保存视频项 - 始终存在
+    items.push({
+      id: 'save',
+      iconName: isSaved ? 'star' : 'star-outline', // 如果已收藏则显示实心星星，否则显示空心星星
+      title: isSaved ? t("Cancel save video") : t("Save video"),
+      textColor: '#333333',
+      iconColor: isSaved ? '#FFB300' : '#333333', // 已收藏时星星显示黄色
+      onPress: handleClickSave
+    });
+
+    // 删除视频项 - 仅在用户视频标签中显示
+    if (menuSourceTab === 'user') {
+      items.push({
+        id: 'delete',
+        iconName: 'trash-outline', // 垃圾桶图标
+        title: t("Delete video"),
+        textColor: '#EF4444', // 红色
+        iconColor: '#EF4444', // 图标也使用红色
+        onPress: handleDelete
+      });
+    }
+
+    return items;
+  }, [isSaved, menuSourceTab, t, handleClickSave, handleDelete]);
+
+  // 自动计算底部菜单的高度：基础高度100 + 每个选项60高度
+  const bottomSheetHeight = useMemo(() => {
+    return 100 + (menuItems.length * 60);
+  }, [menuItems.length]);
 
   const renderBackdrop = useCallback(
     props => (
@@ -328,7 +359,7 @@ export default function Profile() {
       <BottomSheetModal
         ref={bottomSheetModalRef}
         index={0}
-        snapPoints={[220]}
+        snapPoints={[bottomSheetHeight]}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
         handleIndicatorStyle={{ backgroundColor: '#999' }}
@@ -336,33 +367,23 @@ export default function Profile() {
         onDismiss={() => setShowControlMenu(false)}
       >
         <BottomSheetView style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24 + insetBottom }}>
-          <Pressable
-            onPress={handleClickSave}
-            className="w-full h-12 flex-row items-center mb-2"
-          >
-            <Image
-              source={isSaved ? star : starThree}
-              className="w-6 h-6 mr-6"
-              resizeMode="contain"
-            />
-            <Text className="text-[#333333] text-lg font-pmedium">
-              {isSaved ? t("Cancel save video") : t("Save video")}
-            </Text>
-          </Pressable>
-
-          {menuSourceTab === 'user' && (
+          {menuItems.map((item) => (
             <Pressable
-              onPress={handleDelete}
-              className="w-full h-12 flex-row items-center"
+              key={item.id}
+              onPress={item.onPress}
+              className="w-full h-12 flex-row items-center mb-2"
             >
-              <Image
-                source={trash}
-                className="w-6 h-6 mr-6"
-                resizeMode="contain"
+              <Ionicons
+                name={item.iconName}
+                size={24}
+                color={item.iconColor}
+                style={{ marginRight: 24 }}
               />
-              <Text className="text-red-500 text-lg font-pmedium">{t("Delete video")}</Text>
+              <Text style={{ color: item.textColor }} className="text-lg font-pmedium">
+                {item.title}
+              </Text>
             </Pressable>
-          )}
+          ))}
         </BottomSheetView>
       </BottomSheetModal>
 
