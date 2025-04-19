@@ -70,6 +70,18 @@ export default function Home() {
     const setHomeActiveTabIndex = useFocusStatusStore(state => state.setHomeActiveTabIndex);
     const limit = 10;
 
+    // 同步包装函数，用于处理删除按钮点击
+    const handleDeleteSync = () => {
+        setShowControlMenu(false);
+        handleDelete();
+    };
+
+    // 同步包装函数，用于处理保存按钮点击
+    const handleClickSaveSync = () => {
+        setShowControlMenu(false);
+        handleAddSaved();
+    };
+
     // 定义菜单项数组并基于数组计算高度
     const menuItems = useMemo(() => {
         const items = [];
@@ -81,7 +93,7 @@ export default function Home() {
             title: isSaved ? t("Cancel save video") : t("Save video"),
             textColor: '#333333',
             iconColor: isSaved ? '#FFB300' : '#333333', // 已收藏时星星显示黄色
-            onPress: handleClickSave
+            onPress: handleClickSaveSync // 使用同步处理函数
         });
 
         // 删除视频项 - 条件性添加
@@ -92,14 +104,14 @@ export default function Home() {
                 title: t("Delete video"),
                 textColor: '#EF4444', // 红色
                 iconColor: '#EF4444', // 图标也使用红色
-                onPress: handleDelete
+                onPress: handleDeleteSync // 使用同步处理函数
             });
         }
 
         // 在这里添加更多菜单项，它们会自动计入高度
 
         return items;
-    }, [isSaved, isVideoCreator, admin, t, handleClickSave, handleDelete]);
+    }, [isSaved, isVideoCreator, admin, t, handleClickSaveSync, handleDeleteSync]); // 更新依赖
 
     // 自动计算底部菜单的高度：基础高度100 + 每个选项60高度
     const bottomSheetHeight = useMemo(() => {
@@ -442,8 +454,7 @@ export default function Home() {
     // Handle Delete Video
     const handleDelete = async () => {
         if (!selectedVideoId) return;
-        setShowControlMenu(false); // Close menu
-
+        // setShowControlMenu(false); // 从这里移除，因为已经在handleDeleteSync中处理
         try {
             const videoDetails = await getVideoDetails(selectedVideoId);
             const { image_ID, video_ID } = videoDetails;

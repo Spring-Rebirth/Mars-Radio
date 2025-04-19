@@ -59,6 +59,18 @@ export default function Profile() {
   const [isSaved, setIsSaved] = useState(false);
   const [menuSourceTab, setMenuSourceTab] = useState('');
 
+  // 同步包装函数，用于处理删除按钮点击
+  const handleDeleteSync = () => {
+    setShowControlMenu(false);
+    handleDelete();
+  };
+
+  // 同步包装函数，用于处理保存按钮点击
+  const handleClickSaveSync = () => {
+    setShowControlMenu(false);
+    handleAddSaved();
+  };
+
   // 定义菜单项数组并基于数组计算高度
   const menuItems = useMemo(() => {
     const items = [];
@@ -70,7 +82,7 @@ export default function Profile() {
       title: isSaved ? t("Cancel save video") : t("Save video"),
       textColor: '#333333',
       iconColor: isSaved ? '#FFB300' : '#333333', // 已收藏时星星显示黄色
-      onPress: handleClickSave
+      onPress: handleClickSaveSync // 使用同步处理函数
     });
 
     // 删除视频项 - 仅在用户视频标签中显示
@@ -81,12 +93,12 @@ export default function Profile() {
         title: t("Delete video"),
         textColor: '#EF4444', // 红色
         iconColor: '#EF4444', // 图标也使用红色
-        onPress: handleDelete
+        onPress: handleDeleteSync // 使用同步处理函数
       });
     }
 
     return items;
-  }, [isSaved, menuSourceTab, t, handleClickSave, handleDelete]);
+  }, [isSaved, menuSourceTab, t, handleClickSaveSync, handleDeleteSync]);
 
   // 自动计算底部菜单的高度：基础高度100 + 每个选项60高度
   const bottomSheetHeight = useMemo(() => {
@@ -165,7 +177,6 @@ export default function Profile() {
 
   const handleDelete = async () => {
     if (!selectedVideoId) return;
-    setShowControlMenu(false);
     try {
       const videoDetails = await getVideoDetails(selectedVideoId);
       const { image_ID, video_ID } = videoDetails;
