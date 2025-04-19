@@ -602,7 +602,7 @@ export default function Home() {
                     >
                         <TopTab.Screen name={t("Top Hits")} >
                             {() => (
-                                <View className="flex-1 px-4">
+                                <View className="flex-1">
                                     {popularData.length === 0 ? (
                                         <View className="items-center justify-center flex-1">
                                             <Image
@@ -617,9 +617,24 @@ export default function Home() {
                                         </View>
                                     ) : (
                                         <View className="flex-1">
-                                            <Trending
-                                                video={popularData}
-                                                loading={refreshingPopular}
+                                            <FlatList
+                                                directionalLockEnabled={true}
+                                                contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
+                                                data={popularData}
+                                                keyExtractor={(item) => item.$id}
+                                                renderItem={({ item }) => (
+                                                    <VideoCard
+                                                        post={item}
+                                                        adminList={adminList}
+                                                        onMenuPress={(videoId) => {
+                                                            setSelectedVideoId(videoId);
+                                                            setIsSaved(user?.favorite?.includes(videoId) ?? false);
+                                                            setIsVideoCreator(user?.$id === item?.creator?.$id);
+                                                            setShowControlMenu(true);
+                                                        }}
+                                                    />
+                                                )}
+                                                ListEmptyComponent={null}
                                                 refreshControl={
                                                     <RefreshControl
                                                         refreshing={refreshingPopular}
@@ -627,6 +642,10 @@ export default function Home() {
                                                         colors={["#FFB300"]}
                                                     />
                                                 }
+                                                initialNumToRender={5}
+                                                maxToRenderPerBatch={10}
+                                                windowSize={10}
+                                                removeClippedSubviews={true}
                                             />
                                         </View>
                                     )}
