@@ -11,10 +11,10 @@ import {
     TouchableOpacity,
     Animated,
     ScrollView,
+    Share,
 } from "react-native";
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { images } from "../../../constants";
-import SearchInput from "../../../components/SearchInput";
 import Trending from "../../../components/Trending";
 import EmptyState from "../../../components/EmptyState";
 import CustomButton from "../../../components/CustomButton";
@@ -28,17 +28,17 @@ import { fetchAdminData } from "../../../lib/appwrite";
 import VideoLoadingSkeleton from "../../../components/loading-view/VideoLoadingSkeleton";
 import { router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BottomSheet, { BottomSheetView, BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
+import { BottomSheetView, BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { deleteVideoDoc, deleteVideoFiles } from "../../../lib/appwrite";
 import { updateSavedCounts, getVideoDetails } from "../../../lib/appwrite";
 import Toast from "react-native-toast-message";
 import { getPostsWithPagination, getPopularPosts } from "../../../lib/appwrite";
-import icons from "../../../constants/icons";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import useFocusStatusStore from "../../../store/focusStatusStore";
 import { Ionicons } from "@expo/vector-icons";
 import ImageModal from "../../../components/modal/ImageModal";
+import * as Clipboard from 'expo-clipboard';
 const TopTab = createMaterialTopTabNavigator();
 
 export default function Home() {
@@ -82,6 +82,41 @@ export default function Home() {
         handleAddSaved();
     };
 
+    // 同步包装函数，用于处理分享按钮点击
+    const handleShareSync = () => {
+        setShowControlMenu(false);
+        shareVideo();
+    };
+
+    // 同步包装函数，用于处理复制链接按钮点击
+    const handleCopyLinkSync = () => {
+        setShowControlMenu(false);
+        copyDeepLink();
+    };
+
+    // 复制深度链接到剪贴板
+    const copyDeepLink = async () => {
+        if (!selectedVideoId) return;
+
+        try {
+            // 路由格式为：marsx://player/play-screen?videoId=XXX
+            const deepLink = `marsx://player/play-screen?videoId=${selectedVideoId}`;
+
+            // 复制到剪贴板
+            await Clipboard.setStringAsync(deepLink);
+
+            // 显示成功提示
+            Toast.show({
+                text1: t("Copied link to clipboard"),
+                type: "success",
+                topOffset: 68,
+            });
+        } catch (error) {
+            console.error("复制链接失败:", error);
+            Alert.alert(t("Copy Failed"), t("An error occurred while copying the link"));
+        }
+    };
+
     // 定义菜单项数组并基于数组计算高度
     const menuItems = useMemo(() => {
         const items = [];
@@ -96,6 +131,16 @@ export default function Home() {
             onPress: handleClickSaveSync // 使用同步处理函数
         });
 
+        // 复制链接项 - 始终存在
+        items.push({
+            id: 'copy',
+            iconName: 'copy-outline', // 复制图标
+            title: t("Copy link"),
+            textColor: '#333333',
+            iconColor: '#333333',
+            onPress: handleCopyLinkSync
+        });
+
         // 删除视频项 - 条件性添加
         if (isVideoCreator || admin) {
             items.push({
@@ -108,10 +153,8 @@ export default function Home() {
             });
         }
 
-        // 在这里添加更多菜单项，它们会自动计入高度
-
         return items;
-    }, [isSaved, isVideoCreator, admin, t, handleClickSaveSync, handleDeleteSync]); // 更新依赖
+    }, [isSaved, isVideoCreator, admin, t, handleClickSaveSync, handleDeleteSync, handleShareSync, handleCopyLinkSync]); // 更新依赖
 
     // 自动计算底部菜单的高度：基础高度100 + 每个选项60高度
     const bottomSheetHeight = useMemo(() => {

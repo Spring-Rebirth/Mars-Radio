@@ -37,6 +37,7 @@ import {
 import closeIcon from "../../../assets/icons/close.png";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import useFocusStatusStore from "../../../store/focusStatusStore";
+import * as Clipboard from 'expo-clipboard';
 
 const TopTab = createMaterialTopTabNavigator();
 const { width } = Dimensions.get('window');
@@ -71,6 +72,39 @@ export default function Profile() {
     handleAddSaved();
   };
 
+  // 同步包装函数，用于处理复制链接按钮点击
+  const handleCopyLinkSync = () => {
+    setShowControlMenu(false);
+    copyDeepLink();
+  };
+
+  // 复制深度链接到剪贴板
+  const copyDeepLink = async () => {
+    if (!selectedVideoId) return;
+
+    try {
+      // 获取视频详情以获取标题等信息
+      const videoDetails = await getVideoDetails(selectedVideoId);
+
+      // 构建深度链接 - 使用app.json中定义的scheme
+      // 路由格式为：marsx://player/play-screen?videoId=XXX
+      const deepLink = `marsx://player/play-screen?videoId=${selectedVideoId}`;
+
+      // 复制到剪贴板
+      await Clipboard.setStringAsync(deepLink);
+
+      // 显示成功提示
+      Toast.show({
+        text1: t("Copied link to clipboard"),
+        type: "success",
+        topOffset: 68,
+      });
+    } catch (error) {
+      console.error("复制链接失败:", error);
+      Alert.alert(t("Copy Failed"), t("An error occurred while copying the link"));
+    }
+  };
+
   // 定义菜单项数组并基于数组计算高度
   const menuItems = useMemo(() => {
     const items = [];
@@ -83,6 +117,16 @@ export default function Profile() {
       textColor: '#333333',
       iconColor: isSaved ? '#FFB300' : '#333333', // 已收藏时星星显示黄色
       onPress: handleClickSaveSync // 使用同步处理函数
+    });
+
+    // 复制链接项 - 始终存在
+    items.push({
+      id: 'copy',
+      iconName: 'copy-outline', // 复制图标
+      title: t("Copy link"),
+      textColor: '#333333',
+      iconColor: '#333333',
+      onPress: handleCopyLinkSync
     });
 
     // 删除视频项 - 仅在用户视频标签中显示
@@ -98,7 +142,7 @@ export default function Profile() {
     }
 
     return items;
-  }, [isSaved, menuSourceTab, t, handleClickSaveSync, handleDeleteSync]);
+  }, [isSaved, menuSourceTab, t, handleClickSaveSync, handleDeleteSync, handleCopyLinkSync]);
 
   // 自动计算底部菜单的高度：基础高度100 + 每个选项60高度
   const bottomSheetHeight = useMemo(() => {

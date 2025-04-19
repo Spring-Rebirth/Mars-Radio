@@ -22,7 +22,10 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.mystseed.marsx"
+      "bundleIdentifier": "com.mystseed.marsx",
+      "associatedDomains": [
+        "applinks:mars-radio.app"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -30,7 +33,24 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.mystseed.marsx",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "mars-radio.app",
+              "pathPrefix": "/video"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/icon.png"
@@ -45,7 +65,22 @@
     "runtimeVersion": "6.1",
     "extra": {
       "router": {
-        "origin": false
+        "origin": false,
+        "config": {
+          "screens": {
+            "(drawer)": {
+              "screens": {
+                "(tabs)": {
+                  "screens": {
+                    "video": {
+                      "path": "video/:id"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "eas": {
         "projectId": "a8640a18-c37e-4c8b-8b18-48f78543849d"
