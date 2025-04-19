@@ -6,7 +6,7 @@ import CombinedProvider from "../context/CombinedProvider";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { View, Text, Platform } from "react-native";
+import { View, Text, Platform, Linking } from "react-native";
 import * as Notifications from "expo-notifications";
 import { EventSubscription } from "expo-modules-core";
 import useNotificationStore from "../store/notificationStore";
@@ -52,6 +52,7 @@ export default function RootLayout(): React.ReactNode {
     const notificationListener = useRef<EventSubscription>();
     const responseListener = useRef<EventSubscription>();
     const setAdminList = useAdminStore((state) => state.setAdminList);
+    const [pendingDeepLink, setPendingDeepLink] = useState<{ path: string, queryParams: Record<string, string> } | null>(null);
 
     // 加载字体
     const [fontsLoaded, fontsError] = useFonts({
@@ -65,6 +66,122 @@ export default function RootLayout(): React.ReactNode {
         "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
         "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
     });
+
+    // URL解析辅助函数
+    const parseURL = (url: string) => {
+        // 移除自定义协议前缀(如 marsx://)
+        const cleanUrl = url.includes('://') ?
+            'https://' + url.split('://')[1] :
+            url;
+
+        try {
+            const parsedURL = new URL(cleanUrl);
+            const path = parsedURL.pathname;
+            const queryParams: Record<string, string> = {};
+
+            // 解析查询参数
+            parsedURL.searchParams.forEach((value, key) => {
+                queryParams[key] = value;
+            });
+
+            return { path, queryParams };
+        } catch (error) {
+            console.error("URL解析失败:", error);
+            return { path: '', queryParams: {} };
+        }
+    };
+
+    // 导航到深度链接目标
+    const navigateToDeepLinkDestination = (path: string, queryParams: Record<string, string>) => {
+        console.log("导航到深度链接目标:", path, queryParams);
+
+        // 根据路径和参数决定导航目标
+        if (path.includes('player/play-screen') || path.includes('play-screen')) {
+            router.push({
+                pathname: "player/play-screen",
+                params: {
+                    videoId: queryParams.videoId
+                }
+            });
+        }
+        // 添加其他深度链接路由处理...
+    };
+
+    // 处理深度链接
+    const handleDeepLink = (url: string | null) => {
+        if (!url) return;
+        console.log("处理深度链接:", url);
+
+        // 解析URL获取参数
+        const { path, queryParams } = parseURL(url);
+
+        // 检查应用是否已初始化
+        AsyncStorage.getItem('appInitialized').then((initialized) => {
+            if (initialized === 'true') {
+                // 应用已初始化，直接导航
+                navigateToDeepLinkDestination(path, queryParams);
+            } else {
+                // 应用未初始化，存储导航意图并延迟执行
+                console.log("应用未初始化，延迟深度链接处理");
+                AsyncStorage.setItem('pendingDeepLink', JSON.stringify({ path, queryParams }));
+
+                // 设置状态标记有待处理的深度链接
+                setPendingDeepLink({ path, queryParams });
+            }
+        }).catch(error => {
+            console.error("检查应用初始化状态失败:", error);
+        });
+    };
+
+    // 设置深度链接监听器
+    useEffect(() => {
+        // 创建深度链接监听器
+        const subscription = Linking.addEventListener('url', ({ url }) => {
+            handleDeepLink(url);
+        });
+
+        // 处理应用启动时的深度链接
+        Linking.getInitialURL().then((url) => {
+            if (url) {
+                handleDeepLink(url);
+            }
+        });
+
+        return () => subscription.remove();
+    }, []);
+
+    // 在应用初始化完成后处理待定的深度链接
+    useEffect(() => {
+        if (isReady) {
+            AsyncStorage.getItem('appInitialized').then((initialized) => {
+                if (initialized === 'true') {
+                    // 检查是否有待处理的深度链接
+                    AsyncStorage.getItem('pendingDeepLink').then((pendingLink) => {
+                        if (pendingLink) {
+                            try {
+                                const { path, queryParams } = JSON.parse(pendingLink);
+                                navigateToDeepLinkDestination(path, queryParams);
+                                // 处理完后清除
+                                AsyncStorage.removeItem('pendingDeepLink');
+                                setPendingDeepLink(null);
+                            } catch (error) {
+                                console.error("解析待定深度链接失败:", error);
+                                AsyncStorage.removeItem('pendingDeepLink');
+                            }
+                        } else if (pendingDeepLink) {
+                            // 使用状态中的待定深度链接
+                            navigateToDeepLinkDestination(pendingDeepLink.path, pendingDeepLink.queryParams);
+                            setPendingDeepLink(null);
+                        }
+                    }).catch(error => {
+                        console.error("获取待定深度链接失败:", error);
+                    });
+                }
+            }).catch(error => {
+                console.error("检查应用初始化状态失败:", error);
+            });
+        }
+    }, [isReady, pendingDeepLink]);
 
     useEffect(() => {
         async function prepare(): Promise<void> {

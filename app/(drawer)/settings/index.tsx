@@ -1,5 +1,5 @@
 // app/settings.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -16,9 +16,11 @@ import { useTranslation } from 'react-i18next';
 import { useGlobalContext } from '../../../context/GlobalProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+// @ts-ignore
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TapGestureHandler, State } from 'react-native-gesture-handler';
+import * as Application from 'expo-application';
 
 type SettingItemProps = {
     icon: string;
@@ -70,13 +72,18 @@ export default function Settings() {
     const { user } = useGlobalContext();
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+    const [appVersion, setAppVersion] = useState('');
+
+    useEffect(() => {
+        const version = Application.nativeApplicationVersion || 'N/A';
+        setAppVersion(version);
+    }, []);
 
     const toggleNotifications = () => {
         setNotificationsEnabled(previous => !previous);
     };
 
     const toggleDarkMode = () => {
-        // setDarkModeEnabled(previous => !previous);
         Alert.alert(t('Dark Mode'), t('Dark mode settings coming soon'))
     };
 
@@ -107,7 +114,6 @@ export default function Settings() {
             </View>
 
             <ScrollView style={styles.scrollView}>
-                {/* 用户信息部分 */}
                 <View style={styles.profileSection}>
                     <Image
                         source={{ uri: user?.avatar }}
@@ -126,7 +132,6 @@ export default function Settings() {
                     )}
                 </View>
 
-                {/* 设置分组 */}
                 <View style={styles.settingGroup}>
                     <Text style={styles.settingGroupTitle}>{t('Preferences')}</Text>
 
@@ -184,7 +189,7 @@ export default function Settings() {
                     <SettingItem
                         icon="information-circle-outline"
                         title={t('About App')}
-                        subtitle={t('Version 6.2.0')}
+                        subtitle={`${t('Version')} ${appVersion}`}
                         onPress={() => Alert.alert(t('About App'), t('Mars Radio - Your Galactic Audio Platform'))}
                     />
 
