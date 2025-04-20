@@ -204,7 +204,7 @@ export default function Create() {
 
   return (
     <View className='bg-primary h-full px-4 ' style={{ marginTop: insetTop }}>
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* Upload Video */}
         <View className='relative mb-1'>
           <LinearGradient
@@ -248,7 +248,7 @@ export default function Create() {
             </LinearGradient>
             {form.title.length > 0 && (
               <TouchableOpacity
-                className="absolute right-3 top-[18px]"
+                className="absolute right-3 top-[21px]"
                 onPress={() => setForm({ ...form, title: '' })}
               >
                 <View className="w-6 h-6 bg-blue-400 rounded-full flex justify-center items-center">

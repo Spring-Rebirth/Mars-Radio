@@ -72,8 +72,15 @@ export default function Home() {
 
     // 同步包装函数，用于处理删除按钮点击
     const handleDeleteSync = () => {
-        setShowControlMenu(false);
-        handleDelete();
+        Alert.alert(t("Delete video"), t("Are you sure you want to delete this video?"), [
+            { text: t("Cancel"), style: "cancel" },
+            {
+                text: t("Delete"), onPress: () => {
+                    setShowControlMenu(false);
+                    handleDelete();
+                }
+            },
+        ]);
     };
 
     // 同步包装函数，用于处理保存按钮点击
