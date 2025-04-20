@@ -123,7 +123,7 @@ export default function Create() {
         console.log('imageFile:', imageFile, '\n', 'videoFile', videoFile);
         try {
             if (form.title === '' || !isImageSelected || !isVideoSelected) {
-                Alert.alert(t('Please fill in all required fields'));
+                Alert.alert(t('Please fill in all required content'));
                 setUploading(false);
                 return;
             }
