@@ -3,7 +3,7 @@
     "name": "Mars Radio",
     "slug": "marsx",
     "scheme": "marsx",
-    "version": "6.4.0",
+    "version": "6.5.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,7 +18,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "6.4.0",
+      "buildNumber": "6.5.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -62,7 +62,7 @@
       "expo-secure-store",
       "expo-video"
     ],
-    "runtimeVersion": "6.4",
+    "runtimeVersion": "1.0",
     "extra": {
       "router": {
         "origin": false,
