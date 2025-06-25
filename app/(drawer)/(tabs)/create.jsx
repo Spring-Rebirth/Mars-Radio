@@ -20,6 +20,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons'
 import { useImageCropPicker } from '../../../hooks/useImageCropPicker';
 import { useEditedImagesStore } from '../../../store/editedImagesStore';
+import ImagePicker from 'react-native-image-crop-picker';
 
 export default function Create() {
   const insetTop = useSafeAreaInsets().top;
@@ -48,15 +49,26 @@ export default function Create() {
   // 处理图片选择
   const handlePickImage = async () => {
     try {
-      const images = await pickMultipleImages({
-        maxFiles: 10,
-        cropping: true, // 可以开启裁剪
+      const image = await ImagePicker.openPicker({
+        mediaType: 'photo',
+        cropping: true,
         compressImageQuality: 0.8,
+        compressVideoPreset: 'MediumQuality',
       });
 
-      if (images.length > 0) {
-        setImageFile(images[0]);
-        console.log('选中的图片:', images[0]);
+      if (image) {
+        const formattedImage = {
+          uri: image.path,
+          name: image.filename || `image_${Date.now()}.jpg`,
+          type: image.mime,
+          size: image.size,
+          width: image.width,
+          height: image.height,
+          originalPath: image.path,
+        };
+
+        setImageFile(formattedImage);
+        console.log('选中的图片:', formattedImage);
       }
     } catch (error) {
       console.error('选择图片失败:', error);
