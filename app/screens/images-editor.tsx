@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { useLocalSearchParams, router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import ImagePicker from 'react-native-image-crop-picker';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface ImageItem {
   uri: string;
@@ -9,6 +19,14 @@ interface ImageItem {
   height?: number;
   [key: string]: any;
 }
+
+// ---------------
+// 布局常量
+// ---------------
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const COLUMN_COUNT = 3;
+const GAP = 10;
+const ITEM_SIZE = (SCREEN_WIDTH - GAP * (COLUMN_COUNT + 1)) / COLUMN_COUNT;
 
 export default function ImagesEditor() {
   const params = useLocalSearchParams<{ images?: string }>();
@@ -47,8 +65,8 @@ export default function ImagesEditor() {
   const renderItem = ({ item, index }: { item: ImageItem; index: number }) => (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.uri }} style={styles.image} resizeMode="cover" />
-      <TouchableOpacity style={styles.editBtn} onPress={() => handleCrop(index)}>
-        <Text style={styles.editTxt}>编辑</Text>
+      <TouchableOpacity style={styles.editIconWrap} onPress={() => handleCrop(index)}>
+        <MaterialIcons name="edit" size={20} color="#fff" />
       </TouchableOpacity>
     </View>
   );
@@ -62,38 +80,76 @@ export default function ImagesEditor() {
   }
 
   return (
-    <FlatList
-      contentContainerStyle={styles.list}
-      data={images}
-      keyExtractor={(_, i) => String(i)}
-      renderItem={renderItem}
-    />
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.headerIcon} onPress={() => router.back()}>
+          <MaterialIcons name="arrow-back" size={24} color="#000" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>图片编辑</Text>
+        {/* 占位保持标题居中 */}
+        <View style={styles.headerIcon} />
+      </View>
+
+      {/* Grid */}
+      <FlatList
+        contentContainerStyle={styles.list}
+        data={images}
+        keyExtractor={(_, i) => String(i)}
+        renderItem={renderItem}
+        numColumns={COLUMN_COUNT}
+        showsVerticalScrollIndicator={false}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 0.5,
+    borderColor: '#e5e5e5',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
+  },
+  headerIcon: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   list: {
-    padding: 16,
+    padding: GAP,
   },
   itemContainer: {
-    marginBottom: 24,
+    width: ITEM_SIZE,
+    height: ITEM_SIZE,
+    margin: GAP / 2,
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
-    aspectRatio: 1,
-    borderRadius: 8,
+    height: '100%',
   },
-  editBtn: {
-    marginTop: 8,
-    alignSelf: 'flex-end',
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-  },
-  editTxt: {
-    color: '#fff',
-    fontSize: 14,
+  editIconWrap: {
+    position: 'absolute',
+    right: 6,
+    top: 6,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 12,
+    padding: 4,
   },
   centerBox: {
     flex: 1,
