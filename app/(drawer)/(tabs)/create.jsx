@@ -47,8 +47,8 @@ export default function Create() {
   const handlePickImage = async () => {
     try {
       const images = await pickMultipleImages({
-        maxFiles: 1,
-        cropping: false, // 可以开启裁剪
+        maxFiles: 10,
+        cropping: true, // 可以开启裁剪
         compressImageQuality: 0.8,
       });
 
