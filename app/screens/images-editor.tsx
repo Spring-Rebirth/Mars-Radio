@@ -11,6 +11,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ImagePicker from 'react-native-image-crop-picker';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useEditedImagesStore } from '../../store/editedImagesStore';
 
 interface ImageItem {
   uri: string;
@@ -104,6 +105,18 @@ export default function ImagesEditor() {
         renderItem={renderItem}
         numColumns={COLUMN_COUNT}
         showsVerticalScrollIndicator={false}
+        ListFooterComponent={() => (
+          <View className="flex-row items-center justify-center mt-4">
+            <TouchableOpacity
+              className="bg-blue-500 p-2 rounded-md w-11/12 h-12 items-center justify-center"
+              onPress={() => {
+                useEditedImagesStore.getState().setImages(images);
+                router.back();
+              }}>
+              <Text className="text-white">完成</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       />
     </SafeAreaView>
   );

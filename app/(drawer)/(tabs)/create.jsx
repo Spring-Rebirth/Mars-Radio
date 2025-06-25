@@ -19,6 +19,7 @@ import VideoPlayButton from '../../../components/VideoPlayButton';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons'
 import { useImageCropPicker } from '../../../hooks/useImageCropPicker';
+import { useEditedImagesStore } from '../../../store/editedImagesStore';
 
 export default function Create() {
   const insetTop = useSafeAreaInsets().top;
@@ -34,6 +35,7 @@ export default function Create() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const videoPlayer = useVideoPlayer(videoFile?.uri);
+  const { images: editedImages, clear: clearEditedImages } = useEditedImagesStore();
 
   const {
     pickMultipleImages,
@@ -117,6 +119,15 @@ export default function Create() {
       cleanupTempFiles();
     };
   }, [cleanupTempFiles]);
+
+  // 监听裁剪完成的图片
+  useEffect(() => {
+    if (editedImages.length > 0) {
+      setImageFile(editedImages[0]);
+      // 如果你支持多张，可把数组直接保存
+      clearEditedImages();
+    }
+  }, [editedImages]);
 
   // 生成视频缩略图
   const generateThumbnailFromVideo = async () => {
