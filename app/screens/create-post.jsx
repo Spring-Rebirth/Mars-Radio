@@ -214,6 +214,7 @@ export default function CreatePost() {
                                     <Ionicons name="add-circle-outline" size={20} color="gray" />
                                     <Text className="text-gray-500 ml-1">{t("Add more")}</Text>
                                 </Pressable>
+
                                 <Pressable
                                     onPress={() => setImageFiles([])}
                                     className="flex-row items-center ml-4 p-2"
@@ -223,7 +224,6 @@ export default function CreatePost() {
                                 </Pressable>
                             </>
                         )}
-
                     </View>
                 </View>
                 <Pressable
