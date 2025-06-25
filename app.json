@@ -3,7 +3,7 @@
     "name": "Mars Radio",
     "slug": "marsx",
     "scheme": "marsx",
-    "version": "7.0.0",
+    "version": "8.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,7 +18,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "7.0.0",
+      "buildNumber": "8.0.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
