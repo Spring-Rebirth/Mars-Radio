@@ -22,10 +22,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.mystseed.marsx",
-      "associatedDomains": [
-        "applinks:mars-radio.app"
-      ]
+      "bundleIdentifier": "com.mystseed.marsx"
     },
     "android": {
       "adaptiveIcon": {
