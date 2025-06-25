@@ -4,6 +4,36 @@ import { icons } from '../constants'
 
 export default function CustomForm({ title, handleChangeText, value, placeholder }) {
   const [showPassword, setShowPassword] = React.useState(false)
+
+  // 根据 title 动态设置输入框属性
+  const getInputProps = () => {
+    const baseProps = {
+      autoCorrect: false,
+      autoComplete: 'off',
+      spellCheck: false,
+    }
+
+    if (title === 'Email') {
+      return {
+        ...baseProps,
+        keyboardType: 'email-address',
+        autoCapitalize: 'none',
+        textContentType: 'emailAddress',
+      }
+    } else if (title === 'Password' || title === 'Confirm Password') {
+      return {
+        ...baseProps,
+        textContentType: 'password',
+        autoCapitalize: 'none',
+      }
+    } else {
+      return {
+        ...baseProps,
+        textContentType: 'none',
+      }
+    }
+  }
+
   return (
     <View className={`mt-4 space-y-2`}>
       <Text className={`text-[#808080] text-lg`}>{title}</Text>
@@ -20,9 +50,8 @@ export default function CustomForm({ title, handleChangeText, value, placeholder
           style={{ outline: 'none' }}
           secureTextEntry={(title === 'Password' || title === 'Confirm Password') && !showPassword}
           value={value}
-          // Callback that is called when the text input's text changes. 
-          // Changed text is passed as a single string argument to the callback handler.
           onChangeText={handleChangeText}
+          {...getInputProps()}
         />
         {/* Show password icon */}
         {
