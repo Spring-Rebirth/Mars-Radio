@@ -1,17 +1,16 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, Alert, Image } from "react-native";
+import { View, Text, TextInput, Pressable, Alert, Image, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { createPost, fetchFileUrl } from "../../services/postsService";
 import { useGlobalContext } from "../../context/GlobalProvider";
-import { usePickFile } from "../../hooks/usePickFile";
-import * as FileSystem from "expo-file-system";
-import mime from "mime";
+import { useImageCropPicker } from "../../hooks/useImageCropPicker";
 import { useUploadFileForPost } from "../../hooks/useUploadFile";
 import LoadingModal from "../../components/modal/LoadingModal";
 import Toast from "react-native-toast-message";
+import DraggableGrid from "react-native-draggable-grid";
 
 export default function CreatePost() {
   const router = useRouter();
@@ -23,36 +22,36 @@ export default function CreatePost() {
     author: user?.$id,
     author_name: user?.username,
   });
-  const [imageFile, setImageFile] = useState(null);
-  const { pickImage } = usePickFile();
+  // 存储多张图片
+  const [imageFiles, setImageFiles] = useState([]);
+  const { pickMultipleImages } = useImageCropPicker();
   const [onPublish, setOnPublish] = useState(false);
 
   const handlePickImage = async () => {
     try {
-      const result = await pickImage();
+      const results = await pickMultipleImages();
 
-      if (!result) {
-        // 用户可能取消了选择
+      if (!results || results.length === 0) {
+        // 用户取消选择
         return;
       }
 
-      console.log("handlePickImage result:", result);
-      const { uri, name } = result;
-      const fileInfo = await FileSystem.getInfoAsync(uri);
-      const fileSize =
-        fileInfo.exists && "size" in fileInfo ? fileInfo.size : 0;
-      let mimeType;
-      if (fileInfo.exists) {
-        mimeType = mime.getType(uri);
-        console.log(`File MIME type: ${mimeType}`);
-      }
-      const fileModel = { uri, name, type: mimeType, size: fileSize };
+      console.log("handlePickImage results:", results);
 
-      setImageFile(fileModel);
+      // 为每张图片生成唯一 key 方便拖拽排序
+      const resultsWithId = results.map((img, idx) => ({ ...img, key: `${Date.now()}_${idx}` }));
+
+      // 若已选择过图片，则追加；否则直接覆盖
+      setImageFiles(prev => [...prev, ...resultsWithId]);
     } catch (err) {
       console.log("Image selection failed:", err);
       Alert.alert("Error", "There was an error selecting the image");
     }
+  };
+
+  // 删除指定索引的图片
+  const handleDeleteImage = (index) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handlePublishPost = async () => {
@@ -67,23 +66,30 @@ export default function CreatePost() {
     }
     setOnPublish(true);
     try {
-      if (imageFile) {
-        const imageUpload = await useUploadFileForPost(imageFile);
-        console.log(`imageUpload: ${imageUpload}`);
-        if (!imageUpload) {
-          throw new Error("Image upload failed");
+      if (imageFiles.length > 0) {
+        // 上传所有图片并获取 URL
+        const imageUrls = [];
+        for (const file of imageFiles) {
+          const imageUpload = await useUploadFileForPost(file);
+          console.log(`imageUpload: ${imageUpload}`);
+          if (!imageUpload) {
+            throw new Error("Image upload failed");
+          }
+          const { fileId: image_ID } = imageUpload;
+          console.log(`image_ID: ${image_ID}`);
+          const storageImageUrl = await fetchFileUrl(image_ID);
+          console.log(`storageImageUrl: ${storageImageUrl}`);
+          imageUrls.push(storageImageUrl);
         }
-        const { fileId: image_ID } = imageUpload;
-        console.log(`image_ID: ${image_ID}`);
-        const storageImageUrl = await fetchFileUrl(image_ID);
-        console.log(`storageImageUrl: ${storageImageUrl}`);
 
         const fileModel = {
           title: form.title.trim(),
           content: form.content.trim(),
           author: form.author,
           author_name: form.author_name,
-          image: storageImageUrl
+          // 存储图片数组以及第一张图片
+          images: imageUrls,
+          image: imageUrls[0]
         };
 
         await createPost(fileModel);
@@ -125,77 +131,106 @@ export default function CreatePost() {
 
   return (
     <SafeAreaView className="flex-1 bg-white px-5 pt-5 pb-5">
-      {/* 头部区域：包含返回图标 */}
-      <View className="flex-row items-center mb-5">
-        <Pressable onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </Pressable>
-        <Text className="text-2xl font-bold ml-3">{t("Create Post")}</Text>
-      </View>
-      {/* 表单区域 */}
-      <View className="mb-4">
-        <Text className="mb-1 text-lg">{t("Title")} *</Text>
-        <TextInput
-          placeholder={t("Enter title")}
-          className="border border-gray-300 rounded p-2"
-          onChangeText={(text) => setForm({ ...form, title: text })}
-        />
-      </View>
-      <View className="mb-4">
-        <Text className="mb-1 text-lg">{t("Content")}</Text>
-        <TextInput
-          placeholder={t("Enter content")}
-          className="border border-gray-300 rounded p-2 h-40"
-          onChangeText={(text) => setForm({ ...form, content: text })}
-          multiline
-          textAlignVertical="top"
-        />
-      </View>
-      {/* 新增上传图片表单项 */}
-      <View className="mb-4">
-        <View className="flex-row justify-between">
-          <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
-          {imageFile?.uri && (
-            <Text className="mb-1 text-base text-gray-500">
-              {t("Click image to select again")}
-            </Text>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        {/* 头部区域：包含返回图标 */}
+        <View className="flex-row items-center mb-5">
+          <Pressable onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </Pressable>
+          <Text className="text-2xl font-bold ml-3">{t("Create Post")}</Text>
+        </View>
+        {/* 表单区域 */}
+        <View className="mb-4">
+          <Text className="mb-1 text-lg">{t("Title")} *</Text>
+          <TextInput
+            placeholder={t("Enter title")}
+            className="border border-gray-300 rounded p-2"
+            onChangeText={(text) => setForm({ ...form, title: text })}
+          />
+        </View>
+        <View className="mb-4">
+          <Text className="mb-1 text-lg">{t("Content")}</Text>
+          <TextInput
+            placeholder={t("Enter content")}
+            className="border border-gray-300 rounded p-2 h-40"
+            onChangeText={(text) => setForm({ ...form, content: text })}
+            multiline
+            textAlignVertical="top"
+          />
+        </View>
+        {/* 新增上传图片表单项 */}
+        <View className="mb-4">
+          <View className="flex-row justify-between">
+            <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
+          </View>
+
+          <Pressable
+            onPress={() => {
+              handlePickImage();
+            }}
+            className="border border-dashed border-gray-300 rounded p-3 flex justify-center items-center"
+          >
+            {imageFiles.length === 0 ? (
+              <>
+                <Ionicons name="image-outline" size={24} color="gray" />
+                <Text className="text-gray-500 mt-2">
+                  {t("Click to select image")}
+                </Text>
+              </>
+            ) : (
+              <View className="w-full flex-row">
+                {/* 网格预览 & 拖拽排序 */}
+                <DraggableGrid
+                  data={imageFiles}
+                  numColumns={3}
+                  renderItem={(item, index) => {
+                    if (!item || !item.uri) return null;
+                    return (
+                      <Pressable key={item.key} className="m-1 relative">
+                        <Image
+                          source={{ uri: item.uri }}
+                          style={{ width: 100, height: 100, borderRadius: 6 }}
+                          resizeMode="cover"
+                        />
+                        {/* 删除按钮 */}
+                        <Pressable
+                          onPress={() => handleDeleteImage(index)}
+                          className="absolute -top-2 -right-2 bg-black/60 rounded-full p-1"
+                        >
+                          <Ionicons name="close" size={14} color="white" />
+                        </Pressable>
+                      </Pressable>
+                    );
+                  }}
+                  onDragRelease={(newData) => setImageFiles(newData)}
+                />
+              </View>
+            )}
+          </Pressable>
+          {/* 继续添加图片按钮 - 总是在网格下方展示 */}
+          {imageFiles.length > 0 && (
+            <Pressable
+              onPress={handlePickImage}
+              className="mt-3 flex-row items-center"
+            >
+              <Ionicons name="add-circle-outline" size={20} color="gray" />
+              <Text className="text-gray-500 ml-1">{t("Add more")}</Text>
+            </Pressable>
           )}
         </View>
-
         <Pressable
           onPress={() => {
-            handlePickImage();
+            handlePublishPost();
           }}
-          className="border border-dashed border-gray-300 rounded p-4 justify-center items-center"
+          className="bg-blue-500 p-4 rounded justify-center items-center"
         >
-          {!imageFile?.uri ? (
-            <>
-              <Ionicons name="image-outline" size={24} color="gray" />
-              <Text className="text-gray-500 mt-2">
-                {t("Click to select image")}
-              </Text>
-            </>
-          ) : (
-            <Image
-              source={{ uri: imageFile.uri }}
-              style={{ width: 300, height: 250 }}
-              resizeMode="contain"
-            />
-          )}
+          <Text className="text-white font-bold">{t("Publish")}</Text>
         </Pressable>
-      </View>
-      <Pressable
-        onPress={() => {
-          handlePublishPost();
-        }}
-        className="bg-blue-500 p-4 rounded justify-center items-center"
-      >
-        <Text className="text-white font-bold">{t("Publish")}</Text>
-      </Pressable>
-      <LoadingModal
-        isVisible={onPublish}
-        loadingText={t("Publishing post...")}
-      />
+        <LoadingModal
+          isVisible={onPublish}
+          loadingText={t("Publishing post...")}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 }

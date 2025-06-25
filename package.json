@@ -52,6 +52,8 @@
     "react-native": "0.76.9",
     "react-native-animatable": "^1.4.0",
     "react-native-appwrite": "^0.5.0",
+    "react-native-draggable-flatlist": "^4.0.3",
+    "react-native-draggable-grid": "^2.2.2",
     "react-native-edge-to-edge": "^1.1.2",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-image-crop-picker": "^0.50.1",
