@@ -160,58 +160,54 @@ export default function CreatePost() {
         </View>
         {/* 新增上传图片表单项 */}
         <View className="mb-4">
-          <View className="flex-row justify-between">
-            <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
-          </View>
-
-          <Pressable
-            onPress={() => {
-              handlePickImage();
-            }}
-            className="border border-dashed border-gray-300 rounded p-3 flex justify-center items-center"
-          >
-            {imageFiles.length === 0 ? (
-              <>
-                <Ionicons name="image-outline" size={24} color="gray" />
-                <Text className="text-gray-500 mt-2">
-                  {t("Click to select image")}
-                </Text>
-              </>
-            ) : (
-              <View className="w-full flex-row">
-                {/* 网格预览 & 拖拽排序 */}
-                <DraggableGrid
-                  data={imageFiles}
-                  numColumns={3}
-                  renderItem={(item, index) => {
-                    if (!item || !item.uri) return null;
-                    return (
-                      <Pressable key={item.key} className="m-1 relative">
-                        <Image
-                          source={{ uri: item.uri }}
-                          style={{ width: 100, height: 100, borderRadius: 6 }}
-                          resizeMode="cover"
-                        />
-                        {/* 删除按钮 */}
-                        <Pressable
-                          onPress={() => handleDeleteImage(index)}
-                          className="absolute -top-2 -right-2 bg-black/60 rounded-full p-1"
-                        >
-                          <Ionicons name="close" size={14} color="white" />
-                        </Pressable>
+          <Text className="mb-1 text-lg">{t("Upload Image")}</Text>
+          {imageFiles.length === 0 ? (
+            <Pressable
+              onPress={() => {
+                handlePickImage();
+              }}
+              className="border border-dashed border-gray-300 rounded p-3 flex justify-center items-center"
+            >
+              <Ionicons name="image-outline" size={24} color="gray" />
+              <Text className="text-gray-500 mt-2">
+                {t("Click to select image")}
+              </Text>
+            </Pressable>
+          ) : (
+            <View className="w-full flex-row">
+              {/* 网格预览 & 拖拽排序 */}
+              <DraggableGrid
+                data={imageFiles}
+                numColumns={3}
+                renderItem={(item, index) => {
+                  if (!item || !item.uri) return null;
+                  return (
+                    <Pressable key={item.key} className="m-1 relative">
+                      <Image
+                        source={{ uri: item.uri }}
+                        style={{ width: 100, height: 100, borderRadius: 6 }}
+                        resizeMode="cover"
+                      />
+                      {/* 删除按钮 */}
+                      <Pressable
+                        onPress={() => handleDeleteImage(index)}
+                        className="absolute -top-2 -right-2 bg-black/60 rounded-full p-1"
+                      >
+                        <Ionicons name="close" size={14} color="white" />
                       </Pressable>
-                    );
-                  }}
-                  onDragRelease={(newData) => setImageFiles(newData)}
-                />
-              </View>
-            )}
-          </Pressable>
+                    </Pressable>
+                  );
+                }}
+                onDragRelease={(newData) => setImageFiles(newData)}
+              />
+            </View>
+          )}
+
           {/* 继续添加图片按钮 - 总是在网格下方展示 */}
           {imageFiles.length > 0 && (
             <Pressable
               onPress={handlePickImage}
-              className="mt-3 flex-row items-center"
+              className="mt-8 flex-row items-center"
             >
               <Ionicons name="add-circle-outline" size={20} color="gray" />
               <Text className="text-gray-500 ml-1">{t("Add more")}</Text>
