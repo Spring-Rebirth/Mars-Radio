@@ -188,7 +188,7 @@ export default function CreatePost() {
                                     <Pressable
                                         onLongPress={drag}
                                         disabled={isActive}
-                                        className="mx-1 relative"
+                                        className="m-1.5 relative"
                                         style={{ width: 100 }}
                                     >
                                         <Image
