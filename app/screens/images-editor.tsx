@@ -5,7 +5,6 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  StyleSheet,
   Dimensions,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -63,9 +62,15 @@ export default function ImagesEditor() {
   };
 
   const renderItem = ({ item, index }: { item: ImageItem; index: number }) => (
-    <View style={styles.itemContainer}>
-      <Image source={{ uri: item.uri }} style={styles.image} resizeMode="cover" />
-      <TouchableOpacity style={styles.editIconWrap} onPress={() => handleCrop(index)}>
+    <View
+      className="rounded-lg overflow-hidden"
+      style={{ width: ITEM_SIZE, height: ITEM_SIZE, margin: GAP / 2 }}
+    >
+      <Image source={{ uri: item.uri }} className="w-full h-full" resizeMode="cover" />
+      <TouchableOpacity
+        className="absolute right-1.5 top-1.5 bg-black/60 rounded-full p-1"
+        onPress={() => handleCrop(index)}
+      >
         <MaterialIcons name="edit" size={20} color="#fff" />
       </TouchableOpacity>
     </View>
@@ -73,27 +78,27 @@ export default function ImagesEditor() {
 
   if (!images.length) {
     return (
-      <View style={styles.centerBox}>
+      <View className="flex-1 items-center justify-center">
         <Text>没有收到任何图片数据</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerIcon} onPress={() => router.back()}>
+      <View className="flex-row items-center justify-between px-3 py-2 border-b border-gray-200">
+        <TouchableOpacity className="w-6 h-6 items-center justify-center" onPress={() => router.back()}>
           <MaterialIcons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>图片编辑</Text>
+        <Text className="text-lg font-semibold text-black">图片编辑</Text>
         {/* 占位保持标题居中 */}
-        <View style={styles.headerIcon} />
+        <View className="w-6 h-6" />
       </View>
 
       {/* Grid */}
       <FlatList
-        contentContainerStyle={styles.list}
+        contentContainerStyle={{ padding: GAP }}
         data={images}
         keyExtractor={(_, i) => String(i)}
         renderItem={renderItem}
@@ -103,57 +108,3 @@ export default function ImagesEditor() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderBottomWidth: 0.5,
-    borderColor: '#e5e5e5',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000',
-  },
-  headerIcon: {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  list: {
-    padding: GAP,
-  },
-  itemContainer: {
-    width: ITEM_SIZE,
-    height: ITEM_SIZE,
-    margin: GAP / 2,
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  editIconWrap: {
-    position: 'absolute',
-    right: 6,
-    top: 6,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    borderRadius: 12,
-    padding: 4,
-  },
-  centerBox: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
