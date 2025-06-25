@@ -130,7 +130,7 @@ export default function CreatePost() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-5 pt-5 pb-5">
+    <SafeAreaView className="flex-1 bg-white px-5">
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* 头部区域：包含返回图标 */}
         <View className="flex-row items-center mb-5">
@@ -174,7 +174,7 @@ export default function CreatePost() {
               </Text>
             </Pressable>
           ) : (
-            <View className="w-full flex-row">
+            <View className="w-full flex-row border-2 border-sky-500 rounded">
               {/* 网格预览 & 拖拽排序 */}
               <DraggableGrid
                 data={imageFiles}
@@ -203,16 +203,28 @@ export default function CreatePost() {
             </View>
           )}
 
-          {/* 继续添加图片按钮 - 总是在网格下方展示 */}
-          {imageFiles.length > 0 && (
-            <Pressable
-              onPress={handlePickImage}
-              className="mt-8 flex-row items-center"
-            >
-              <Ionicons name="add-circle-outline" size={20} color="gray" />
-              <Text className="text-gray-500 ml-1">{t("Add more")}</Text>
-            </Pressable>
-          )}
+          <View className="flex-row justify-between mt-8 mb-2">
+            {/* 继续添加图片按钮 - 总是在网格下方展示 */}
+            {imageFiles.length > 0 && (
+              <>
+                <Pressable
+                  onPress={handlePickImage}
+                  className="flex-row items-center p-2"
+                >
+                  <Ionicons name="add-circle-outline" size={20} color="gray" />
+                  <Text className="text-gray-500 ml-1">{t("Add more")}</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setImageFiles([])}
+                  className="flex-row items-center ml-4 p-2"
+                >
+                  <Ionicons name="trash-outline" size={20} color="gray" />
+                  <Text className="text-gray-500 ml-1">{t("Clear all")}</Text>
+                </Pressable>
+              </>
+            )}
+
+          </View>
         </View>
         <Pressable
           onPress={() => {
