@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Alert, Platform } from 'react-native';
+import { router } from 'expo-router';
 
 export const useImageCropPicker = () => {
   const [loading, setLoading] = useState(false);
@@ -38,7 +39,7 @@ export const useImageCropPicker = () => {
       const images = await ImagePicker.openPicker(defaultOptions);
       console.log('选中的图片:', images);
 
-      return images.map(image => ({
+      const formattedImages = images.map(image => ({
         uri: image.path,
         name: image.filename || `image_${Date.now()}.jpg`,
         type: image.mime,
@@ -47,6 +48,14 @@ export const useImageCropPicker = () => {
         height: image.height,
         originalPath: image.path,
       }));
+
+      // 将结果通过路由参数传递给图片编辑页面
+      router.push({
+        pathname: '/screens/images-editor',
+        params: { images: JSON.stringify(formattedImages) },
+      });
+
+      return formattedImages;
     } catch (error) {
       if (error.code !== 'E_PICKER_CANCELLED') {
         console.error('选择图片失败:', error);
