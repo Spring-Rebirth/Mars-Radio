@@ -147,7 +147,8 @@ export default function PostDetails() {
 
     Promise.all(promises).then(heights => {
       const maxH = Math.max(...heights);
-      setMaxImageHeight(maxH);
+      const finalH = Math.min(maxH, screenHeight * 0.75);
+      setMaxImageHeight(finalH);
     });
   }, [imagesArr]);
 
