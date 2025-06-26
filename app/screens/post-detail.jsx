@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  FlatList,
 } from "react-native";
 import {
   fetchCommentsOfPost,
@@ -29,33 +30,30 @@ import React from "react";
 // 将 PostHeader 组件提取出来并使用 React.memo 包装
 const PostHeader = React.memo(({
   parsedPost,
-  coverImage,
-  imageHeight,
-  imageLoading,
-  setImageLoading,
+  images,
+  maxImageHeight,
   onCommentSubmitted
 }) => (
   <>
     {/* 帖子详情 */}
     <View className="py-5 pt-0 border-b border-gray-300">
-      {coverImage && (
-        <View className="relative overflow-hidden">
-          <Image
-            source={{ uri: coverImage }}
-            className="w-screen bg-[#EFEDED]"
-            style={{ height: imageHeight }}
-            resizeMode="contain"
-            onLoad={() => setImageLoading(false)}
-          />
-          {imageLoading && (
-            <View
-              className="absolute inset-x-0 items-center justify-center bg-gray-50"
-              style={{ height: imageHeight || 200 }}
-            >
-              <ActivityIndicator size="large" color="#0000ff" />
+      {images.length > 0 && (
+        <FlatList
+          data={images}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item, idx) => item + idx}
+          renderItem={({ item }) => (
+            <View className="bg-[#EFEDED]" style={{ width: Dimensions.get('window').width, height: maxImageHeight }}>
+              <Image
+                source={{ uri: item }}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="contain"
+              />
             </View>
           )}
-        </View>
+        />
       )}
 
       <View className="px-5">
@@ -85,8 +83,7 @@ export default function PostDetails() {
   const { t } = useTranslation();
   const [commentsDoc, setCommentsDoc] = useState([]);
   const [postCreator, setPostCreator] = useState(null);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [imageHeight, setImageHeight] = useState(0);
+  const [maxImageHeight, setMaxImageHeight] = useState(200);
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const maxHeight = screenHeight * 1; // 设置为屏幕高度的100%
   const adminList = useAdminStore((state) => state.adminList);
@@ -94,8 +91,8 @@ export default function PostDetails() {
   const { user } = useGlobalContext();
   const [deleting, setDeleting] = useState(false);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
-  // 兼容旧文档：优先 images[0]，否则 image
-  const coverImage = parsedPost?.images?.[0] ?? parsedPost?.image;
+  // 图片数组：优先 images 数组，否则退回单张 image
+  const imagesArr = parsedPost?.images?.length ? parsedPost.images : (parsedPost?.image ? [parsedPost.image] : []);
 
   // 获取帖子作者信息
   useEffect(() => {
@@ -139,17 +136,20 @@ export default function PostDetails() {
   }, [user, parsedPost, adminList]);
 
   useEffect(() => {
-    if (coverImage) {
-      Image.getSize(coverImage, (width, height) => {
-        // 计算等比例缩放后的高度
-        const scaledHeight = (screenWidth * height) / width;
-        // 使用原始比例计算的高度和最大高度中的较小值
-        setImageHeight(Math.min(scaledHeight, maxHeight));
-      }, (error) => {
-        console.error('Error getting image size:', error);
-      });
-    }
-  }, [coverImage]);
+    if (imagesArr.length === 0) return;
+
+    const promises = imagesArr.map(uri => new Promise((resolve) => {
+      Image.getSize(uri, (w, h) => {
+        const scaled = (screenWidth * h) / w;
+        resolve(Math.min(scaled, maxHeight));
+      }, () => resolve(200));
+    }));
+
+    Promise.all(promises).then(heights => {
+      const maxH = Math.max(...heights);
+      setMaxImageHeight(maxH);
+    });
+  }, [imagesArr]);
 
   const onCommentSubmitted = (newComment) => {
     setCommentsDoc((prevComments) => [newComment, ...prevComments]);
@@ -205,13 +205,11 @@ export default function PostDetails() {
   const headerComponent = useMemo(() => (
     <PostHeader
       parsedPost={parsedPost}
-      coverImage={coverImage}
-      imageHeight={imageHeight}
-      imageLoading={imageLoading}
-      setImageLoading={setImageLoading}
+      images={imagesArr}
+      maxImageHeight={maxImageHeight}
       onCommentSubmitted={onCommentSubmitted}
     />
-  ), [parsedPost, coverImage, imageHeight, imageLoading, onCommentSubmitted]);
+  ), [parsedPost, imagesArr, maxImageHeight, onCommentSubmitted]);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
