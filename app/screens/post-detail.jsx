@@ -29,6 +29,7 @@ import React from "react";
 // 将 PostHeader 组件提取出来并使用 React.memo 包装
 const PostHeader = React.memo(({
   parsedPost,
+  coverImage,
   imageHeight,
   imageLoading,
   setImageLoading,
@@ -37,10 +38,10 @@ const PostHeader = React.memo(({
   <>
     {/* 帖子详情 */}
     <View className="py-5 pt-0 border-b border-gray-300">
-      {parsedPost.image && (
+      {coverImage && (
         <View className="relative overflow-hidden">
           <Image
-            source={{ uri: parsedPost.image }}
+            source={{ uri: coverImage }}
             className="w-screen bg-[#EFEDED]"
             style={{ height: imageHeight }}
             resizeMode="contain"
@@ -93,6 +94,8 @@ export default function PostDetails() {
   const { user } = useGlobalContext();
   const [deleting, setDeleting] = useState(false);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
+  // 兼容旧文档：优先 images[0]，否则 image
+  const coverImage = parsedPost?.images?.[0] ?? parsedPost?.image;
 
   // 获取帖子作者信息
   useEffect(() => {
@@ -136,8 +139,8 @@ export default function PostDetails() {
   }, [user, parsedPost, adminList]);
 
   useEffect(() => {
-    if (parsedPost.image) {
-      Image.getSize(parsedPost.image, (width, height) => {
+    if (coverImage) {
+      Image.getSize(coverImage, (width, height) => {
         // 计算等比例缩放后的高度
         const scaledHeight = (screenWidth * height) / width;
         // 使用原始比例计算的高度和最大高度中的较小值
@@ -146,7 +149,7 @@ export default function PostDetails() {
         console.error('Error getting image size:', error);
       });
     }
-  }, [parsedPost.image]);
+  }, [coverImage]);
 
   const onCommentSubmitted = (newComment) => {
     setCommentsDoc((prevComments) => [newComment, ...prevComments]);
@@ -202,12 +205,13 @@ export default function PostDetails() {
   const headerComponent = useMemo(() => (
     <PostHeader
       parsedPost={parsedPost}
+      coverImage={coverImage}
       imageHeight={imageHeight}
       imageLoading={imageLoading}
       setImageLoading={setImageLoading}
       onCommentSubmitted={onCommentSubmitted}
     />
-  ), [parsedPost, imageHeight, imageLoading, onCommentSubmitted]);
+  ), [parsedPost, coverImage, imageHeight, imageLoading, onCommentSubmitted]);
 
   return (
     <SafeAreaView className="flex-1 bg-white">

@@ -60,17 +60,35 @@ const createPost = async (fileModel) => {
   }
 }
 
+// 为帖子上传单张图片（外层循环调用可实现多图上传）
 const createFileForPost = async (file) => {
   const fileId = ID.unique();
   try {
+    // 统一并校验文件名，避免 Bucket 限制报 "File extension not allowed"
+    let { name, type } = file;
+    const mimeType = type || 'image/jpeg';
+    const extFromMime = mimeType.split('/')[1] || 'jpg';
+
+    // 若文件名缺失或无扩展名，使用时间戳+扩展
+    if (!name || !/\.[a-zA-Z0-9]+$/.test(name)) {
+      name = `upload_${Date.now()}.${extFromMime}`;
+    }
+
+    // 仅保留安全字符，防止空格或特殊符号
+    name = name.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+    const uploadFile = { ...file, name };
+
+    // 直接将包含 uri、name、type、size 的 file 对象上传（兼容 SDK 0.5.0）
     const response = await storage.createFile(
       config.bucketId,
       fileId,
-      file
+      uploadFile
     );
     return { response, fileId };
   } catch (error) {
     console.error('Error creating file:', error);
+    return null;
   }
 }
 
