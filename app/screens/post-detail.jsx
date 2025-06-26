@@ -26,13 +26,15 @@ import Toast from "react-native-toast-message";
 import LoadingModal from "../../components/modal/LoadingModal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
+import ImageViewing from "react-native-image-viewing";
 
 // 将 PostHeader 组件提取出来并使用 React.memo 包装
 const PostHeader = React.memo(({
   parsedPost,
   images,
   maxImageHeight,
-  onCommentSubmitted
+  onCommentSubmitted,
+  onImagePress
 }) => (
   <>
     {/* 帖子详情 */}
@@ -44,14 +46,18 @@ const PostHeader = React.memo(({
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item, idx) => item + idx}
-          renderItem={({ item }) => (
-            <View className="bg-[#EFEDED]" style={{ width: Dimensions.get('window').width, height: maxImageHeight }}>
+          renderItem={({ item, index }) => (
+            <Pressable
+              onPress={() => onImagePress(index)}
+              className="bg-[#EFEDED]"
+              style={{ width: Dimensions.get('window').width, height: maxImageHeight }}
+            >
               <Image
                 source={{ uri: item }}
                 style={{ width: '100%', height: '100%' }}
                 resizeMode="contain"
               />
-            </View>
+            </Pressable>
           )}
         />
       )}
@@ -156,6 +162,16 @@ export default function PostDetails() {
     setCommentsDoc((prevComments) => [newComment, ...prevComments]);
   };
 
+  // image viewing state
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  const openViewer = (idx) => {
+    setCurrentIdx(idx);
+    setViewerVisible(true);
+  };
+  const closeViewer = () => setViewerVisible(false);
+
   const handleDeletePost = async () => {
     setDeleting(true);
     try {
@@ -209,6 +225,7 @@ export default function PostDetails() {
       images={imagesArr}
       maxImageHeight={maxImageHeight}
       onCommentSubmitted={onCommentSubmitted}
+      onImagePress={(idx) => openViewer(idx)}
     />
   ), [parsedPost, imagesArr, maxImageHeight, onCommentSubmitted]);
 
@@ -263,6 +280,13 @@ export default function PostDetails() {
         />
       )}
       <LoadingModal isVisible={deleting} loadingText={t("Deleting post...")} />
+      {/* Image Viewer */}
+      <ImageViewing
+        images={imagesArr.map(uri => ({ uri }))}
+        imageIndex={currentIdx}
+        visible={viewerVisible}
+        onRequestClose={closeViewer}
+      />
     </SafeAreaView>
   );
 }
