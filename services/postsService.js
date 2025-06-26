@@ -104,16 +104,57 @@ async function fetchFileUrl(fileId) {
   }
 }
 
+const extractFileIdFromUrl = (url = '') => {
+  // URL 格式示例： https://cloud.appwrite.io/v1/storage/buckets/<bucket>/files/<fileId>/view?... 
+  const match = url.match(/\/files\/([^/]+)\//);
+  return match ? match[1] : null;
+};
+
 const deleteSinglePost = async (post_id) => {
   try {
+    // 1. 先获取帖子文档，提取所有图片 URL
+    const postDoc = await databases.getDocument(
+      config.databaseId,
+      config.postColletionId,
+      post_id
+    );
+
+    const imgUrls = Array.isArray(postDoc.images) ? postDoc.images : [];
+
+    // 2. 删除每张图片对应的文件
+    for (const url of imgUrls) {
+      const fileId = extractFileIdFromUrl(url);
+      if (fileId) {
+        try {
+          await storage.deleteFile(config.bucketId, fileId);
+        } catch (err) {
+          console.warn('Failed to delete file', fileId, err);
+        }
+      }
+    }
+
+    // 同时检查旧字段 image
+    if (postDoc.image) {
+      const singleId = extractFileIdFromUrl(postDoc.image);
+      if (singleId) {
+        try {
+          await storage.deleteFile(config.bucketId, singleId);
+        } catch (err) {
+          console.warn('Failed to delete single image', singleId, err);
+        }
+      }
+    }
+
+    // 3. 删除帖子文档
     await databases.deleteDocument(
       config.databaseId,
       config.postColletionId,
       post_id
     );
+
     return true;
   } catch (error) {
-    console.error(error);
+    console.error('Error deleting post:', error);
     return false;
   }
 }
