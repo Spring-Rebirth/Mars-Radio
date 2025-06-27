@@ -75,7 +75,7 @@ export default function VideoCard({
 
   return (
     <Animatable.View
-      className={`relative mx-4 ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-7'}`}
+      className={`relative mx-4 rounded-[16px] ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-7'}`}
       style={cardShadowStyle}
     >
       {/* 在全屏模式下隐藏状态栏 */}
