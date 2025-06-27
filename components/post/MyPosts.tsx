@@ -3,15 +3,23 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchPostsWithPagination } from "../../services/postsService";
 import { router } from "expo-router";
 import PostItem from "./PostItem";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
+type Post = {
+    title: string;
+    content: string;
+    author: string;
+    author_name: string;
+    $createdAt: string;
+    images: string[];
+}
 
 export default function MyPosts() {
+    const { user } = useGlobalContext();
     const { data, isLoading, error, fetchNextPage } = useInfiniteQuery({
         queryKey: ["myPosts"],
         queryFn: ({ pageParam = 0 }) => fetchPostsWithPagination(pageParam, 10),
         getNextPageParam: (lastPage, allPages) => {
-            // console.log("getNextPageParam - lastPage:", lastPage);
-            // console.log("getNextPageParam - allPages:", allPages);
             if (Array.isArray(lastPage) && lastPage.length > 0) {
                 return allPages.length * 10;
             }
@@ -20,11 +28,25 @@ export default function MyPosts() {
         initialPageParam: 0,
     });
 
-    console.log("MyPosts - data:", data);
-    console.log("MyPosts - isLoading:", isLoading);
-    console.log("MyPosts - error:", error);
+    let posts: Post[] = [];
 
-    const posts = data?.pages.flatMap(page => page) || [];
+    if (data) {
+        posts = data.pages.flatMap((page) => {
+            return page.map((post: any) => {
+                if (post && post.author === user?.$id) {
+                    return {
+                        title: post.title || '',
+                        content: post.content || '',
+                        author: post.author || '',
+                        author_name: post.author_name || '',
+                        $createdAt: post.$createdAt || '',
+                        images: post.images || [],
+                    } as Post;
+                }
+                return undefined;
+            }).filter(Boolean) as Post[];
+        });
+    }
 
     return (
         <View>
@@ -41,12 +63,14 @@ export default function MyPosts() {
                         }}
                         className="mx-4"
                     >
-                        <PostItem
-                            title={item.title}
-                            content={item.content}
-                            author_name={item.author_name}
-                            $createdAt={item.$createdAt}
-                        />
+                        {item && (
+                            <PostItem
+                                title={item.title}
+                                content={item.content}
+                                author_name={item.author_name}
+                                $createdAt={item.$createdAt}
+                            />
+                        )}
                     </Pressable>
                 )}
             />
