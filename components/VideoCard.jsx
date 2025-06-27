@@ -13,6 +13,16 @@ import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 
+// 卡片阴影样式，避免 RN 关于透明背景的性能警告
+const cardShadowStyle = {
+  backgroundColor: '#FFFFFF',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 3,
+  elevation: 3,
+};
+
 export default function VideoCard({
   post,
   isFullscreen,
@@ -65,7 +75,8 @@ export default function VideoCard({
 
   return (
     <Animatable.View
-      className={`relative bg-primary mx-4 ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-7'}`}
+      className={`relative mx-4 ${isFullscreen ? 'flex-1 w-full h-full' : 'mb-7'}`}
+      style={cardShadowStyle}
     >
       {/* 在全屏模式下隐藏状态栏 */}
       {isFullscreen && <StatusBar hidden />}
@@ -80,7 +91,7 @@ export default function VideoCard({
         maxDist={10}
       >
         <View
-          className="relative justify-center items-center w-full rounded-[16px] overflow-hidden shadow-md"
+          className="relative justify-center items-center w-full rounded-[16px] overflow-hidden"
           style={{ height: thumbnailHeight }}
         >
           {/* 渐变背景 */}
