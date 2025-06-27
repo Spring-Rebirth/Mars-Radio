@@ -27,6 +27,7 @@ import LoadingModal from "../../components/modal/LoadingModal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
 import ImageViewing from "react-native-image-viewing";
+import PageIndicator from "../../components/post/PageIndicator";
 
 // 将 PostHeader 组件提取出来并使用 React.memo 包装
 const PostHeader = React.memo(({
@@ -35,53 +36,68 @@ const PostHeader = React.memo(({
   maxImageHeight,
   onCommentSubmitted,
   onImagePress
-}) => (
-  <>
-    {/* 帖子详情 */}
-    <View className="py-5 pt-0 border-b border-gray-300">
-      {images.length > 0 && (
-        <FlatList
-          data={images}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, idx) => item + idx}
-          renderItem={({ item, index }) => (
-            <Pressable
-              onPress={() => onImagePress(index)}
-              className="bg-[#EFEDED]"
-              style={{ width: Dimensions.get('window').width, height: maxImageHeight }}
-            >
-              <Image
-                source={{ uri: item }}
-                style={{ width: '100%', height: '100%' }}
-                resizeMode="contain"
-              />
-            </Pressable>
-          )}
-        />
-      )}
+}) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const screenWidth = Dimensions.get('window').width;
 
-      <View className="px-5">
-        <Text className="mt-3 text-2xl font-bold text-gray-900">
-          {parsedPost?.title || "无法读取到标题文本"}
-        </Text>
-        {parsedPost?.content && (
-          <Text className="mt-2 text-base text-gray-600" numberOfLines={20}>
-            {parsedPost.content}
-          </Text>
+  const handleMomentumScrollEnd = (e) => {
+    const index = Math.round(e.nativeEvent.contentOffset.x / screenWidth);
+    setActiveIndex(index);
+  };
+
+  return (
+    <>
+      {/* 帖子详情 */}
+      <View className="py-5 pt-0 border-b border-gray-300">
+        {images.length > 0 && (
+          <>
+            <FlatList
+              data={images}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, idx) => item + idx}
+              onMomentumScrollEnd={handleMomentumScrollEnd}
+              renderItem={({ item, index }) => (
+                <Pressable
+                  onPress={() => onImagePress(index)}
+                  className="bg-[#EFEDED]"
+                  style={{ width: Dimensions.get('window').width, height: maxImageHeight }}
+                >
+                  <Image
+                    source={{ uri: item }}
+                    style={{ width: '100%', height: '100%' }}
+                    resizeMode="contain"
+                  />
+                </Pressable>
+              )}
+            />
+            {/* 页面指示器 */}
+            <PageIndicator total={images.length} currentIndex={activeIndex} />
+          </>
         )}
+
+        <View className="px-5">
+          <Text className="mt-3 text-2xl font-bold text-gray-900">
+            {parsedPost?.title || "无法读取到标题文本"}
+          </Text>
+          {parsedPost?.content && (
+            <Text className="mt-2 text-base text-gray-600" numberOfLines={20}>
+              {parsedPost.content}
+            </Text>
+          )}
+        </View>
       </View>
-    </View>
-    {/* 评论输入框 */}
-    <View className="px-2">
-      <CommentInputBox
-        onCommentSubmitted={onCommentSubmitted}
-        post_id={parsedPost.$id}
-      />
-    </View>
-  </>
-));
+      {/* 评论输入框 */}
+      <View className="px-2">
+        <CommentInputBox
+          onCommentSubmitted={onCommentSubmitted}
+          post_id={parsedPost.$id}
+        />
+      </View>
+    </>
+  );
+});
 
 export default function PostDetails() {
   const { post } = useLocalSearchParams();
