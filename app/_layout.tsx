@@ -18,6 +18,7 @@ import Toast from "react-native-toast-message";
 import AppInitializer from "../components/AppInitializer";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const originalWarn = console.warn;
 console.warn = (message: any) => {
@@ -45,6 +46,8 @@ Notifications.setNotificationHandler({
         shouldSetBadge: false,
     }),
 });
+
+const queryClient = new QueryClient();
 
 export default function RootLayout(): React.ReactNode {
     const [isReady, setIsReady] = useState<boolean>(false);
@@ -312,26 +315,28 @@ export default function RootLayout(): React.ReactNode {
         <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
             <ClerkLoaded>
                 <I18nextProvider i18n={i18n}>
-                    <CombinedProvider>
-                        <AppInitializer>
-                            <GestureHandlerRootView style={{ flex: 1 }}>
-                                <Stack>
-                                    {/* 不需要 Drawer 的路由 */}
-                                    <Stack.Screen name="index" options={{ headerShown: false }} />
-                                    <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                                    <Stack.Screen name="player" options={{ headerShown: false }} />
-                                    <Stack.Screen name="screens" options={{ headerShown: false }} />
-                                    <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
-                                    <Stack.Screen name="view-user/index" options={{ headerShown: false }} />
-                                    {/* 包含 Drawer 的路由组 */}
-                                    <Stack.Screen
-                                        name="(drawer)"
-                                        options={{ headerShown: false }}
-                                    />
-                                </Stack>
-                            </GestureHandlerRootView>
-                        </AppInitializer>
-                    </CombinedProvider>
+                    <QueryClientProvider client={queryClient}>
+                        <CombinedProvider>
+                            <AppInitializer>
+                                <GestureHandlerRootView style={{ flex: 1 }}>
+                                    <Stack>
+                                        {/* 不需要 Drawer 的路由 */}
+                                        <Stack.Screen name="index" options={{ headerShown: false }} />
+                                        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                                        <Stack.Screen name="player" options={{ headerShown: false }} />
+                                        <Stack.Screen name="screens" options={{ headerShown: false }} />
+                                        <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
+                                        <Stack.Screen name="view-user/index" options={{ headerShown: false }} />
+                                        {/* 包含 Drawer 的路由组 */}
+                                        <Stack.Screen
+                                            name="(drawer)"
+                                            options={{ headerShown: false }}
+                                        />
+                                    </Stack>
+                                </GestureHandlerRootView>
+                            </AppInitializer>
+                        </CombinedProvider>
+                    </QueryClientProvider>
                 </I18nextProvider>
             </ClerkLoaded>
             <Toast />

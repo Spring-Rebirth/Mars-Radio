@@ -25,10 +25,12 @@ async function fetchPostsWithPagination(offset = 0, limit = 10) {
             config.postColletionId,
             queries
         );
-        return response.documents;
+        // 确保总是返回一个数组
+        return response.documents || [];
     } catch (error) {
         console.error('Error fetching posts:', error);
-        throw error;
+        // 在发生错误时也返回一个空数组，以避免 undefined
+        return [];
     }
 }
 const fetchPostData = async (postId) => {
