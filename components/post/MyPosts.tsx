@@ -12,6 +12,7 @@ type Post = {
     author: string;
     author_name: string;
     $createdAt: string;
+    image?: string;
     images: string[];
 }
 
@@ -72,6 +73,7 @@ export default function MyPosts() {
                                 content={item.content}
                                 author_name={item.author_name}
                                 $createdAt={item.$createdAt}
+                                image={item.image}
                                 images={item.images}
                             />
                         )}
