@@ -72,7 +72,7 @@ export default function MyPosts() {
                                 content={item.content}
                                 author_name={item.author_name}
                                 $createdAt={item.$createdAt}
-                                image={item.images}
+                                images={item.images}
                             />
                         )}
                     </Pressable>
