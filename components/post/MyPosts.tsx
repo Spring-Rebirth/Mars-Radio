@@ -6,6 +6,7 @@ import PostItem from "./PostItem";
 import { useGlobalContext } from "../../context/GlobalProvider";
 
 type Post = {
+    $id: string;
     title: string;
     content: string;
     author: string;
@@ -41,6 +42,7 @@ export default function MyPosts() {
                         author_name: post.author_name || '',
                         $createdAt: post.$createdAt || '',
                         images: post.images || [],
+                        $id: post.$id || '',
                     } as Post;
                 }
                 return undefined;
@@ -65,10 +67,12 @@ export default function MyPosts() {
                     >
                         {item && (
                             <PostItem
+                                $id={item.$id}
                                 title={item.title}
                                 content={item.content}
                                 author_name={item.author_name}
                                 $createdAt={item.$createdAt}
+                                image={item.images}
                             />
                         )}
                     </Pressable>

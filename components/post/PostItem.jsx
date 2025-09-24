@@ -3,7 +3,7 @@ import { View, Text, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 
-export default function PostItem({ title, content, author_name, $createdAt, image }) {
+export default function PostItem({ $id, title, content, author_name, $createdAt, image }) {
     return (
         <View className="mb-5">
             <LinearGradient
