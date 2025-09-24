@@ -64,6 +64,7 @@ const VideoPlayer = ({
     const totalDuration = videoPlayer.duration || 1;
     const previousFullscreen = useRef(fullscreen);
     const ratioCheckAttempts = useRef(0);
+    const [wasPlayingBeforeSeek, setWasPlayingBeforeSeek] = useState(false);
 
     // 检测视频比例并设置合适的高度
     const checkVideoRatio = useCallback(async () => {
@@ -363,16 +364,29 @@ const VideoPlayer = ({
                                     maximumTrackTintColor="#FFFFFF"
                                     trackStyle={styles.trackStyle}
                                     thumbTouchSize={{ width: 40, height: 50 }}
-                                    onSlidingStart={(e) => {
+                                    onSlidingStart={() => {
                                         // 用户开始滑动，显示控件并清除隐藏定时器
                                         if (hideControlsTimer.current) {
                                             clearTimeout(hideControlsTimer.current);
                                             hideControlsTimer.current = null;
                                         }
                                         setShowControls(true);
+                                        setWasPlayingBeforeSeek(isPlaying);
+                                        if (videoPlayer) {
+                                            videoPlayer.pause();
+                                        }
                                     }}
                                     onValueChange={changeVideoProgress}
-                                    onSlidingComplete={() => {
+                                    onSlidingComplete={(value) => {
+                                        if (videoPlayer && status === 'readyToPlay') {
+                                            videoPlayer.currentTime = value;
+                                            // 延迟确保seek生效后恢复播放
+                                            setTimeout(() => {
+                                                if (wasPlayingBeforeSeek) {
+                                                    videoPlayer.play();
+                                                }
+                                            }, 100);
+                                        }
                                         showControlsWithTimer();
                                     }}
                                 />
