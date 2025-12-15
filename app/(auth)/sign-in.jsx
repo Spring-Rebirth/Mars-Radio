@@ -16,10 +16,10 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 import images from "../../constants/images";
 import CustomForm from "../../components/CustomForm";
 import CustomButton from "../../components/CustomButton";
-import * as ScreenOrientation from "expo-screen-orientation";
 import { updatePushToken } from "../../functions/notifications/index";
 import { useTranslation } from "react-i18next";
 import { useSignIn, useUser } from "@clerk/clerk-expo";
+import useLockPortrait from "../../hooks/useLockPortrait";
 
 export default function SignIn() {
     const { signIn, setActive, isLoaded } = useSignIn();
@@ -30,23 +30,7 @@ export default function SignIn() {
     const { setUser, setIsLoggedIn } = useGlobalContext();
     const { t } = useTranslation();
 
-    useEffect(() => {
-        const lockPortrait = async () => {
-            try {
-                await ScreenOrientation.lockAsync(
-                    ScreenOrientation.OrientationLock.PORTRAIT_UP
-                );
-            } catch (error) {
-                console.error("Failed to lock orientation:", error);
-            }
-        };
-
-        lockPortrait();
-
-        return () => {
-            ScreenOrientation.unlockAsync().catch(console.error);
-        };
-    }, []);
+    useLockPortrait();
 
     async function submit() {
         if (form.email === "" || form.password === "") {
@@ -57,9 +41,7 @@ export default function SignIn() {
         setIsSubmitting(true);
 
         try {
-            if (!isLoaded) {
-                return;
-            }
+            if (!isLoaded) return;
 
             try {
                 const signInAttempt = await signIn.create({
