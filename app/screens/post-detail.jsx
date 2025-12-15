@@ -114,7 +114,9 @@ export default function PostDetails() {
     const [deleting, setDeleting] = useState(false);
     const [isCommentsLoading, setIsCommentsLoading] = useState(true);
     // 图片数组：优先 images 数组，否则退回单张 image
-    const imagesArr = parsedPost?.images?.length ? parsedPost.images : (parsedPost?.image ? [parsedPost.image] : []);
+    const imagesArr = parsedPost?.images?.length
+        ? parsedPost.images
+        : (parsedPost?.image ? [parsedPost.image] : []);
 
     // 获取帖子作者信息
     useEffect(() => {
