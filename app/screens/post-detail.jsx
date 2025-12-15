@@ -16,7 +16,7 @@ import {
 import { fetchUserData } from '../../services/userService'
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useLayoutEffect } from "react";
 import CommentInputBox from "../../components/post-comment/CommentInputBox";
 import CommentList from "../../components/post-comment/CommentList";
 import { useAdminStore } from "../../store/adminStore";
@@ -29,6 +29,8 @@ import React from "react";
 import ImageViewing from "react-native-image-viewing";
 import PageIndicator from "../../components/post/PageIndicator";
 
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
 // 将 PostHeader 组件提取出来并使用 React.memo 包装
 const PostHeader = React.memo(({
     parsedPost,
@@ -38,7 +40,6 @@ const PostHeader = React.memo(({
     onImagePress
 }) => {
     const [activeIndex, setActiveIndex] = useState(0);
-    const screenWidth = Dimensions.get('window').width;
 
     const handleMomentumScrollEnd = (e) => {
         const index = Math.round(e.nativeEvent.contentOffset.x / screenWidth);
@@ -106,7 +107,7 @@ export default function PostDetails() {
     const [commentsDoc, setCommentsDoc] = useState([]);
     const [postCreator, setPostCreator] = useState(null);
     const [maxImageHeight, setMaxImageHeight] = useState(200);
-    const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
     const maxHeight = screenHeight * 1; // 设置为屏幕高度的100%
     const adminList = useAdminStore((state) => state.adminList);
     const [isCreator, setIsCreator] = useState(false);
@@ -162,7 +163,7 @@ export default function PostDetails() {
         }
     }, [user, parsedPost, adminList]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (imagesArr.length === 0) return;
 
         const promises = imagesArr.map(uri => new Promise((resolve) => {
